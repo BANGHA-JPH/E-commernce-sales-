@@ -20,9 +20,9 @@ export default function HeroSection({ onSelectCarModel }) {
     <section className="relative h-[870px] min-h-[600px] flex items-center justify-center overflow-hidden mb-32 border-b border-[#584236]/10">
       
       {/* Background Engine Image Overlay */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 flex items-center justify-center">
         <div 
-          className="w-full h-full bg-cover bg-center opacity-40"
+          className="w-full h-full bg-contain bg-center bg-no-repeat opacity-40 mix-blend-screen"
           style={{ 
             backgroundImage: `url(${heroEngineImage})` 
           }}
