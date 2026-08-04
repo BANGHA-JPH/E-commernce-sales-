@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, Plus, Check } from 'lucide-react';
+import engineSchematicImg from '../assets/hero_engine.png';
 
 const BLUEPRINT_HOTSPOTS = [
   {
@@ -7,8 +8,8 @@ const BLUEPRINT_HOTSPOTS = [
     name: 'NOS Holley 4150 Carburetor',
     partNumber: 'PART // C7ZX-9510-A',
     price: 849.00,
-    top: '25%',
-    left: '35%',
+    top: '20%',
+    left: '49%',
     category: 'Fuel & Carburetion',
     image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=600&q=80',
     description: 'Original high-performance 4-barrel carburetor for classic flat-four & V8 engine platforms.'
@@ -18,8 +19,8 @@ const BLUEPRINT_HOTSPOTS = [
     name: 'Dual-Port Aluminum Cylinder Head Set',
     partNumber: 'PART // VW-113-101-065',
     price: 425.00,
-    top: '48%',
-    left: '72%',
+    top: '44%',
+    left: '66%',
     category: 'Engine Block & Internals',
     image: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=600&q=80',
     description: 'High-density aluminum alloy dual-port cylinder head set with hardened valve seats.'
@@ -30,7 +31,7 @@ const BLUEPRINT_HOTSPOTS = [
     partNumber: 'PART // MAHLE-85.5MM',
     price: 620.00,
     top: '68%',
-    left: '48%',
+    left: '38%',
     category: 'Engine Block & Internals',
     image: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80',
     description: 'Forged aluminum pistons with cast iron cylinders, wrist pins, and stainless rings.'
@@ -78,17 +79,17 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
           {/* Blueprint Grid Lines */}
           <div className="absolute inset-0 bg-blueprint-grid opacity-30"></div>
           
-          {/* Technical Engine Schematic Diagram Background */}
+          {/* 3D Technical Exploded Engine Schematic Diagram Background */}
           <div 
-            className="w-full h-full bg-contain bg-center bg-no-repeat opacity-80 z-10 transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full bg-contain bg-center bg-no-repeat opacity-90 mix-blend-screen z-10 transition-transform duration-700 group-hover:scale-105"
             style={{ 
-              backgroundImage: `url("https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80")` 
+              backgroundImage: `url(${engineSchematicImg})` 
             }}
           />
 
           {/* Blueprint Header Label */}
           <div className="absolute top-4 left-4 font-technical-data text-xs text-[#83cffb]/70 z-20 uppercase tracking-widest bg-[#131314]/80 px-2.5 py-1 border border-[#83cffb]/20">
-            SCHEMATIC // VW-T1-1600-FLAT4
+            SCHEMATIC // 3D-ENGINE-EXPLODED-SPEC
           </div>
 
           {/* Interactive Pulsing Hotspots */}
