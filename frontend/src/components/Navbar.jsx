@@ -30,7 +30,7 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
             <span className="w-1.5 h-1.5 rounded-full bg-[#83cffb] animate-pulse"></span>
             Inspector
           </a>
-          <a href="#vehicles" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5">Vehicles</a>
+          <a href="#engines" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5">Engines</a>
           <a href="#workshop" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5">Showcase</a>
           <a href="#reviews" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5">Reviews</a>
         </nav>
@@ -107,7 +107,7 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
           </div>
           <a href="#catalog" onClick={() => setMobileMenuOpen(false)} className="block text-[#e0c0b1] hover:text-[#ff7a1a] py-1">Catalog</a>
           <a href="#blueprint" onClick={() => setMobileMenuOpen(false)} className="block text-[#e0c0b1] hover:text-[#ff7a1a] py-1">Blueprint Inspector</a>
-          <a href="#vehicles" onClick={() => setMobileMenuOpen(false)} className="block text-[#e0c0b1] hover:text-[#ff7a1a] py-1">Vehicles</a>
+          <a href="#engines" onClick={() => setMobileMenuOpen(false)} className="block text-[#e0c0b1] hover:text-[#ff7a1a] py-1">Engines</a>
           <a href="#workshop" onClick={() => setMobileMenuOpen(false)} className="block text-[#e0c0b1] hover:text-[#ff7a1a] py-1">Showcase</a>
           <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="block text-[#e0c0b1] hover:text-[#ff7a1a] py-1">Customer Reviews</a>
           <button 

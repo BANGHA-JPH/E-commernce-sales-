@@ -92,13 +92,13 @@ export default function PartDetailModal({ part, onClose, onAddToCart }) {
                 </div>
               </div>
 
-              {/* Compatible Vehicle List */}
+              {/* Engine Compatibility List */}
               <div className="space-y-2 mb-6">
                 <div className="text-xs font-mono text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                  <Cpu className="w-3.5 h-3.5 text-amber-400" /> Vehicle Compatibility Matrix:
+                  <Cpu className="w-3.5 h-3.5 text-amber-400" /> Engine Compatibility Matrix:
                 </div>
                 <ul className="text-xs text-slate-300 space-y-1 font-mono pl-2">
-                  {part.compatibleVehicles.map((v, i) => (
+                  {(part.compatibleVehicles || part.compatibleEngines || []).map((v, i) => (
                     <li key={i} className="flex items-center gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                       <span>{v}</span>

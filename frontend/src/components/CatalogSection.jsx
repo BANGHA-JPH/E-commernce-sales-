@@ -110,9 +110,9 @@ export default function CatalogSection({
             ))}
           </div>
 
-          {/* Model Filter Pills */}
+          {/* Engine Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <span className="font-technical-data text-[#a78b7d] uppercase mr-2">Car Model:</span>
+            <span className="font-technical-data text-[#a78b7d] uppercase mr-2">Engine:</span>
             <button
               onClick={() => setSelectedCarFilter('ALL')}
               className={`px-3.5 py-1.5 rounded-sm transition-all whitespace-nowrap uppercase tracking-wider ${
@@ -121,7 +121,7 @@ export default function CatalogSection({
                   : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40'
               }`}
             >
-              All Vintage Models
+              All Engine Families
             </button>
             {VINTAGE_CARS.map((car) => (
               <button

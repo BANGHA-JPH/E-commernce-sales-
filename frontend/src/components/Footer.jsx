@@ -19,7 +19,7 @@ export default function Footer() {
         <div className="flex flex-col gap-3 font-label-caps text-xs tracking-wider uppercase">
           <a className="hover:text-[#ff7a1a] transition-colors" href="#catalog">Catalog</a>
           <a className="hover:text-[#ff7a1a] transition-colors" href="#blueprint">Blueprint Inspector</a>
-          <a className="hover:text-[#ff7a1a] transition-colors" href="#vehicles">Vehicles</a>
+          <a className="hover:text-[#ff7a1a] transition-colors" href="#engines">Engines</a>
         </div>
 
         <div className="flex flex-col gap-3 font-label-caps text-xs tracking-wider uppercase">

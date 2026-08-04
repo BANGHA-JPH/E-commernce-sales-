@@ -10,20 +10,20 @@ const CUSTOMER_REVIEWS = [
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
     rating: 5,
     date: '3 days ago',
-    vehicle: '1967 VW Beetle 1500cc',
-    partPurchased: 'NOS Holley 4150 & Mahle Piston Set',
+    vehicle: '1600cc Dual-Port Flat-4 Engine',
+    partPurchased: 'Dual-Port Heads & Mahle Piston Set',
     title: 'Flawless casting tolerances and verified OEM codes',
-    review: 'Rebuilding a 67 Beetle engine requires exact tolerances. Every single part received from Rusty Aircooled matched original factory casting blueprints down to the millimeter. Couldn’t ask for better quality.'
+    review: 'Rebuilding an air-cooled flat-four engine requires exact tolerances. Every single part received from Rusty Aircooled matched original factory casting blueprints down to the millimeter. Couldn’t ask for better quality.'
   },
   {
     id: 2,
     author: 'Elena Rostova',
-    role: 'Classic VW Collector',
+    role: 'Classic VW Engine Specialist',
     location: 'Portland, OR',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
     rating: 5,
     date: '1 week ago',
-    vehicle: '1971 T2 Split-Window Bus',
+    vehicle: '2.0L Type 4 Air-Cooled Flat-4',
     partPurchased: 'Dual Weber 40 IDF Carburetor Kit',
     title: 'The Blueprint Inspector saved me hours of guesswork',
     review: 'Using their interactive blueprint inspector made identifying the exact fuel delivery linkage effortless. Shipped securely in insulated wooden crates and arrived in under 48 hours.'
@@ -31,15 +31,15 @@ const CUSTOMER_REVIEWS = [
   {
     id: 3,
     author: 'Dave "Sledge" Miller',
-    role: 'Restoration Shop Owner',
+    role: 'Engine Restoration Shop Owner',
     location: 'Denver, CO',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
     rating: 5,
     date: '2 weeks ago',
-    vehicle: '1964 Karmann Ghia Coupe',
-    partPurchased: 'Chrome Side Mirrors & Braking Cylinders',
+    vehicle: '428 Cobra Jet 7.0L V8 Build',
+    partPurchased: 'Dual Holley 4-Barrel Carburetor Setup',
     title: 'Top tier customer support and fast shipping',
-    review: 'Our shop restores 15+ vintage VWs a year. Rusty Aircooled is our primary supplier. High-contrast authentic parts, zero knockoffs, and their customer care team actually knows air-cooled mechanics inside out.'
+    review: 'Our shop rebuilds 15+ vintage engine assemblies a year. Rusty Aircooled is our primary supplier. High-contrast authentic engine parts, zero knockoffs, and their customer care team knows engine mechanics inside out.'
   }
 ];
 

@@ -51,7 +51,7 @@ export default function HeroSection({ onSelectCarModel }) {
 
         {/* Value Proposition */}
         <p className="font-body-lg text-base sm:text-lg text-[#e0c0b1] mb-10 max-w-2xl leading-relaxed">
-          Engineered precision for high-end VW restorations. OEM-grade components verified against original mechanical blueprints for Beetles, Buses, and Ghias.
+          Engineered precision for high-end VW & classic engine restorations. OEM-grade components verified against original mechanical blueprints for Flat-Four, Flat-Six, and Performance V8 Engines.
         </p>
 
         {/* Action Buttons (Solid High Contrast - No Gradients) */}

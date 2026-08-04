@@ -9,31 +9,31 @@ const BLUEPRINT_HOTSPOTS = [
     price: 849.00,
     top: '25%',
     left: '35%',
-    category: 'Fuel Delivery',
+    category: 'Fuel & Carburetion',
     image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=600&q=80',
-    description: 'Original high-performance 4-barrel carburetor for classic flat-four & performance engines.'
+    description: 'Original high-performance 4-barrel carburetor for classic flat-four & V8 engine platforms.'
   },
   {
-    id: 'mirr-02',
-    name: 'Chrome Vintage Side Mirrors',
-    partNumber: 'PART // MB-300SL-MIR',
-    price: 325.00,
+    id: 'head-02',
+    name: 'Dual-Port Aluminum Cylinder Head Set',
+    partNumber: 'PART // VW-113-101-065',
+    price: 425.00,
     top: '48%',
     left: '72%',
-    category: 'Body & Trim',
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80',
-    description: 'Triple-chromed solid brass side mirrors with anti-vibration rubber gaskets.'
+    category: 'Engine Block & Internals',
+    image: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=600&q=80',
+    description: 'High-density aluminum alloy dual-port cylinder head set with hardened valve seats.'
   },
   {
-    id: 'whl-03',
-    name: 'Classic Wire-Spoke Wheels Set',
-    partNumber: 'PART // JAG-E-WHEEL',
-    price: 1200.00,
+    id: 'piston-03',
+    name: 'Mahle Forged Piston & Cylinder Kit',
+    partNumber: 'PART // MAHLE-85.5MM',
+    price: 620.00,
     top: '68%',
     left: '48%',
-    category: 'Wheels & Brakes',
-    image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80',
-    description: 'Hand-laced 72-spoke stainless steel wheels with knock-off center hubs.'
+    category: 'Engine Block & Internals',
+    image: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80',
+    description: 'Forged aluminum pistons with cast iron cylinders, wrist pins, and stainless rings.'
   }
 ];
 
