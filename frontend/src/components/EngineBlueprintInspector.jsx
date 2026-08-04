@@ -1,184 +1,223 @@
 import React, { useState } from 'react';
-import { Cpu, Eye, ShoppingBag, Sparkles, CheckCircle2, Crosshair, HelpCircle } from 'lucide-react';
-import { ENGINE_HOTSPOTS, SPARE_PARTS } from '../data/partsData';
+import { Eye, Plus, Check } from 'lucide-react';
+
+const BLUEPRINT_HOTSPOTS = [
+  {
+    id: 'carb-01',
+    name: 'NOS Holley 4150 Carburetor',
+    partNumber: 'PART // C7ZX-9510-A',
+    price: 849.00,
+    top: '25%',
+    left: '35%',
+    category: 'Fuel Delivery',
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=600&q=80',
+    description: 'Original high-performance 4-barrel carburetor for classic flat-four & performance engines.'
+  },
+  {
+    id: 'mirr-02',
+    name: 'Chrome Vintage Side Mirrors',
+    partNumber: 'PART // MB-300SL-MIR',
+    price: 325.00,
+    top: '48%',
+    left: '72%',
+    category: 'Body & Trim',
+    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80',
+    description: 'Triple-chromed solid brass side mirrors with anti-vibration rubber gaskets.'
+  },
+  {
+    id: 'whl-03',
+    name: 'Classic Wire-Spoke Wheels Set',
+    partNumber: 'PART // JAG-E-WHEEL',
+    price: 1200.00,
+    top: '68%',
+    left: '48%',
+    category: 'Wheels & Brakes',
+    image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80',
+    description: 'Hand-laced 72-spoke stainless steel wheels with knock-off center hubs.'
+  }
+];
 
 export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetails }) {
-  const [activeHotspot, setActiveHotspot] = useState(ENGINE_HOTSPOTS[0]);
-  const matchedPart = SPARE_PARTS.find(p => p.id === activeHotspot.partId) || SPARE_PARTS[0];
+  const [selectedHotspot, setSelectedHotspot] = useState(BLUEPRINT_HOTSPOTS[0]);
+  const [addedIds, setAddedIds] = useState([]);
+
+  const handleAdd = (item) => {
+    onAddToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      partNumber: item.partNumber,
+      image: item.image,
+      category: item.category
+    });
+    setAddedIds(prev => [...prev, item.id]);
+    setTimeout(() => {
+      setAddedIds(prev => prev.filter(id => id !== item.id));
+    }, 2000);
+  };
 
   return (
-    <section id="blueprint" className="py-20 bg-slate-950 relative border-b border-slate-800">
+    <section id="blueprint" className="max-w-[1440px] mx-auto px-4 md:px-8 mb-32 pt-8">
       
-      {/* Blueprint Grid Styling Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
+      {/* Section Header */}
+      <div className="text-center mb-16">
+        <h2 className="font-h2 text-2xl md:text-4xl text-[#e5e2e3] font-bold mb-4">
+          Inspect the Engine. Find the Part.
+        </h2>
+        <p className="font-body-md text-sm md:text-base text-[#e0c0b1] max-w-xl mx-auto">
+          Interactive exploded schematics linked directly to our inventory database.
+        </p>
+      </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Blueprint Grid Container */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[580px]">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono">
-            <Crosshair className="w-3.5 h-3.5 animate-spin" />
-            <span>INTERACTIVE EXPLODED DIAGRAM</span>
+        {/* Interactive Schematic View (Left Column) */}
+        <div className="lg:col-span-2 glass-panel relative overflow-hidden flex items-center justify-center group rounded-sm min-h-[420px]">
+          
+          {/* Blueprint Grid Lines */}
+          <div className="absolute inset-0 bg-blueprint-grid opacity-30"></div>
+          
+          {/* Technical Engine Schematic Diagram Background */}
+          <div 
+            className="w-full h-full bg-contain bg-center bg-no-repeat opacity-80 z-10 transition-transform duration-700 group-hover:scale-105"
+            style={{ 
+              backgroundImage: `url("https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80")` 
+            }}
+          />
+
+          {/* Blueprint Header Label */}
+          <div className="absolute top-4 left-4 font-technical-data text-xs text-[#83cffb]/70 z-20 uppercase tracking-widest bg-[#131314]/80 px-2.5 py-1 rounded-sm border border-[#83cffb]/20">
+            SCHEMATIC // VW-T1-1600-FLAT4
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-display">
-            Vintage Engine <span className="text-amber-400">Blueprint Inspector</span>
-          </h2>
+          {/* Interactive Pulsing Hotspots */}
+          {BLUEPRINT_HOTSPOTS.map((hotspot) => {
+            const isSelected = selectedHotspot?.id === hotspot.id;
+            return (
+              <button
+                key={hotspot.id}
+                onClick={() => setSelectedHotspot(hotspot)}
+                style={{ top: hotspot.top, left: hotspot.left }}
+                className={`absolute z-30 transform -translate-x-1/2 -translate-y-1/2 group/pin transition-all duration-300 ${
+                  isSelected ? 'scale-125' : 'hover:scale-110'
+                }`}
+              >
+                <span className={`block w-5 h-5 rounded-full border-2 ${
+                  isSelected ? 'border-[#ff7a1a] bg-[#ff7a1a]/30' : 'border-[#83cffb] bg-[#83cffb]/20'
+                } animate-pulse`} />
+                <span className={`absolute top-0 left-0 w-5 h-5 rounded-full ${
+                  isSelected ? 'bg-[#ff7a1a]' : 'bg-[#83cffb]'
+                } opacity-75 blur-sm`} />
+              </button>
+            );
+          })}
 
-          <p className="text-slate-400 text-sm sm:text-base">
-            Hover and click on engine component hotspots below to inspect original casting codes, technical schematics, and add rare parts directly to your cart.
-          </p>
+          {/* Active Blueprint Overlay Description Box */}
+          {selectedHotspot && (
+            <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-md bg-[#131314]/95 border border-[#ff7a1a]/40 p-4 z-30 backdrop-blur-md rounded-sm">
+              <div className="flex justify-between items-start mb-1">
+                <span className="font-technical-data text-[10px] text-[#ff7a1a] uppercase font-bold">
+                  HOTSPOT ACTIVE // {selectedHotspot.category}
+                </span>
+                <span className="font-technical-data text-xs text-[#ff7a1a] font-bold">
+                  ${selectedHotspot.price.toFixed(2)}
+                </span>
+              </div>
+              <h3 className="font-h3 text-base text-[#e5e2e3] font-bold">
+                {selectedHotspot.name}
+              </h3>
+              <p className="text-xs text-[#e0c0b1] mt-1 font-technical-data">
+                {selectedHotspot.partNumber}
+              </p>
+            </div>
+          )}
+
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-8 items-center">
-          
-          {/* Left Column: Interactive Schematic Canvas */}
-          <div className="lg:col-span-7 relative bg-slate-900/90 rounded-3xl border border-cyan-900/50 p-6 shadow-2xl overflow-hidden group">
-            
-            {/* Blueprint Header */}
-            <div className="flex items-center justify-between border-b border-cyan-900/40 pb-4 mb-4 text-xs font-mono">
-              <div className="flex items-center gap-2 text-cyan-400">
-                <Cpu className="w-4 h-4" />
-                <span>SPECIMEN: 7.0L V8 COBRA JET (SCHEMATIC VERSION 1967.4)</span>
-              </div>
-              <span className="text-slate-500">SCALE: 1:1 OEM SPEC</span>
-            </div>
+        {/* Detail Inventory Panel (Right Column) */}
+        <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar max-h-[600px]">
+          {BLUEPRINT_HOTSPOTS.map((part) => {
+            const isSelected = selectedHotspot?.id === part.id;
+            const isAdded = addedIds.includes(part.id);
+            return (
+              <div 
+                key={part.id}
+                onClick={() => setSelectedHotspot(part)}
+                className={`glass-panel p-4 flex flex-col gap-3 rounded-sm cursor-pointer transition-all ${
+                  isSelected ? 'border-[#ff7a1a] bg-[#201f20]' : 'hover:border-[#584236]'
+                }`}
+              >
+                <div className="aspect-video bg-[#353436] overflow-hidden rounded-sm relative group/img">
+                  <img 
+                    src={part.image} 
+                    alt={part.name} 
+                    className="w-full h-full object-cover opacity-85 group-hover/img:opacity-100 transition-opacity"
+                  />
+                  <div className="absolute top-2 right-2 bg-[#131314]/80 px-2 py-0.5 text-[10px] font-technical-data text-[#83cffb]">
+                    {part.category}
+                  </div>
+                </div>
 
-            {/* Schematic Image with Hotspot Pins */}
-            <div className="relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 min-h-[380px] flex items-center justify-center">
-              <img
-                src="https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80"
-                alt="Engine Blueprint Visual"
-                className="w-full h-[400px] object-cover opacity-60 mix-blend-luminosity filter contrast-125"
-              />
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-h3 text-base text-[#e5e2e3] font-bold">
+                      {part.name}
+                    </h4>
+                    <p className="font-technical-data text-xs text-[#ff7a1a] mt-0.5">
+                      {part.partNumber}
+                    </p>
+                  </div>
+                  <span className="text-[#ff7a1a] font-technical-data font-bold text-base">
+                    ${part.price.toFixed(2)}
+                  </span>
+                </div>
 
-              <div className="absolute inset-0 bg-cyan-950/20 pointer-events-none" />
+                <p className="text-xs text-[#a78b7d] line-clamp-2">
+                  {part.description}
+                </p>
 
-              {/* Glowing Hotspot Pins */}
-              {ENGINE_HOTSPOTS.map((hotspot) => {
-                const isActive = activeHotspot.id === hotspot.id;
-                return (
+                <div className="flex items-center gap-2 pt-2 border-t border-[#584236]/30">
                   <button
-                    key={hotspot.id}
-                    onClick={() => setActiveHotspot(hotspot)}
-                    style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
-                    className={`absolute -translate-x-1/2 -translate-y-1/2 group/pin transition-all duration-300 ${
-                      isActive ? 'z-20 scale-125' : 'z-10 hover:scale-110'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAdd(part);
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 font-label-caps text-xs uppercase font-bold tracking-wider rounded-sm transition-all ${
+                      isAdded 
+                        ? 'bg-emerald-600 text-white' 
+                        : 'bg-[#ff7a1a] hover:bg-[#ffb68e] text-black glow-button'
                     }`}
                   >
-                    <span className={`relative flex h-8 w-8 items-center justify-center rounded-full border ${
-                      isActive 
-                        ? 'bg-amber-500 border-white text-slate-950 shadow-lg shadow-amber-500/50' 
-                        : 'bg-cyan-950/90 border-cyan-400 text-cyan-300 hover:bg-amber-500 hover:text-slate-950'
-                    }`}>
-                      <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${
-                        isActive ? 'bg-amber-400' : 'bg-cyan-400'
-                      }`} />
-                      <Crosshair className="w-4 h-4 relative z-10" />
-                    </span>
-                    
-                    {/* Hotspot Label Tooltip on Hover */}
-                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/pin:block bg-slate-950 text-white text-[10px] font-mono font-bold px-2 py-1 rounded shadow border border-slate-700 whitespace-nowrap z-30">
-                      {hotspot.name}
-                    </div>
+                    {isAdded ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" /> Added to Cart
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-3.5 h-3.5" /> Add to Cart
+                      </>
+                    )}
                   </button>
-                );
-              })}
 
-            </div>
-
-            {/* Quick Hotspot Pill Selectors */}
-            <div className="flex items-center gap-2 overflow-x-auto pt-4 scrollbar-none">
-              {ENGINE_HOTSPOTS.map((h) => (
-                <button
-                  key={h.id}
-                  onClick={() => setActiveHotspot(h)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                    activeHotspot.id === h.id
-                      ? 'bg-amber-500 text-slate-950 font-bold'
-                      : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
-                  }`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                  {h.name}
-                </button>
-              ))}
-            </div>
-
-          </div>
-
-          {/* Right Column: Dynamic Hotspot Part Inspector Card */}
-          <div className="lg:col-span-5 space-y-6">
-            
-            <div className="bg-slate-900 border border-amber-500/30 rounded-3xl p-6 shadow-2xl relative">
-              <div className="flex items-center justify-between mb-4">
-                <span className="px-3 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono font-semibold">
-                  HOTSPOT COMPONENT # {matchedPart.id.toUpperCase()}
-                </span>
-                <span className="text-xs text-emerald-400 flex items-center gap-1 font-mono">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  IN STOCK ({matchedPart.stock} UNITS)
-                </span>
-              </div>
-
-              <h3 className="text-2xl font-bold text-white font-display mb-2">
-                {matchedPart.title}
-              </h3>
-
-              <p className="text-slate-400 text-xs sm:text-sm mb-4 leading-relaxed">
-                {activeHotspot.shortDesc}
-              </p>
-
-              {/* Part Image & Spec Matrix */}
-              <div className="rounded-xl overflow-hidden border border-slate-800 mb-4 h-44 relative group">
-                <img
-                  src={matchedPart.image}
-                  alt={matchedPart.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white font-mono">
-                  <span>CASTING: {matchedPart.castingCode}</span>
-                  <span className="text-amber-400 font-bold">${matchedPart.price.toLocaleString()} USD</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewPartDetails(part);
+                    }}
+                    className="p-2 border border-[#83cffb]/40 text-[#83cffb] hover:bg-[#83cffb]/10 rounded-sm transition-colors"
+                    title="View Technical Specs"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-
-              {/* Part Specifications Preview */}
-              <div className="bg-slate-950 rounded-xl p-3 border border-slate-800 text-xs space-y-2 mb-6">
-                {matchedPart.specifications.slice(0, 3).map((spec, i) => (
-                  <div key={i} className="flex items-center justify-between text-slate-300 font-mono">
-                    <span className="text-slate-500">{spec.key}:</span>
-                    <span className="font-semibold text-slate-200">{spec.value}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Component Actions */}
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => onViewPartDetails(matchedPart)}
-                  className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl text-xs font-semibold border border-slate-700 transition-all"
-                >
-                  <Eye className="w-4 h-4 text-amber-400" />
-                  <span>Full Technical Specs</span>
-                </button>
-
-                <button
-                  onClick={() => onAddToCart(matchedPart)}
-                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 py-3 rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 transition-all"
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>Add To Cart</span>
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-
+            );
+          })}
         </div>
 
       </div>
+
     </section>
   );
 }

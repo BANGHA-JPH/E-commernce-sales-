@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Filter, Search, ShoppingBag, Eye, Heart, ShieldCheck, Tag, Sparkles, Layers } from 'lucide-react';
+import { Filter, Search, ShoppingBag, Eye, Heart, Layers, Check } from 'lucide-react';
 import { SPARE_PARTS, VINTAGE_CARS } from '../data/partsData';
 
 export default function CatalogSection({ 
@@ -14,15 +14,24 @@ export default function CatalogSection({
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedCarFilter, setSelectedCarFilter] = useState(selectedCarModelId || 'ALL');
   const [sortBy, setSortBy] = useState('FEATURED');
+  const [addedIds, setAddedIds] = useState([]);
 
   // Categories list
   const categories = ['ALL', 'Fuel & Carburetion', 'Engine Block & Internals', 'Ignition & Electrical', 'Transmission & Clutch'];
   const eras = ['ALL', '1950s', '1960s', '1970s'];
 
+  // Handle Add To Cart with instant feedback
+  const handleAdd = (part) => {
+    onAddToCart(part);
+    setAddedIds(prev => [...prev, part.id]);
+    setTimeout(() => {
+      setAddedIds(prev => prev.filter(id => id !== part.id));
+    }, 2000);
+  };
+
   // Filter & Sort Logic
   const filteredParts = useMemo(() => {
     return SPARE_PARTS.filter((part) => {
-      // Search match
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = !searchTerm || 
         part.title.toLowerCase().includes(searchLower) ||
@@ -30,13 +39,8 @@ export default function CatalogSection({
         part.carModelName.toLowerCase().includes(searchLower) ||
         part.castingCode.toLowerCase().includes(searchLower);
 
-      // Era match
       const matchesEra = selectedEra === 'ALL' || part.era === selectedEra;
-
-      // Category match
       const matchesCategory = selectedCategory === 'ALL' || part.category === selectedCategory;
-
-      // Car Model match
       const matchesCar = selectedCarFilter === 'ALL' || part.carModelId === selectedCarFilter;
 
       return matchesSearch && matchesEra && matchesCategory && matchesCar;
@@ -44,36 +48,36 @@ export default function CatalogSection({
       if (sortBy === 'PRICE_LOW') return a.price - b.price;
       if (sortBy === 'PRICE_HIGH') return b.price - a.price;
       if (sortBy === 'RARITY') return b.rarityScore.localeCompare(a.rarityScore);
-      return 0; // FEATURED
+      return 0;
     });
   }, [searchTerm, selectedEra, selectedCategory, selectedCarFilter, sortBy]);
 
   return (
-    <section id="catalog" className="py-20 bg-[#0D0F12] relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="catalog" className="py-20 bg-[#131314] relative border-b border-[#584236]/20">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 pb-6 border-b border-slate-800 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 pb-6 border-b border-[#584236]/30 gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 text-[#ff7a1a] font-technical-data text-xs mb-3">
               <Layers className="w-3.5 h-3.5" />
-              <span>AUTHENTICATED CATALOG (GUEST BROWSING)</span>
+              <span>SHOP THE FULL INVENTORY // GUEST BROWSING ENABLED</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-display">
-              Spare Parts <span className="text-amber-400">Inventory</span>
+            <h2 className="text-2xl md:text-4xl font-bold text-[#e5e2e3] font-h2">
+              Spare Parts <span className="text-[#ff7a1a]">Catalog</span>
             </h2>
-            <p className="text-slate-400 text-sm mt-1">
-              Browse original casting-coded engine components, carburetion systems, and vintage assemblies.
+            <p className="text-[#e0c0b1] text-xs md:text-sm mt-1">
+              Complete inventory of OEM-grade casting components, carburetion kits, and engine restoration parts.
             </p>
           </div>
 
-          {/* Sort Dropdown */}
+          {/* Sort Control */}
           <div className="flex items-center gap-3">
-            <span className="text-xs font-mono text-slate-400">SORT BY:</span>
+            <span className="text-xs font-technical-data text-[#a78b7d]">SORT BY:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono py-2 px-3 rounded-xl focus:outline-none focus:border-amber-500"
+              className="bg-[#201f20] border border-[#584236]/60 text-[#e5e2e3] text-xs font-technical-data py-2 px-3 rounded-sm focus:outline-none focus:border-[#ff7a1a]"
             >
               <option value="FEATURED">Featured Inventory</option>
               <option value="PRICE_LOW">Price: Low to High</option>
@@ -84,21 +88,21 @@ export default function CatalogSection({
         </div>
 
         {/* Filter Controls Bar */}
-        <div className="space-y-4 mb-10">
+        <div className="space-y-4 mb-10 font-label-caps text-xs">
           
           {/* Era Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-xs font-mono text-slate-500 uppercase tracking-widest mr-2 flex items-center gap-1">
+            <span className="font-technical-data text-[#a78b7d] uppercase mr-2 flex items-center gap-1">
               <Filter className="w-3.5 h-3.5" /> Era:
             </span>
             {eras.map((era) => (
               <button
                 key={era}
                 onClick={() => setSelectedEra(era)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-sm transition-all whitespace-nowrap uppercase tracking-wider ${
                   selectedEra === era
-                    ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
-                    : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                    ? 'bg-[#ff7a1a] text-black font-bold glow-button'
+                    : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40'
                 }`}
               >
                 {era === 'ALL' ? 'All Eras' : era}
@@ -108,13 +112,13 @@ export default function CatalogSection({
 
           {/* Model Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-xs font-mono text-slate-500 uppercase tracking-widest mr-2">Car Model:</span>
+            <span className="font-technical-data text-[#a78b7d] uppercase mr-2">Car Model:</span>
             <button
               onClick={() => setSelectedCarFilter('ALL')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-sm transition-all whitespace-nowrap uppercase tracking-wider ${
                 selectedCarFilter === 'ALL'
-                  ? 'bg-amber-500 text-slate-950 font-bold'
-                  : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                  ? 'bg-[#ff7a1a] text-black font-bold glow-button'
+                  : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40'
               }`}
             >
               All Vintage Models
@@ -123,10 +127,10 @@ export default function CatalogSection({
               <button
                 key={car.id}
                 onClick={() => setSelectedCarFilter(car.id)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-sm transition-all whitespace-nowrap uppercase tracking-wider ${
                   selectedCarFilter === car.id
-                    ? 'bg-amber-500 text-slate-950 font-bold'
-                    : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                    ? 'bg-[#ff7a1a] text-black font-bold glow-button'
+                    : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40'
                 }`}
               >
                 {car.make}
@@ -136,15 +140,15 @@ export default function CatalogSection({
 
           {/* Category Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-xs font-mono text-slate-500 uppercase tracking-widest mr-2">Category:</span>
+            <span className="font-technical-data text-[#a78b7d] uppercase mr-2">Category:</span>
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1 rounded-lg text-xs font-mono transition-all whitespace-nowrap ${
+                className={`px-3 py-1 rounded-sm font-technical-data transition-all whitespace-nowrap text-[11px] ${
                   selectedCategory === cat
-                    ? 'bg-slate-700 text-white font-semibold border border-slate-500'
-                    : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
+                    ? 'bg-[#353436] text-[#ff7a1a] font-bold border border-[#ff7a1a]/50'
+                    : 'bg-[#0e0e0f] text-[#a78b7d] hover:text-[#e5e2e3] border border-[#584236]/30'
                 }`}
               >
                 {cat === 'ALL' ? 'All Categories' : cat}
@@ -154,108 +158,120 @@ export default function CatalogSection({
 
         </div>
 
-        {/* Product Cards Grid */}
+        {/* Product Grid */}
         {filteredParts.length === 0 ? (
-          <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-slate-800">
-            <Search className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-lg font-bold text-white mb-1 font-display">No Spare Parts Found</h3>
-            <p className="text-slate-400 text-xs">Try clearing search keywords or resetting your model/era filters.</p>
+          <div className="text-center py-20 glass-panel rounded-sm">
+            <Search className="w-12 h-12 text-[#a78b7d] mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-[#e5e2e3] mb-1 font-h3">No Spare Parts Match Search</h3>
+            <p className="text-[#a78b7d] text-xs font-technical-data">Try resetting model or category filters.</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredParts.map((part) => {
               const isWishlisted = wishlistIds.includes(part.id);
+              const isAdded = addedIds.includes(part.id);
+
               return (
                 <div
                   key={part.id}
-                  className="bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 rounded-2xl overflow-hidden flex flex-col justify-between group transition-all duration-300 hover:shadow-2xl hover:shadow-amber-500/10"
+                  className="glass-panel p-4 flex flex-col justify-between rounded-sm group hover:border-[#ff7a1a] transition-all"
                 >
                   <div>
-                    {/* Image Box */}
-                    <div className="relative h-52 overflow-hidden bg-slate-950">
+                    {/* Part Image Box */}
+                    <div className="relative h-48 overflow-hidden bg-[#0e0e0f] rounded-sm mb-4">
                       <img
                         src={part.image}
                         alt={part.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover opacity-85 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
 
                       {/* Condition Badge */}
-                      <span className="absolute top-3 left-3 bg-slate-950/90 backdrop-blur-sm border border-amber-500/40 text-amber-400 text-[10px] font-mono font-bold px-2.5 py-1 rounded-md">
+                      <span className="absolute top-2 left-2 bg-[#131314]/90 border border-[#ff7a1a]/40 text-[#ff7a1a] text-[10px] font-technical-data font-bold px-2 py-0.5 rounded-sm">
                         {part.condition}
                       </span>
 
                       {/* Wishlist Button */}
                       <button
                         onClick={() => onToggleWishlist(part.id)}
-                        className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md border transition-all ${
+                        className={`absolute top-2 right-2 p-1.5 rounded-sm backdrop-blur-md transition-all ${
                           isWishlisted
-                            ? 'bg-rose-500 border-rose-400 text-white'
-                            : 'bg-slate-950/70 border-slate-700 text-slate-300 hover:text-white'
+                            ? 'bg-[#ff7a1a] text-black'
+                            : 'bg-[#131314]/80 text-[#e0c0b1] hover:text-[#ff7a1a]'
                         }`}
                       >
                         <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
                       </button>
 
-                      {/* OEM Badge */}
-                      <div className="absolute bottom-2 left-3 right-3 text-[10px] font-mono text-slate-300 truncate">
-                        OEM: {part.oemNumber}
+                      {/* OEM Number Tag */}
+                      <div className="absolute bottom-2 left-2 right-2 text-[10px] font-technical-data text-[#83cffb] truncate bg-[#131314]/80 px-2 py-0.5 rounded-sm border border-[#83cffb]/20">
+                        OEM // {part.oemNumber}
                       </div>
                     </div>
 
-                    {/* Card Content */}
-                    <div className="p-4 space-y-3">
-                      <div className="text-[11px] font-mono text-amber-400 uppercase tracking-wide">
+                    {/* Part Content */}
+                    <div className="space-y-2 mb-4">
+                      <div className="text-[10px] font-technical-data text-[#ff7a1a] uppercase">
                         {part.carModelName}
                       </div>
 
-                      <h3 className="text-base font-bold text-white line-clamp-2 leading-snug group-hover:text-amber-300 transition-colors font-display">
+                      <h3 className="font-h3 text-sm font-bold text-[#e5e2e3] line-clamp-2 leading-snug group-hover:text-[#ff7a1a] transition-colors">
                         {part.title}
                       </h3>
 
-                      <div className="text-xs text-slate-400 space-y-1 font-mono">
+                      <div className="text-xs text-[#a78b7d] font-technical-data space-y-1 pt-1">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">ENGINE:</span>
-                          <span className="text-slate-300 font-semibold">{part.engineType}</span>
+                          <span>ENGINE:</span>
+                          <span className="text-[#e0c0b1] font-bold">{part.engineType}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">CASTING:</span>
-                          <span className="text-slate-300">{part.castingCode}</span>
+                          <span>CASTING:</span>
+                          <span className="text-[#e0c0b1]">{part.castingCode}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Card Footer: Price & CTA Actions */}
-                  <div className="p-4 pt-0 space-y-3">
-                    <div className="flex items-center justify-between border-t border-slate-800 pt-3">
+                  {/* Card Bottom: Pricing & Action Buttons */}
+                  <div className="pt-3 border-t border-[#584236]/30 space-y-3">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-[10px] font-mono text-slate-500 uppercase">PRICE (USD)</div>
-                        <div className="text-lg font-extrabold text-amber-400 font-display">
-                          ${part.price.toLocaleString()}
+                        <div className="text-[9px] font-technical-data text-[#a78b7d] uppercase">PRICE</div>
+                        <div className="text-lg font-bold text-[#ff7a1a] font-technical-data">
+                          ${part.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-[10px] font-mono text-slate-500">RARITY SCORE</div>
-                        <div className="text-xs font-mono font-bold text-emerald-400">{part.rarityScore}</div>
+                        <div className="text-[9px] font-technical-data text-[#a78b7d]">RARITY</div>
+                        <div className="text-xs font-technical-data font-bold text-[#83cffb]">{part.rarityScore}</div>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => onViewPartDetails(part)}
-                        className="flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl text-xs font-semibold border border-slate-700 transition-all"
+                        className="p-2 border border-[#83cffb]/40 text-[#83cffb] hover:bg-[#83cffb]/10 text-xs font-label-caps uppercase font-bold rounded-sm flex items-center justify-center gap-1 transition-colors"
                       >
-                        <Eye className="w-3.5 h-3.5 text-amber-400" />
+                        <Eye className="w-3.5 h-3.5" />
                         <span>Specs</span>
                       </button>
 
                       <button
-                        onClick={() => onAddToCart(part)}
-                        className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-amber-500/20 transition-all"
+                        onClick={() => handleAdd(part)}
+                        className={`p-2 font-label-caps text-xs uppercase font-bold tracking-wider rounded-sm flex items-center justify-center gap-1 transition-all ${
+                          isAdded
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-[#ff7a1a] hover:bg-[#ffb68e] text-black glow-button'
+                        }`}
                       >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>Add</span>
+                        {isAdded ? (
+                          <>
+                            <Check className="w-3.5 h-3.5" /> Added
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingBag className="w-3.5 h-3.5" /> Add
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import EngineBlueprintInspector from './components/EngineBlueprintInspector';
 import CatalogSection from './components/CatalogSection';
+import ReviewsSection from './components/ReviewsSection';
 import VideoShowcase from './components/VideoShowcase';
 import PartDetailModal from './components/PartDetailModal';
 import CartDrawer from './components/CartDrawer';
@@ -62,7 +63,6 @@ export default function App() {
     if (!currentUser) {
       setIsAuthOpen(true);
     } else {
-      // Send order to backend API if available
       try {
         const res = await fetch('http://localhost:5000/api/orders', {
           method: 'POST',
@@ -89,11 +89,11 @@ export default function App() {
     }
   };
 
-  const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
+  const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
   return (
-    <div className="min-h-screen bg-[#0D0F12] text-slate-100 selection:bg-amber-500 selection:text-black">
+    <div className="min-h-screen bg-[#131314] text-[#e5e2e3] selection:bg-[#ff7a1a] selection:text-black">
       
       {/* Top Navbar */}
       <Navbar
@@ -105,8 +105,8 @@ export default function App() {
         onOpenAuth={() => setIsAuthOpen(true)}
       />
 
-      {/* Main Page Body (Guest Browsing Enabled) */}
-      <main>
+      {/* Main Page Body */}
+      <main className="pt-16">
         {/* Hero Showcase */}
         <HeroSection
           onSelectCarModel={(carId) => setSelectedCarModelId(carId)}
@@ -118,7 +118,7 @@ export default function App() {
           onViewPartDetails={(part) => setActiveModalPart(part)}
         />
 
-        {/* Comprehensive Catalog */}
+        {/* Comprehensive Catalog & Shopping Section */}
         <CatalogSection
           onAddToCart={handleAddToCart}
           onViewPartDetails={(part) => setActiveModalPart(part)}
@@ -128,7 +128,10 @@ export default function App() {
           selectedCarModelId={selectedCarModelId}
         />
 
-        {/* YouTube Video Inter-Play Showcase (Bottom Section) */}
+        {/* Social Proof & Verified Customer Reviews */}
+        <ReviewsSection />
+
+        {/* YouTube Video Inter-Play Showcase */}
         <VideoShowcase />
       </main>
 
@@ -168,3 +171,4 @@ export default function App() {
     </div>
   );
 }
+
