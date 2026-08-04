@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Video, Volume2, Sparkles, Tv, CheckCircle2, Film } from 'lucide-react';
+import { Play, Video, Film } from 'lucide-react';
 import { YOUTUBE_SHOWCASE } from '../data/partsData';
 
 export default function VideoShowcase() {
@@ -7,7 +7,6 @@ export default function VideoShowcase() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [customYoutubeUrl, setCustomYoutubeUrl] = useState('');
 
-  // Extract YouTube ID from custom URL or ID
   const getYoutubeId = (urlOrId) => {
     if (!urlOrId) return activeVideo.youtubeId;
     const match = urlOrId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
@@ -17,49 +16,46 @@ export default function VideoShowcase() {
   const currentYoutubeId = getYoutubeId(customYoutubeUrl || activeVideo.youtubeId);
 
   return (
-    <section id="workshop" className="py-20 bg-slate-950 relative border-t border-b border-slate-800">
+    <section id="workshop" className="py-20 bg-[#131314] relative border-t border-b border-[#584236]/30">
       
-      {/* Glow Effects */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-red-600/10 blur-[120px] rounded-full pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-[1440px] mx-auto px-4 md:px-8">
         
         {/* Section Title */}
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 text-[#ff7a1a] font-technical-data text-xs uppercase">
             <Video className="w-4 h-4" />
-            <span>IN THE RESTORER'S WORKSHOP</span>
+            <span>IN THE ENGINE WORKSHOP</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-display">
-            Vintage Engine <span className="text-red-500">Live Video Showcase</span>
+          <h2 className="text-2xl md:text-4xl font-bold text-[#e5e2e3] font-h2">
+            Vintage Engine <span className="text-[#ff7a1a]">Live Showcase</span>
           </h2>
 
-          <p className="text-slate-400 text-sm sm:text-base">
-            Watch live dyno runs, engine sound checks, NOS parts unboxing, and master restorer tuning videos directly in guest mode.
+          <p className="text-[#e0c0b1] text-xs md:text-sm">
+            Watch live engine dyno runs, exhaust sound tests, NOS engine component unboxings, and tuning walkthroughs.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-12 gap-8 items-center">
           
-          {/* Left Column: YouTube Embedded Video Player Container */}
+          {/* Left Column: Video Player Container */}
           <div className="lg:col-span-8">
-            <div className="bg-slate-900 border border-slate-700/80 rounded-3xl p-4 sm:p-6 shadow-2xl relative overflow-hidden group">
+            <div className="glass-panel p-4 sm:p-6 shadow-2xl relative overflow-hidden group">
               
-              {/* Chrome Top Bar styling */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800 text-xs font-mono text-slate-400">
+              {/* Top Bar */}
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#584236]/30 text-xs font-technical-data text-[#a78b7d]">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-red-500 inline-block animate-pulse" />
-                  <span className="text-white font-bold">{activeVideo.title}</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff7a1a] inline-block animate-pulse" />
+                  <span className="text-[#e5e2e3] font-bold">{activeVideo.title}</span>
                 </div>
                 <div className="hidden sm:flex items-center gap-3 text-[11px]">
                   <span>DURATION: {activeVideo.duration}</span>
-                  <span className="bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-mono">4K ULTRA HD</span>
+                  <span className="bg-[#ff7a1a]/20 text-[#ff7a1a] px-2 py-0.5 font-technical-data">4K ULTRA HD</span>
                 </div>
               </div>
 
-              {/* Player Viewport */}
-              <div className="relative rounded-2xl overflow-hidden aspect-video bg-black border border-slate-800 shadow-inner">
+              {/* Viewport */}
+              <div className="relative aspect-video bg-[#0e0e0f] border border-[#584236]/40 shadow-inner">
                 {isPlaying ? (
                   <iframe
                     src={`https://www.youtube.com/embed/${currentYoutubeId}?autoplay=1&rel=0`}
@@ -75,50 +71,49 @@ export default function VideoShowcase() {
                       alt={activeVideo.title}
                       className="w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#131314] via-[#131314]/40 to-transparent" />
 
-                    {/* Play Button Overlay */}
+                    {/* Play Button */}
                     <button
                       onClick={() => setIsPlaying(true)}
-                      className="relative z-10 flex items-center justify-center w-20 h-20 rounded-full bg-red-600 text-white shadow-2xl shadow-red-600/50 hover:scale-110 hover:bg-red-500 transition-all duration-300 group/play"
+                      className="relative z-10 flex items-center justify-center w-20 h-20 bg-[#ff7a1a] text-black shadow-2xl hover:scale-110 hover:bg-[#ffb68e] transition-all duration-300 group/play glow-button"
                     >
                       <Play className="w-8 h-8 ml-1 fill-current group-hover/play:scale-110 transition-transform" />
-                      <span className="absolute -inset-2 rounded-full border border-red-500/50 animate-ping pointer-events-none" />
                     </button>
 
-                    {/* Overlay Info */}
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-slate-300 font-mono">
+                    {/* Info */}
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-[#e0c0b1] font-technical-data">
                       <span>CATEGORY: {activeVideo.category}</span>
-                      <span className="bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700">Click to Play Video</span>
+                      <span className="bg-[#131314]/80 px-3 py-1 border border-[#584236]/40">Click to Play Video</span>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Custom YouTube Slot Input Bar */}
-              <div className="mt-4 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center gap-3 text-xs font-mono">
-                <span className="text-slate-400 whitespace-nowrap flex items-center gap-1">
-                  <Film className="w-3.5 h-3.5 text-red-400" /> Insert Your Custom YouTube Video Link:
+              {/* Custom YouTube Input */}
+              <div className="mt-4 pt-4 border-t border-[#584236]/30 flex flex-col sm:flex-row items-center gap-3 text-xs font-technical-data">
+                <span className="text-[#a78b7d] whitespace-nowrap flex items-center gap-1">
+                  <Film className="w-3.5 h-3.5 text-[#ff7a1a]" /> Custom YouTube Link:
                 </span>
                 <input
                   type="text"
-                  placeholder="Paste YouTube Video URL or ID (e.g., https://youtu.be/...)"
+                  placeholder="Paste YouTube Video URL or ID..."
                   value={customYoutubeUrl}
                   onChange={(e) => {
                     setCustomYoutubeUrl(e.target.value);
                     setIsPlaying(false);
                   }}
-                  className="flex-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-red-500"
+                  className="flex-1 w-full bg-[#0e0e0f] border border-[#584236]/60 px-3 py-2 text-[#e5e2e3] focus:outline-none focus:border-[#ff7a1a]"
                 />
               </div>
 
             </div>
           </div>
 
-          {/* Right Column: Playlist Selector */}
+          {/* Right Column: Playlist */}
           <div className="lg:col-span-4 space-y-4">
-            <h3 className="text-sm font-mono uppercase tracking-widest text-slate-400 font-semibold mb-2">
-              Featured Workshop Playlist
+            <h3 className="text-xs font-technical-data uppercase tracking-widest text-[#a78b7d] font-bold mb-2">
+              Engine Workshop Playlist
             </h3>
 
             <div className="space-y-3">
@@ -132,24 +127,24 @@ export default function VideoShowcase() {
                       setIsPlaying(false);
                       setCustomYoutubeUrl('');
                     }}
-                    className={`w-full text-left p-4 rounded-2xl border transition-all flex items-start gap-4 ${
+                    className={`w-full text-left p-4 transition-all flex items-start gap-4 ${
                       isActive
-                        ? 'bg-slate-900 border-red-500/60 shadow-lg shadow-red-500/10'
-                        : 'bg-slate-900/50 border-slate-800 hover:border-slate-700 text-slate-400'
+                        ? 'bg-[#201f20] border border-[#ff7a1a]'
+                        : 'glass-panel hover:border-[#584236] text-[#a78b7d]'
                     }`}
                   >
-                    <div className="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-950">
-                      <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <Play className="w-4 h-4 text-white fill-current" />
+                    <div className="relative w-24 h-16 overflow-hidden flex-shrink-0 bg-[#0e0e0f]">
+                      <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover opacity-85" />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <Play className="w-4 h-4 text-[#ff7a1a] fill-current" />
                       </div>
                     </div>
 
                     <div className="space-y-1 flex-1">
-                      <div className="text-[10px] font-mono text-red-400 uppercase font-semibold">
+                      <div className="text-[10px] font-technical-data text-[#ff7a1a] uppercase font-bold">
                         {video.category} • {video.duration}
                       </div>
-                      <h4 className={`text-xs font-bold font-display line-clamp-2 ${isActive ? 'text-white' : 'text-slate-300'}`}>
+                      <h4 className={`text-xs font-bold font-h3 line-clamp-2 ${isActive ? 'text-[#e5e2e3]' : 'text-[#e0c0b1]'}`}>
                         {video.title}
                       </h4>
                     </div>

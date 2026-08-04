@@ -1,4 +1,8 @@
 // Vintage Engines & Spare Parts Mock Database
+import v8EngineImg from '../assets/v8_engine.png';
+import flat6EngineImg from '../assets/flat6_engine.png';
+import weberCarbsImg from '../assets/weber_carbs.png';
+import heroEngineImg from '../assets/hero_engine.png';
 
 export const VINTAGE_ENGINES = [
   {
@@ -8,7 +12,7 @@ export const VINTAGE_ENGINES = [
     make: 'VW Air-Cooled',
     engineName: '1600cc Dual-Port Flat-4',
     engineType: 'Flat-4 Air-Cooled',
-    image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80',
+    image: heroEngineImg,
     horsepower: '60 HP @ 4200 RPM',
     torque: '82 lb-ft @ 2800 RPM',
     description: 'Iconic dual-port air-cooled boxer engine with magnesium alloy crankcase and Solex 34 PICT carburetion.'
@@ -20,7 +24,7 @@ export const VINTAGE_ENGINES = [
     make: 'Performance V8',
     engineName: '7.0L V8 Cobra Jet (428 cu in)',
     engineType: 'V8 Big Block',
-    image: 'https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=1200&q=80',
+    image: v8EngineImg,
     horsepower: '355 HP @ 5400 RPM',
     torque: '420 lb-ft @ 3200 RPM',
     description: 'High-performance V8 engine block with high-rise aluminum intake manifolds and Holley 4-barrel carburetors.'
@@ -32,7 +36,7 @@ export const VINTAGE_ENGINES = [
     make: 'Air-Cooled Flat-6',
     engineName: '2.2L Air-Cooled Flat-6 (M901)',
     engineType: 'Air-Cooled Boxer-6',
-    image: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80',
+    image: flat6EngineImg,
     horsepower: '180 HP @ 6500 RPM',
     torque: '147 lb-ft @ 5200 RPM',
     description: 'Mechanical fuel injection with dry-sump lubrication and magnesium alloy crankcase architecture.'
@@ -44,7 +48,7 @@ export const VINTAGE_ENGINES = [
     make: 'VW Heavy Duty',
     engineName: '2.0L Type 4 Flat-4',
     engineType: 'Type 4 Air-Cooled',
-    image: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=1200&q=80',
+    image: weberCarbsImg,
     horsepower: '70 HP @ 4200 RPM',
     torque: '105 lb-ft @ 3000 RPM',
     description: 'Heavy-duty air-cooled boxer platform with reinforced cylinder heads and dual Zenith carburetors.'
@@ -56,7 +60,7 @@ export const VINTAGE_ENGINES = [
     make: 'Classic Inline-6',
     engineName: '3.0L Inline-6 M198 Direct Injection',
     engineType: 'Inline-6 Dry Sump',
-    image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80',
     horsepower: '240 HP @ 6100 RPM',
     torque: '217 lb-ft @ 4800 RPM',
     description: 'Pioneered mechanical direct fuel injection with dry-sump lubrication system.'
@@ -130,7 +134,7 @@ export const SPARE_PARTS = [
     rarityScore: 'Extremely Rare (98/100)',
     stock: 2,
     inStock: true,
-    image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=800&q=80',
     castingCode: 'C8OF-9510-AA',
     provenance: 'Acquired from private collector inventory. Factory vacuum sealed in original blue box.',
     specifications: [
@@ -162,7 +166,7 @@ export const SPARE_PARTS = [
     rarityScore: 'Rare (88/100)',
     stock: 4,
     inStock: true,
-    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=800&q=80',
     castingCode: 'VW-113-101-065-C',
     provenance: 'Matched pair of NOS dual-port cylinder heads with stainless valves and hardened seats.',
     specifications: [
@@ -222,7 +226,7 @@ export const SPARE_PARTS = [
     rarityScore: 'Rare (92/100)',
     stock: 3,
     inStock: true,
-    image: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-[#1486006920555-c77dce18193b]?auto=format&fit=crop&w=800&q=80',
     castingCode: 'MAHLE-85.5MM',
     provenance: 'Original Mahle Stuttgart forged aluminum pistons with cast iron cylinders and wrist pins.',
     specifications: [
@@ -251,7 +255,7 @@ export const SPARE_PARTS = [
     rarityScore: 'Ultra Museum Grade (99/100)',
     stock: 1,
     inStock: true,
-    image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=800&q=80',
     castingCode: 'PES6KL70-R11',
     provenance: 'Precision calibrated on Bosch bench with certified flow test results included.',
     specifications: [
@@ -280,7 +284,7 @@ export const SPARE_PARTS = [
     rarityScore: 'Very Rare (91/100)',
     stock: 2,
     inStock: true,
-    image: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=800&q=80',
+    image: flat6EngineImg,
     castingCode: '901.101.101.2R',
     provenance: 'Inspected with Magnaflux non-destructive crack detection, line-bored to std specifications.',
     specifications: [
@@ -308,7 +312,7 @@ export const SPARE_PARTS = [
     rarityScore: 'Rare (89/100)',
     stock: 3,
     inStock: true,
-    image: 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80',
+    image: weberCarbsImg,
     castingCode: 'WEBER-40-IDF-ITALY',
     provenance: 'Original Italian-made Weber 40 IDF carburetors complete with hex-bar throttle linkage.',
     specifications: [
@@ -332,7 +336,7 @@ export const YOUTUBE_SHOWCASE = [
     youtubeId: '3G8mS7wE0bM',
     duration: '04:12',
     category: 'Dyno & Sound Test',
-    thumbnail: 'https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=800&q=80'
+    thumbnail: v8EngineImg
   },
   {
     id: 'flat4-rebuild',
@@ -341,7 +345,7 @@ export const YOUTUBE_SHOWCASE = [
     youtubeId: 'dDk5_Erh0mY',
     duration: '08:45',
     category: 'Engine Assembly Workshop',
-    thumbnail: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80'
+    thumbnail: heroEngineImg
   },
   {
     id: 'flat6-unboxing',
@@ -350,6 +354,6 @@ export const YOUTUBE_SHOWCASE = [
     youtubeId: 'L_LUpnjgPso',
     duration: '06:30',
     category: 'Engine Inspection & Testing',
-    thumbnail: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80'
+    thumbnail: flat6EngineImg
   }
 ];
