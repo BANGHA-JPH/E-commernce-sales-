@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Eye, Plus, Check } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Eye, Plus, Check, RotateCw, RefreshCw, Move } from 'lucide-react';
 import engineSchematicImg from '../assets/hero_engine.png';
 
 const BLUEPRINT_HOTSPOTS = [
@@ -8,8 +8,8 @@ const BLUEPRINT_HOTSPOTS = [
     name: 'NOS Holley 4150 Carburetor',
     partNumber: 'PART // C7ZX-9510-A',
     price: 849.00,
-    top: '20%',
-    left: '49%',
+    baseX: 49,
+    baseY: 20,
     category: 'Fuel & Carburetion',
     image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=600&q=80',
     description: 'Original high-performance 4-barrel carburetor for classic flat-four & V8 engine platforms.'
@@ -19,8 +19,8 @@ const BLUEPRINT_HOTSPOTS = [
     name: 'Dual-Port Aluminum Cylinder Head Set',
     partNumber: 'PART // VW-113-101-065',
     price: 425.00,
-    top: '44%',
-    left: '66%',
+    baseX: 66,
+    baseY: 44,
     category: 'Engine Block & Internals',
     image: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=600&q=80',
     description: 'High-density aluminum alloy dual-port cylinder head set with hardened valve seats.'
@@ -30,8 +30,8 @@ const BLUEPRINT_HOTSPOTS = [
     name: 'Mahle Forged Piston & Cylinder Kit',
     partNumber: 'PART // MAHLE-85.5MM',
     price: 620.00,
-    top: '68%',
-    left: '38%',
+    baseX: 38,
+    baseY: 68,
     category: 'Engine Block & Internals',
     image: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80',
     description: 'Forged aluminum pistons with cast iron cylinders, wrist pins, and stainless rings.'
@@ -42,6 +42,66 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
   const [selectedHotspot, setSelectedHotspot] = useState(BLUEPRINT_HOTSPOTS[0]);
   const [addedIds, setAddedIds] = useState([]);
 
+  // 360 Degree Interactive Rotation States
+  const [rotationY, setRotationY] = useState(0);
+  const [rotationX, setRotationX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isAutoSpinning, setIsAutoSpinning] = useState(false);
+
+  const containerRef = useRef(null);
+
+  // Auto-Spin 360° Animation Interval
+  useEffect(() => {
+    let interval;
+    if (isAutoSpinning) {
+      interval = setInterval(() => {
+        setRotationY((prev) => (prev + 2) % 360);
+      }, 30);
+    }
+    return () => clearInterval(interval);
+  }, [isAutoSpinning]);
+
+  // Mouse / Touch Drag Handlers for 360° Free Rotation
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setIsAutoSpinning(false);
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - dragStart.x;
+    const deltaY = e.clientY - dragStart.y;
+
+    setRotationY((prev) => (prev + deltaX * 0.5) % 360);
+    setRotationX((prev) => Math.max(-40, Math.min(40, prev - deltaY * 0.3)));
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Touch handlers for mobile
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      setIsAutoSpinning(false);
+      setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const deltaX = e.touches[0].clientX - dragStart.x;
+    const deltaY = e.touches[0].clientY - dragStart.y;
+
+    setRotationY((prev) => (prev + deltaX * 0.5) % 360);
+    setRotationX((prev) => Math.max(-40, Math.min(40, prev - deltaY * 0.3)));
+    setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+  };
+
   const handleAdd = (item) => {
     onAddToCart({
       id: item.id,
@@ -51,93 +111,201 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
       image: item.image,
       category: item.category
     });
-    setAddedIds(prev => [...prev, item.id]);
+    setAddedIds((prev) => [...prev, item.id]);
     setTimeout(() => {
-      setAddedIds(prev => prev.filter(id => id !== item.id));
+      setAddedIds((prev) => prev.filter((id) => id !== item.id));
     }, 2000);
   };
+
+  // Compute 3D Hotspot Position dynamically based on rotation
+  const getHotspotStyle = (hotspot) => {
+    const rad = (rotationY * Math.PI) / 180;
+    const offsetX = Math.sin(rad) * 20; // 3D depth sway
+    const opacity = Math.cos(rad) > -0.4 ? 1 : 0.3; // fade hotspot if facing rear
+
+    const left = `calc(${hotspot.baseX}% + ${offsetX}px)`;
+    const top = `calc(${hotspot.baseY}% + ${rotationX * 0.3}px)`;
+
+    return { left, top, opacity };
+  };
+
+  const normalizedAngle = ((Math.round(rotationY) % 360) + 360) % 360;
 
   return (
     <section id="blueprint" className="max-w-[1440px] mx-auto px-4 md:px-8 mb-32 pt-8">
       
       {/* Section Header */}
-      <div className="text-center mb-16">
-        <h2 className="font-h2 text-2xl md:text-4xl text-[#e5e2e3] font-bold mb-4">
-          Inspect the Engine. Find the Part.
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#83cffb]/10 border border-[#83cffb]/30 text-[#83cffb] font-technical-data text-xs uppercase mb-3">
+          <RotateCw className="w-3.5 h-3.5" /> 360° INTERACTIVE 3D ENGINE VIEW
+        </div>
+        <h2 className="font-h2 text-2xl md:text-4xl text-[#e5e2e3] font-bold mb-3">
+          Inspect the Engine. Rotate in 360°.
         </h2>
         <p className="font-body-md text-sm md:text-base text-[#e0c0b1] max-w-xl mx-auto">
-          Interactive exploded schematics linked directly to our inventory database.
+          Click and drag to rotate the 3D engine render in any direction, or use angle presets.
         </p>
       </div>
 
-      {/* Blueprint Grid Container */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[580px] h-[600px]">
+      {/* Main Inspector Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[620px]">
         
-        {/* Interactive Schematic View (Left Column) */}
-        <div className="lg:col-span-2 glass-panel relative overflow-hidden flex items-center justify-center group cursor-crosshair">
+        {/* Interactive 3D Rotation View (Left Column) */}
+        <div className="lg:col-span-2 glass-panel relative overflow-hidden flex flex-col justify-between group rounded-none select-none min-h-[520px]">
           
-          {/* Blueprint Grid Lines */}
-          <div className="absolute inset-0 bg-blueprint-grid opacity-30"></div>
-          
-          {/* 3D Technical Exploded Engine Schematic Diagram Background */}
-          <div 
-            className="w-full h-full bg-contain bg-center bg-no-repeat opacity-90 mix-blend-screen z-10 transition-transform duration-700 group-hover:scale-105"
-            style={{ 
-              backgroundImage: `url(${engineSchematicImg})` 
-            }}
-          />
+          {/* Top Control Bar & Badges */}
+          <div className="relative z-20 flex flex-wrap items-center justify-between p-4 border-b border-[#584236]/30 bg-[#131314]/80 backdrop-blur-md gap-3">
+            <div className="font-technical-data text-xs text-[#83cffb] uppercase tracking-widest flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#ff7a1a] animate-pulse"></span>
+              <span>ANGLE // {normalizedAngle}°</span>
+            </div>
 
-          {/* Blueprint Header Label */}
-          <div className="absolute top-4 left-4 font-technical-data text-xs text-[#83cffb]/70 z-20 uppercase tracking-widest bg-[#131314]/80 px-2.5 py-1 border border-[#83cffb]/20">
-            SCHEMATIC // 3D-ENGINE-EXPLODED-SPEC
+            {/* Quick Angle Preset Buttons */}
+            <div className="flex items-center gap-2 font-technical-data text-xs">
+              <button 
+                onClick={() => { setRotationY(0); setRotationX(0); setIsAutoSpinning(false); }}
+                className={`px-2.5 py-1 transition-all ${normalizedAngle === 0 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+              >
+                0° Front
+              </button>
+              <button 
+                onClick={() => { setRotationY(90); setRotationX(0); setIsAutoSpinning(false); }}
+                className={`px-2.5 py-1 transition-all ${normalizedAngle === 90 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+              >
+                90° Side
+              </button>
+              <button 
+                onClick={() => { setRotationY(180); setRotationX(0); setIsAutoSpinning(false); }}
+                className={`px-2.5 py-1 transition-all ${normalizedAngle === 180 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+              >
+                180° Back
+              </button>
+              <button 
+                onClick={() => { setRotationY(270); setRotationX(0); setIsAutoSpinning(false); }}
+                className={`px-2.5 py-1 transition-all ${normalizedAngle === 270 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+              >
+                270° Side
+              </button>
+              <button 
+                onClick={() => setIsAutoSpinning(!isAutoSpinning)}
+                className={`px-3 py-1 flex items-center gap-1.5 transition-all ${isAutoSpinning ? 'bg-[#83cffb] text-black font-bold' : 'bg-[#201f20] text-[#83cffb] border border-[#83cffb]/40'}`}
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isAutoSpinning ? 'animate-spin' : ''}`} />
+                <span>{isAutoSpinning ? 'Spinning' : '360° Spin'}</span>
+              </button>
+            </div>
           </div>
 
-          {/* Interactive Pulsing Hotspots */}
-          {BLUEPRINT_HOTSPOTS.map((hotspot) => {
-            const isSelected = selectedHotspot?.id === hotspot.id;
-            return (
-              <button
-                key={hotspot.id}
-                onClick={() => setSelectedHotspot(hotspot)}
-                style={{ top: hotspot.top, left: hotspot.left }}
-                className={`absolute z-30 transform -translate-x-1/2 -translate-y-1/2 group/pin transition-all duration-300 ${
-                  isSelected ? 'scale-125' : 'hover:scale-110'
-                }`}
-              >
-                <span className={`block w-5 h-5 rounded-full border-2 ${
-                  isSelected ? 'border-[#ff7a1a] bg-[#ff7a1a]/30' : 'border-[#83cffb] bg-[#83cffb]/20'
-                } animate-pulse`} />
-                <span className={`absolute top-0 left-0 w-5 h-5 rounded-full ${
-                  isSelected ? 'bg-[#ff7a1a]' : 'bg-[#83cffb]'
-                } opacity-75 blur-sm`} />
-              </button>
-            );
-          })}
+          {/* 3D Rotatable Viewport */}
+          <div 
+            ref={containerRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleMouseUp}
+            className="relative flex-1 flex items-center justify-center cursor-grab active:cursor-grabbing overflow-hidden"
+            style={{ perspective: '1200px' }}
+          >
+            {/* Blueprint Grid Lines Background */}
+            <div className="absolute inset-0 bg-blueprint-grid opacity-30 pointer-events-none"></div>
 
-          {/* Active Blueprint Overlay Description Box */}
-          {selectedHotspot && (
-            <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-md bg-[#131314]/95 border border-[#ff7a1a]/40 p-4 z-30 backdrop-blur-md">
-              <div className="flex justify-between items-start mb-1">
-                <span className="font-technical-data text-[10px] text-[#ff7a1a] uppercase font-bold">
-                  HOTSPOT ACTIVE // {selectedHotspot.category}
-                </span>
-                <span className="font-technical-data text-xs text-[#ff7a1a] font-bold">
-                  ${selectedHotspot.price.toFixed(2)}
-                </span>
-              </div>
-              <h3 className="font-h3 text-base text-[#e5e2e3] font-bold">
-                {selectedHotspot.name}
-              </h3>
-              <p className="text-xs text-[#e0c0b1] mt-1 font-technical-data">
-                {selectedHotspot.partNumber}
-              </p>
+            {/* Drag Hint Tooltip Overlay */}
+            <div className="absolute top-4 right-4 font-technical-data text-[11px] text-[#a78b7d] bg-[#131314]/80 px-3 py-1.5 border border-[#584236]/40 pointer-events-none flex items-center gap-1.5">
+              <Move className="w-3.5 h-3.5 text-[#ff7a1a]" />
+              <span>Click & Drag to Rotate 360°</span>
             </div>
-          )}
+
+            {/* 3D Rotating Engine Render Graphics Container */}
+            <div 
+              className="w-full h-full max-w-[550px] max-h-[550px] bg-contain bg-center bg-no-repeat opacity-95 mix-blend-screen transition-transform"
+              style={{ 
+                backgroundImage: `url(${engineSchematicImg})`,
+                transform: `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`,
+                transformStyle: 'preserve-3d',
+                transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+              }}
+            />
+
+            {/* Interactive Hotspots Layer */}
+            {BLUEPRINT_HOTSPOTS.map((hotspot) => {
+              const isSelected = selectedHotspot?.id === hotspot.id;
+              const posStyle = getHotspotStyle(hotspot);
+              return (
+                <button
+                  key={hotspot.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedHotspot(hotspot);
+                  }}
+                  style={{
+                    top: posStyle.top,
+                    left: posStyle.left,
+                    opacity: posStyle.opacity,
+                    transition: isDragging ? 'none' : 'all 0.3s ease'
+                  }}
+                  className={`absolute z-30 transform -translate-x-1/2 -translate-y-1/2 group/pin transition-all duration-300 ${
+                    isSelected ? 'scale-125' : 'hover:scale-110'
+                  }`}
+                >
+                  <span className={`block w-5 h-5 rounded-full border-2 ${
+                    isSelected ? 'border-[#ff7a1a] bg-[#ff7a1a]/40' : 'border-[#83cffb] bg-[#83cffb]/20'
+                  } animate-pulse`} />
+                  <span className={`absolute top-0 left-0 w-5 h-5 rounded-full ${
+                    isSelected ? 'bg-[#ff7a1a]' : 'bg-[#83cffb]'
+                  } opacity-75 blur-sm`} />
+                </button>
+              );
+            })}
+
+            {/* Active Hotspot Overlay Description Box */}
+            {selectedHotspot && (
+              <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-md bg-[#131314]/95 border border-[#ff7a1a]/40 p-4 z-30 backdrop-blur-md">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="font-technical-data text-[10px] text-[#ff7a1a] uppercase font-bold">
+                    HOTSPOT ACTIVE // {selectedHotspot.category}
+                  </span>
+                  <span className="font-technical-data text-xs text-[#ff7a1a] font-bold">
+                    ${selectedHotspot.price.toFixed(2)}
+                  </span>
+                </div>
+                <h3 className="font-h3 text-base text-[#e5e2e3] font-bold">
+                  {selectedHotspot.name}
+                </h3>
+                <p className="text-xs text-[#e0c0b1] mt-1 font-technical-data">
+                  {selectedHotspot.partNumber}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Interactive 360° Rotation Angle Range Slider */}
+          <div className="p-4 border-t border-[#584236]/30 bg-[#131314]/90 flex items-center gap-4">
+            <span className="font-technical-data text-xs text-[#a78b7d] whitespace-nowrap">
+              ROTATION SLIDER:
+            </span>
+            <input 
+              type="range"
+              min="0"
+              max="360"
+              value={normalizedAngle}
+              onChange={(e) => {
+                setIsAutoSpinning(false);
+                setRotationY(parseFloat(e.target.value));
+              }}
+              className="w-full accent-[#ff7a1a] cursor-pointer"
+            />
+            <span className="font-technical-data text-xs text-[#ff7a1a] font-bold w-12 text-right">
+              {normalizedAngle}°
+            </span>
+          </div>
 
         </div>
 
         {/* Detail Inventory Panel (Right Column) */}
-        <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar h-full">
+        <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar h-[600px]">
           {BLUEPRINT_HOTSPOTS.map((part) => {
             const isSelected = selectedHotspot?.id === part.id;
             const isAdded = addedIds.includes(part.id);
@@ -222,4 +390,3 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
     </section>
   );
 }
-
