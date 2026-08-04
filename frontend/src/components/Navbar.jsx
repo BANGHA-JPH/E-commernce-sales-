@@ -10,7 +10,7 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
         
         {/* Brand Logo Header */}
         <a href="#" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 bg-[#ff7a1a] flex items-center justify-center rounded-sm text-black font-bold group-hover:bg-[#ffb68e] transition-colors">
+          <div className="w-10 h-10 bg-[#ff7a1a] flex items-center justify-center text-black font-bold group-hover:bg-[#ffb68e] transition-colors">
             <Wrench className="w-5 h-5 text-black" />
           </div>
           <div>
@@ -25,14 +25,14 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
 
         {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center space-x-6 font-label-caps text-xs tracking-wider uppercase">
-          <a href="#catalog" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5 rounded-sm">Catalog</a>
-          <a href="#blueprint" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5 rounded-sm flex items-center gap-1.5">
+          <a href="#catalog" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5">Catalog</a>
+          <a href="#blueprint" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#83cffb] animate-pulse"></span>
             Inspector
           </a>
-          <a href="#vehicles" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5 rounded-sm">Vehicles</a>
-          <a href="#workshop" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5 rounded-sm">Showcase</a>
-          <a href="#reviews" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5 rounded-sm">Reviews</a>
+          <a href="#vehicles" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5">Vehicles</a>
+          <a href="#workshop" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5">Showcase</a>
+          <a href="#reviews" className="text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#ff7a1a]/10 transition-colors px-2.5 py-1.5">Reviews</a>
         </nav>
 
         {/* Global Live Search Bar */}
@@ -44,7 +44,7 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
               placeholder="Search parts, casting numbers..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full bg-[#201f20] border border-[#584236]/50 rounded-sm pl-9 pr-3 py-1.5 text-xs text-[#e5e2e3] placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-technical-data transition-all"
+              className="w-full bg-[#201f20] border border-[#584236]/50 pl-9 pr-3 py-1.5 text-xs text-[#e5e2e3] placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-technical-data transition-all"
             />
           </div>
         </div>
@@ -56,7 +56,7 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
           <button className="relative p-2 text-[#e0c0b1] hover:text-[#ff7a1a] transition-colors" title="Wishlist">
             <Heart className="w-5 h-5" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#ff7a1a] text-black text-[10px] font-technical-data font-bold px-1 rounded-sm leading-none py-[2px]">
+              <span className="absolute -top-1 -right-1 bg-[#ff7a1a] text-black text-[10px] font-technical-data font-bold px-1 leading-none py-[2px]">
                 {wishlistCount}
               </span>
             )}
@@ -65,11 +65,11 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
           {/* Cart Drawer Trigger */}
           <button 
             onClick={onOpenCart}
-            className="relative flex items-center gap-2 bg-[#201f20] hover:bg-[#353436] text-[#e5e2e3] border border-[#584236]/60 px-3 py-1.5 rounded-sm transition-all"
+            className="relative flex items-center gap-2 bg-[#201f20] hover:bg-[#353436] text-[#e5e2e3] border border-[#584236]/60 px-3 py-1.5 transition-all"
           >
             <ShoppingBag className="w-4 h-4 text-[#ff7a1a]" />
             <span className="hidden sm:inline font-label-caps text-xs uppercase tracking-wider">Cart</span>
-            <span className="bg-[#ff7a1a] text-black text-[10px] font-technical-data font-bold px-1.5 py-0.5 rounded-sm">
+            <span className="bg-[#ff7a1a] text-black text-[10px] font-technical-data font-bold px-1.5 py-0.5">
               {cartCount}
             </span>
           </button>
@@ -77,7 +77,7 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
           {/* Create Account / Sign In CTA */}
           <button 
             onClick={onOpenAuth}
-            className="hidden sm:block font-label-caps text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] px-4 py-2 glow-button uppercase font-bold tracking-wider rounded-sm"
+            className="hidden sm:block font-label-caps text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] px-4 py-2 glow-button uppercase font-bold tracking-wider"
           >
             Create Account
           </button>
@@ -102,7 +102,7 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
               placeholder="Search catalog..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full bg-[#201f20] border border-[#584236] rounded-sm pl-9 pr-3 py-2 text-xs text-white"
+              className="w-full bg-[#201f20] border border-[#584236] pl-9 pr-3 py-2 text-xs text-white"
             />
           </div>
           <a href="#catalog" onClick={() => setMobileMenuOpen(false)} className="block text-[#e0c0b1] hover:text-[#ff7a1a] py-1">Catalog</a>
@@ -112,7 +112,7 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
           <a href="#reviews" onClick={() => setMobileMenuOpen(false)} className="block text-[#e0c0b1] hover:text-[#ff7a1a] py-1">Customer Reviews</a>
           <button 
             onClick={() => { setMobileMenuOpen(false); onOpenAuth(); }}
-            className="w-full mt-3 font-label-caps text-xs text-black bg-[#ff7a1a] py-2.5 uppercase font-bold tracking-wider rounded-sm"
+            className="w-full mt-3 font-label-caps text-xs text-black bg-[#ff7a1a] py-2.5 uppercase font-bold tracking-wider"
           >
             Create Account / Sign In
           </button>
@@ -121,4 +121,5 @@ export default function Navbar({ cartCount, wishlistCount, onOpenCart, onSearchC
     </header>
   );
 }
+
 

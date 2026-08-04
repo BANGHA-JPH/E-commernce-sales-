@@ -70,10 +70,10 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
       </div>
 
       {/* Blueprint Grid Container */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[580px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[580px] h-[600px]">
         
         {/* Interactive Schematic View (Left Column) */}
-        <div className="lg:col-span-2 glass-panel relative overflow-hidden flex items-center justify-center group rounded-sm min-h-[420px]">
+        <div className="lg:col-span-2 glass-panel relative overflow-hidden flex items-center justify-center group cursor-crosshair">
           
           {/* Blueprint Grid Lines */}
           <div className="absolute inset-0 bg-blueprint-grid opacity-30"></div>
@@ -87,7 +87,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
           />
 
           {/* Blueprint Header Label */}
-          <div className="absolute top-4 left-4 font-technical-data text-xs text-[#83cffb]/70 z-20 uppercase tracking-widest bg-[#131314]/80 px-2.5 py-1 rounded-sm border border-[#83cffb]/20">
+          <div className="absolute top-4 left-4 font-technical-data text-xs text-[#83cffb]/70 z-20 uppercase tracking-widest bg-[#131314]/80 px-2.5 py-1 border border-[#83cffb]/20">
             SCHEMATIC // VW-T1-1600-FLAT4
           </div>
 
@@ -115,7 +115,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
 
           {/* Active Blueprint Overlay Description Box */}
           {selectedHotspot && (
-            <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-md bg-[#131314]/95 border border-[#ff7a1a]/40 p-4 z-30 backdrop-blur-md rounded-sm">
+            <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-md bg-[#131314]/95 border border-[#ff7a1a]/40 p-4 z-30 backdrop-blur-md">
               <div className="flex justify-between items-start mb-1">
                 <span className="font-technical-data text-[10px] text-[#ff7a1a] uppercase font-bold">
                   HOTSPOT ACTIVE // {selectedHotspot.category}
@@ -136,7 +136,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
         </div>
 
         {/* Detail Inventory Panel (Right Column) */}
-        <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar max-h-[600px]">
+        <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar h-full">
           {BLUEPRINT_HOTSPOTS.map((part) => {
             const isSelected = selectedHotspot?.id === part.id;
             const isAdded = addedIds.includes(part.id);
@@ -144,15 +144,15 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
               <div 
                 key={part.id}
                 onClick={() => setSelectedHotspot(part)}
-                className={`glass-panel p-4 flex flex-col gap-3 rounded-sm cursor-pointer transition-all ${
+                className={`glass-panel p-4 flex flex-col gap-3 cursor-pointer transition-all ${
                   isSelected ? 'border-[#ff7a1a] bg-[#201f20]' : 'hover:border-[#584236]'
                 }`}
               >
-                <div className="aspect-video bg-[#353436] overflow-hidden rounded-sm relative group/img">
+                <div className="aspect-square bg-[#353436] overflow-hidden relative group/img">
                   <img 
                     src={part.image} 
                     alt={part.name} 
-                    className="w-full h-full object-cover opacity-85 group-hover/img:opacity-100 transition-opacity"
+                    className="w-full h-full object-cover opacity-80 group-hover/img:opacity-100 transition-opacity"
                   />
                   <div className="absolute top-2 right-2 bg-[#131314]/80 px-2 py-0.5 text-[10px] font-technical-data text-[#83cffb]">
                     {part.category}
@@ -183,7 +183,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
                       e.stopPropagation();
                       handleAdd(part);
                     }}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 font-label-caps text-xs uppercase font-bold tracking-wider rounded-sm transition-all ${
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 font-label-caps text-xs uppercase font-bold tracking-wider transition-all ${
                       isAdded 
                         ? 'bg-emerald-600 text-white' 
                         : 'bg-[#ff7a1a] hover:bg-[#ffb68e] text-black glow-button'
@@ -205,7 +205,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
                       e.stopPropagation();
                       onViewPartDetails(part);
                     }}
-                    className="p-2 border border-[#83cffb]/40 text-[#83cffb] hover:bg-[#83cffb]/10 rounded-sm transition-colors"
+                    className="p-2 border border-[#83cffb]/40 text-[#83cffb] hover:bg-[#83cffb]/10 transition-colors"
                     title="View Technical Specs"
                   >
                     <Eye className="w-4 h-4" />
@@ -221,3 +221,4 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
     </section>
   );
 }
+
