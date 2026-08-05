@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Eye, Plus, Check, RotateCw, RefreshCw, Move } from 'lucide-react';
-import engineSchematicImg from '../assets/hero_engine.png';
+import engineAngle0 from '../assets/engine_angle_0.png';
+import engineAngle90 from '../assets/engine_angle_90.png';
+import engineAngle180 from '../assets/engine_angle_180.png';
+import engineAngle270 from '../assets/engine_angle_270.png';
 
 const BLUEPRINT_HOTSPOTS = [
   {
@@ -42,7 +45,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
   const [selectedHotspot, setSelectedHotspot] = useState(BLUEPRINT_HOTSPOTS[0]);
   const [addedIds, setAddedIds] = useState([]);
 
-  // 360 Degree Interactive Rotation States
+  // 360 Degree Interactive Multi-Angle Rotation States
   const [rotationY, setRotationY] = useState(0);
   const [rotationX, setRotationX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -51,18 +54,18 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
 
   const containerRef = useRef(null);
 
-  // Auto-Spin 360° Animation Interval
+  // Auto-Spin 360° Animation Loop
   useEffect(() => {
     let interval;
     if (isAutoSpinning) {
       interval = setInterval(() => {
         setRotationY((prev) => (prev + 2) % 360);
-      }, 30);
+      }, 40);
     }
     return () => clearInterval(interval);
   }, [isAutoSpinning]);
 
-  // Mouse / Touch Drag Handlers for 360° Free Rotation
+  // Mouse / Touch Drag Handlers
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setIsAutoSpinning(false);
@@ -74,8 +77,8 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
 
-    setRotationY((prev) => (prev + deltaX * 0.5) % 360);
-    setRotationX((prev) => Math.max(-40, Math.min(40, prev - deltaY * 0.3)));
+    setRotationY((prev) => (prev + deltaX * 0.6) % 360);
+    setRotationX((prev) => Math.max(-30, Math.min(30, prev - deltaY * 0.3)));
     setDragStart({ x: e.clientX, y: e.clientY });
   };
 
@@ -83,7 +86,6 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
     setIsDragging(false);
   };
 
-  // Touch handlers for mobile
   const handleTouchStart = (e) => {
     if (e.touches.length === 1) {
       setIsDragging(true);
@@ -97,8 +99,8 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
     const deltaX = e.touches[0].clientX - dragStart.x;
     const deltaY = e.touches[0].clientY - dragStart.y;
 
-    setRotationY((prev) => (prev + deltaX * 0.5) % 360);
-    setRotationX((prev) => Math.max(-40, Math.min(40, prev - deltaY * 0.3)));
+    setRotationY((prev) => (prev + deltaX * 0.6) % 360);
+    setRotationX((prev) => Math.max(-30, Math.min(30, prev - deltaY * 0.3)));
     setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
   };
 
@@ -117,19 +119,34 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
     }, 2000);
   };
 
-  // Compute 3D Hotspot Position dynamically based on rotation
-  const getHotspotStyle = (hotspot) => {
-    const rad = (rotationY * Math.PI) / 180;
-    const offsetX = Math.sin(rad) * 20; // 3D depth sway
-    const opacity = Math.cos(rad) > -0.4 ? 1 : 0.3; // fade hotspot if facing rear
+  // Normalized 0 to 360 Angle
+  const normalizedAngle = ((Math.round(rotationY) % 360) + 360) % 360;
 
-    const left = `calc(${hotspot.baseX}% + ${offsetX}px)`;
-    const top = `calc(${hotspot.baseY}% + ${rotationX * 0.3}px)`;
-
-    return { left, top, opacity };
+  // Determine current active multi-angle real photo asset
+  const getActiveAngleImage = () => {
+    if (normalizedAngle >= 45 && normalizedAngle < 135) {
+      return { img: engineAngle90, label: 'RIGHT SIDE (90°)' };
+    }
+    if (normalizedAngle >= 135 && normalizedAngle < 225) {
+      return { img: engineAngle180, label: 'REAR VIEW (180°)' };
+    }
+    if (normalizedAngle >= 225 && normalizedAngle < 315) {
+      return { img: engineAngle270, label: 'LEFT SIDE (270°)' };
+    }
+    return { img: engineAngle0, label: 'FRONT VIEW (0°)' };
   };
 
-  const normalizedAngle = ((Math.round(rotationY) % 360) + 360) % 360;
+  const activeAngle = getActiveAngleImage();
+
+  // Dynamic Hotspot Style with 3D Depth Sway
+  const getHotspotStyle = (hotspot) => {
+    const rad = (rotationY * Math.PI) / 180;
+    const offsetX = Math.sin(rad) * 18;
+    const left = `calc(${hotspot.baseX}% + ${offsetX}px)`;
+    const top = `calc(${hotspot.baseY}% + ${rotationX * 0.2}px)`;
+
+    return { left, top };
+  };
 
   return (
     <section id="blueprint" className="max-w-[1440px] mx-auto px-4 md:px-8 mb-32 pt-8">
@@ -137,52 +154,52 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
       {/* Section Header */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#83cffb]/10 border border-[#83cffb]/30 text-[#83cffb] font-technical-data text-xs uppercase mb-3">
-          <RotateCw className="w-3.5 h-3.5" /> 360° INTERACTIVE 3D ENGINE VIEW
+          <RotateCw className="w-3.5 h-3.5" /> 360° MULTI-ANGLE REAL PHOTO INSPECTOR
         </div>
         <h2 className="font-h2 text-2xl md:text-4xl text-[#e5e2e3] font-bold mb-3">
-          Inspect the Engine. Rotate in 360°.
+          Inspect the Engine. Rotate 360°.
         </h2>
         <p className="font-body-md text-sm md:text-base text-[#e0c0b1] max-w-xl mx-auto">
-          Click and drag to rotate the 3D engine render in any direction, or use angle presets.
+          Multi-angle photo view allows seamless 360° inspection from front, sides, and rear without flattening.
         </p>
       </div>
 
       {/* Main Inspector Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[620px]">
         
-        {/* Interactive 3D Rotation View (Left Column) */}
+        {/* Interactive Multi-Angle Photo Rotation View (Left Column) */}
         <div className="lg:col-span-2 glass-panel relative overflow-hidden flex flex-col justify-between group rounded-none select-none min-h-[520px]">
           
           {/* Top Control Bar & Badges */}
-          <div className="relative z-20 flex flex-wrap items-center justify-between p-4 border-b border-[#584236]/30 bg-[#131314]/80 backdrop-blur-md gap-3">
+          <div className="relative z-20 flex flex-wrap items-center justify-between p-4 border-b border-[#584236]/30 bg-[#131314]/90 backdrop-blur-md gap-3">
             <div className="font-technical-data text-xs text-[#83cffb] uppercase tracking-widest flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#ff7a1a] animate-pulse"></span>
-              <span>ANGLE // {normalizedAngle}°</span>
+              <span>{activeAngle.label} // {normalizedAngle}°</span>
             </div>
 
             {/* Quick Angle Preset Buttons */}
             <div className="flex items-center gap-2 font-technical-data text-xs">
               <button 
                 onClick={() => { setRotationY(0); setRotationX(0); setIsAutoSpinning(false); }}
-                className={`px-2.5 py-1 transition-all ${normalizedAngle === 0 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+                className={`px-2.5 py-1 transition-all ${normalizedAngle < 45 || normalizedAngle >= 315 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
               >
                 0° Front
               </button>
               <button 
                 onClick={() => { setRotationY(90); setRotationX(0); setIsAutoSpinning(false); }}
-                className={`px-2.5 py-1 transition-all ${normalizedAngle === 90 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+                className={`px-2.5 py-1 transition-all ${normalizedAngle >= 45 && normalizedAngle < 135 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
               >
                 90° Side
               </button>
               <button 
                 onClick={() => { setRotationY(180); setRotationX(0); setIsAutoSpinning(false); }}
-                className={`px-2.5 py-1 transition-all ${normalizedAngle === 180 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+                className={`px-2.5 py-1 transition-all ${normalizedAngle >= 135 && normalizedAngle < 225 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
               >
-                180° Back
+                180° Rear
               </button>
               <button 
                 onClick={() => { setRotationY(270); setRotationX(0); setIsAutoSpinning(false); }}
-                className={`px-2.5 py-1 transition-all ${normalizedAngle === 270 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+                className={`px-2.5 py-1 transition-all ${normalizedAngle >= 225 && normalizedAngle < 315 ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
               >
                 270° Side
               </button>
@@ -196,7 +213,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
             </div>
           </div>
 
-          {/* 3D Rotatable Viewport */}
+          {/* Rotatable Multi-Angle Viewport */}
           <div 
             ref={containerRef}
             onMouseDown={handleMouseDown}
@@ -207,25 +224,22 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
             onTouchMove={handleTouchMove}
             onTouchEnd={handleMouseUp}
             className="relative flex-1 flex items-center justify-center cursor-grab active:cursor-grabbing overflow-hidden"
-            style={{ perspective: '1200px' }}
           >
             {/* Blueprint Grid Lines Background */}
             <div className="absolute inset-0 bg-blueprint-grid opacity-30 pointer-events-none"></div>
 
-            {/* Drag Hint Tooltip Overlay */}
-            <div className="absolute top-4 right-4 font-technical-data text-[11px] text-[#a78b7d] bg-[#131314]/80 px-3 py-1.5 border border-[#584236]/40 pointer-events-none flex items-center gap-1.5">
+            {/* Drag Hint Tooltip */}
+            <div className="absolute top-4 right-4 font-technical-data text-[11px] text-[#a78b7d] bg-[#131314]/80 px-3 py-1.5 border border-[#584236]/40 pointer-events-none flex items-center gap-1.5 z-20">
               <Move className="w-3.5 h-3.5 text-[#ff7a1a]" />
-              <span>Click & Drag to Rotate 360°</span>
+              <span>Drag to Rotate 360° (Multi-Angle Real View)</span>
             </div>
 
-            {/* 3D Rotating Engine Render Graphics Container */}
+            {/* Multi-Angle Real Photo Render Container */}
             <div 
-              className="w-full h-full max-w-[550px] max-h-[550px] bg-contain bg-center bg-no-repeat opacity-95 mix-blend-screen transition-transform"
+              className="w-full h-full max-w-[550px] max-h-[550px] bg-contain bg-center bg-no-repeat opacity-95 mix-blend-screen transition-all duration-300"
               style={{ 
-                backgroundImage: `url(${engineSchematicImg})`,
-                transform: `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`,
-                transformStyle: 'preserve-3d',
-                transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+                backgroundImage: `url(${activeAngle.img})`,
+                transform: `rotateX(${rotationX * 0.3}deg)`
               }}
             />
 
@@ -242,9 +256,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
                   }}
                   style={{
                     top: posStyle.top,
-                    left: posStyle.left,
-                    opacity: posStyle.opacity,
-                    transition: isDragging ? 'none' : 'all 0.3s ease'
+                    left: posStyle.left
                   }}
                   className={`absolute z-30 transform -translate-x-1/2 -translate-y-1/2 group/pin transition-all duration-300 ${
                     isSelected ? 'scale-125' : 'hover:scale-110'
@@ -260,7 +272,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
               );
             })}
 
-            {/* Active Hotspot Overlay Description Box */}
+            {/* Active Hotspot Description Card */}
             {selectedHotspot && (
               <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-md bg-[#131314]/95 border border-[#ff7a1a]/40 p-4 z-30 backdrop-blur-md">
                 <div className="flex justify-between items-start mb-1">
@@ -281,7 +293,7 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
             )}
           </div>
 
-          {/* Bottom Interactive 360° Rotation Angle Range Slider */}
+          {/* Bottom Interactive 360° Angle Slider */}
           <div className="p-4 border-t border-[#584236]/30 bg-[#131314]/90 flex items-center gap-4">
             <span className="font-technical-data text-xs text-[#a78b7d] whitespace-nowrap">
               ROTATION SLIDER:
