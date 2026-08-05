@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Eye, Plus, Check, RotateCw, RefreshCw, Move } from 'lucide-react';
+import { Eye, Plus, Check, RotateCw, RefreshCw, Move, Box, Camera, Sparkles } from 'lucide-react';
 
 import frame0 from '../assets/engine_frame_0.png';
 import frame1 from '../assets/engine_frame_1.png';
@@ -25,6 +25,8 @@ const BLUEPRINT_HOTSPOTS = [
     price: 849.00,
     baseX: 49,
     baseY: 20,
+    position3D: '0m 0.8m 0m',
+    normal3D: '0m 1m 0m',
     category: 'Fuel & Carburetion',
     image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=600&q=80',
     description: 'Original high-performance 4-barrel carburetor for classic flat-four & V8 engine platforms.'
@@ -36,6 +38,8 @@ const BLUEPRINT_HOTSPOTS = [
     price: 425.00,
     baseX: 66,
     baseY: 44,
+    position3D: '0.4m 0.3m 0.1m',
+    normal3D: '1m 0m 0m',
     category: 'Engine Block & Internals',
     image: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=600&q=80',
     description: 'High-density aluminum alloy dual-port cylinder head set with hardened valve seats.'
@@ -47,6 +51,8 @@ const BLUEPRINT_HOTSPOTS = [
     price: 620.00,
     baseX: 38,
     baseY: 68,
+    position3D: '-0.3m -0.2m 0m',
+    normal3D: '-1m 0m 0m',
     category: 'Engine Block & Internals',
     image: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80',
     description: 'Forged aluminum pistons with cast iron cylinders, wrist pins, and stainless rings.'
@@ -56,35 +62,38 @@ const BLUEPRINT_HOTSPOTS = [
 export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetails }) {
   const [selectedHotspot, setSelectedHotspot] = useState(BLUEPRINT_HOTSPOTS[0]);
   const [addedIds, setAddedIds] = useState([]);
+  const [viewMode, setViewMode] = useState('3d_canvas'); // '3d_canvas' or 'turntable'
 
-  // 360 Degree Rotation States
+  // 360 Degree Rotation States for Turntable Mode
   const [rotationY, setRotationY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0 });
   const [isAutoSpinning, setIsAutoSpinning] = useState(false);
 
   const containerRef = useRef(null);
+  const modelViewerRef = useRef(null);
 
   // Auto-Spin 360 Animation Loop
   useEffect(() => {
     let interval;
-    if (isAutoSpinning) {
+    if (isAutoSpinning && viewMode === 'turntable') {
       interval = setInterval(() => {
         setRotationY((prev) => (prev + 2) % 360);
       }, 40);
     }
     return () => clearInterval(interval);
-  }, [isAutoSpinning]);
+  }, [isAutoSpinning, viewMode]);
 
   // Mouse / Touch Drag Handlers
   const handleMouseDown = (e) => {
+    if (viewMode !== 'turntable') return;
     setIsDragging(true);
     setIsAutoSpinning(false);
     setDragStart({ x: e.clientX });
   };
 
   const handleMouseMove = (e) => {
-    if (!isDragging) return;
+    if (!isDragging || viewMode !== 'turntable') return;
     const deltaX = e.clientX - dragStart.x;
     setRotationY((prev) => (prev + deltaX * 0.8) % 360);
     setDragStart({ x: e.clientX });
@@ -92,21 +101,6 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
 
   const handleMouseUp = () => {
     setIsDragging(false);
-  };
-
-  const handleTouchStart = (e) => {
-    if (e.touches.length === 1) {
-      setIsDragging(true);
-      setIsAutoSpinning(false);
-      setDragStart({ x: e.touches[0].clientX });
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging || e.touches.length !== 1) return;
-    const deltaX = e.touches[0].clientX - dragStart.x;
-    setRotationY((prev) => (prev + deltaX * 0.8) % 360);
-    setDragStart({ x: e.touches[0].clientX });
   };
 
   const handleAdd = (item) => {
@@ -126,12 +120,9 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
 
   // Normalized 0 to 360 Angle
   const normalizedAngle = ((Math.round(rotationY) % 360) + 360) % 360;
-
-  // Determine current active frame index (6-frame turntable sequence)
   const frameIndex = Math.floor(normalizedAngle / 60) % 6;
   const currentFrame = ENGINE_FRAMES[frameIndex];
 
-  // Dynamic Hotspot Style with 3D Depth Sway
   const getHotspotStyle = (hotspot) => {
     const rad = (rotationY * Math.PI) / 180;
     const offsetX = Math.sin(rad) * 16;
@@ -147,107 +138,175 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
       {/* Section Header */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#83cffb]/10 border border-[#83cffb]/30 text-[#83cffb] font-technical-data text-xs uppercase mb-3">
-          <RotateCw className="w-3.5 h-3.5" /> 6-ANGLE REAL 3D TURNTABLE INSPECTOR
+          <Sparkles className="w-3.5 h-3.5" /> REAL-TIME 3D WEBGL ENGINE INSPECTOR
         </div>
         <h2 className="font-h2 text-2xl md:text-4xl text-[#e5e2e3] font-bold mb-3">
-          Inspect the Engine. Rotate 360°.
+          Inspect the Engine. Rotate in True 3D.
         </h2>
         <p className="font-body-md text-sm md:text-base text-[#e0c0b1] max-w-xl mx-auto">
-          Turn the engine to inspect all 6 real turntable angles without flattening.
+          Full 3D WebGL orbit controls with PBR reflections, real lighting, and 360° turntable inspection.
         </p>
       </div>
 
       {/* Main Inspector Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[620px]">
         
-        {/* Interactive 6-Frame Turntable Inspector (Left Column) */}
-        <div className="lg:col-span-2 glass-panel relative overflow-hidden flex flex-col justify-between group rounded-none select-none min-h-[520px]">
+        {/* Interactive 3D Canvas View (Left Column) */}
+        <div className="lg:col-span-2 glass-panel relative overflow-hidden flex flex-col justify-between group rounded-none select-none min-h-[540px]">
           
-          {/* Top Control Bar & Angle Badges */}
+          {/* Top Mode Selector Bar */}
           <div className="relative z-20 flex flex-wrap items-center justify-between p-4 border-b border-[#584236]/30 bg-[#131314]/90 backdrop-blur-md gap-3">
-            <div className="font-technical-data text-xs text-[#83cffb] uppercase tracking-widest flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#ff7a1a] animate-pulse"></span>
-              <span>{currentFrame.label} // {normalizedAngle}°</span>
-            </div>
-
-            {/* Quick Angle Preset Buttons */}
-            <div className="flex flex-wrap items-center gap-1.5 font-technical-data text-xs">
-              {ENGINE_FRAMES.map((f, idx) => (
-                <button 
-                  key={f.angle}
-                  onClick={() => { setRotationY(f.angle); setIsAutoSpinning(false); }}
-                  className={`px-2 py-1 transition-all ${frameIndex === idx ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
-                >
-                  {f.angle}°
-                </button>
-              ))}
-              <button 
-                onClick={() => setIsAutoSpinning(!isAutoSpinning)}
-                className={`px-2.5 py-1 flex items-center gap-1 transition-all ${isAutoSpinning ? 'bg-[#83cffb] text-black font-bold' : 'bg-[#201f20] text-[#83cffb] border border-[#83cffb]/40'}`}
+            <div className="flex items-center gap-2 font-technical-data text-xs">
+              <button
+                onClick={() => setViewMode('3d_canvas')}
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all ${
+                  viewMode === '3d_canvas'
+                    ? 'bg-[#ff7a1a] text-black font-bold glow-button'
+                    : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'
+                }`}
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isAutoSpinning ? 'animate-spin' : ''}`} />
-                <span>{isAutoSpinning ? 'Spinning' : '360° Spin'}</span>
+                <Box className="w-3.5 h-3.5" />
+                <span>3D WebGL Canvas</span>
+              </button>
+
+              <button
+                onClick={() => setViewMode('turntable')}
+                className={`px-3 py-1.5 flex items-center gap-1.5 transition-all ${
+                  viewMode === 'turntable'
+                    ? 'bg-[#ff7a1a] text-black font-bold glow-button'
+                    : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'
+                }`}
+              >
+                <Camera className="w-3.5 h-3.5" />
+                <span>6-Angle Turntable</span>
               </button>
             </div>
+
+            {viewMode === 'turntable' && (
+              <div className="flex items-center gap-2 font-technical-data text-xs">
+                {ENGINE_FRAMES.map((f, idx) => (
+                  <button 
+                    key={f.angle}
+                    onClick={() => { setRotationY(f.angle); setIsAutoSpinning(false); }}
+                    className={`px-2 py-1 transition-all ${frameIndex === idx ? 'bg-[#ff7a1a] text-black font-bold' : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a]'}`}
+                  >
+                    {f.angle}°
+                  </button>
+                ))}
+                <button 
+                  onClick={() => setIsAutoSpinning(!isAutoSpinning)}
+                  className={`px-3 py-1 flex items-center gap-1 transition-all ${isAutoSpinning ? 'bg-[#83cffb] text-black font-bold' : 'bg-[#201f20] text-[#83cffb] border border-[#83cffb]/40'}`}
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isAutoSpinning ? 'animate-spin' : ''}`} />
+                  <span>{isAutoSpinning ? 'Spinning' : '360°'}</span>
+                </button>
+              </div>
+            )}
+
+            {viewMode === '3d_canvas' && (
+              <span className="font-technical-data text-xs text-[#83cffb] uppercase">
+                WEBGL PBR LIGHTING // ACTIVE
+              </span>
+            )}
           </div>
 
-          {/* 360° Turntable Viewport */}
-          <div 
-            ref={containerRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleMouseUp}
-            className="relative flex-1 flex items-center justify-center cursor-grab active:cursor-grabbing overflow-hidden min-h-[440px]"
-          >
-            {/* Blueprint Grid Lines Background */}
+          {/* Viewport Render Area */}
+          <div className="relative flex-1 flex items-center justify-center overflow-hidden min-h-[440px]">
+            {/* Blueprint Grid Background */}
             <div className="absolute inset-0 bg-blueprint-grid opacity-30 pointer-events-none"></div>
 
-            {/* Drag Hint Tooltip */}
+            {/* Hint Tooltip */}
             <div className="absolute top-4 right-4 font-technical-data text-[11px] text-[#a78b7d] bg-[#131314]/80 px-3 py-1.5 border border-[#584236]/40 pointer-events-none flex items-center gap-1.5 z-20">
               <Move className="w-3.5 h-3.5 text-[#ff7a1a]" />
-              <span>Drag to Turn Engine 360°</span>
+              <span>{viewMode === '3d_canvas' ? 'Orbit 3D Model with Mouse / Pinch to Zoom' : 'Drag to Rotate 360°'}</span>
             </div>
 
-            {/* Real Turntable Angle Image Frame Render */}
-            <div 
-              className="w-full h-full max-w-[560px] max-h-[560px] bg-contain bg-center bg-no-repeat opacity-95 mix-blend-screen transition-all duration-200"
-              style={{ 
-                backgroundImage: `url(${currentFrame.img})`
-              }}
-            />
-
-            {/* Interactive Hotspots Layer */}
-            {BLUEPRINT_HOTSPOTS.map((hotspot) => {
-              const isSelected = selectedHotspot?.id === hotspot.id;
-              const posStyle = getHotspotStyle(hotspot);
-              return (
-                <button
-                  key={hotspot.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedHotspot(hotspot);
-                  }}
-                  style={{
-                    top: posStyle.top,
-                    left: posStyle.left
-                  }}
-                  className={`absolute z-30 transform -translate-x-1/2 -translate-y-1/2 group/pin transition-all duration-300 ${
-                    isSelected ? 'scale-125' : 'hover:scale-110'
-                  }`}
+            {/* Mode 1: True 3D WebGL Model Viewer with Orbit Controls */}
+            {viewMode === '3d_canvas' ? (
+              <div className="w-full h-full min-h-[440px] flex items-center justify-center relative">
+                <model-viewer
+                  ref={modelViewerRef}
+                  src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Engine/glTF-Binary/Engine.glb"
+                  alt="3D Interactive Engine Model"
+                  camera-controls
+                  auto-rotate
+                  shadow-intensity="1.5"
+                  shadow-softness="0.8"
+                  environment-image="neutral"
+                  exposure="1.2"
+                  camera-orbit="0deg 75deg 105%"
+                  ar
+                  ar-modes="webxr scene-viewer quick-look"
+                  className="w-full h-[460px] bg-transparent"
+                  style={{ width: '100%', height: '460px', backgroundColor: 'transparent' }}
                 >
-                  <span className={`block w-5 h-5 rounded-full border-2 ${
-                    isSelected ? 'border-[#ff7a1a] bg-[#ff7a1a]/40' : 'border-[#83cffb] bg-[#83cffb]/20'
-                  } animate-pulse`} />
-                  <span className={`absolute top-0 left-0 w-5 h-5 rounded-full ${
-                    isSelected ? 'bg-[#ff7a1a]' : 'bg-[#83cffb]'
-                  } opacity-75 blur-sm`} />
-                </button>
-              );
-            })}
+                  {/* 3D Hotspot Slots attached to GLTF Mesh Coordinates */}
+                  {BLUEPRINT_HOTSPOTS.map((hotspot) => {
+                    const isSelected = selectedHotspot?.id === hotspot.id;
+                    return (
+                      <button
+                        key={hotspot.id}
+                        slot={`hotspot-${hotspot.id}`}
+                        data-position={hotspot.position3D}
+                        data-normal={hotspot.normal3D}
+                        onClick={() => setSelectedHotspot(hotspot)}
+                        className="group/pin transform -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+                      >
+                        <span className={`block w-5 h-5 rounded-full border-2 ${
+                          isSelected ? 'border-[#ff7a1a] bg-[#ff7a1a]/50 scale-125' : 'border-[#83cffb] bg-[#83cffb]/30'
+                        } animate-pulse`} />
+                      </button>
+                    );
+                  })}
+                </model-viewer>
+              </div>
+            ) : (
+              /* Mode 2: 6-Frame Turntable Photo View */
+              <div 
+                ref={containerRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleMouseUp}
+                className="w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing"
+              >
+                <div 
+                  className="w-full h-full max-w-[560px] max-h-[560px] bg-contain bg-center bg-no-repeat opacity-95 mix-blend-screen transition-all duration-200"
+                  style={{ 
+                    backgroundImage: `url(${currentFrame.img})`
+                  }}
+                />
+
+                {/* Hotspots for Turntable */}
+                {BLUEPRINT_HOTSPOTS.map((hotspot) => {
+                  const isSelected = selectedHotspot?.id === hotspot.id;
+                  const posStyle = getHotspotStyle(hotspot);
+                  return (
+                    <button
+                      key={hotspot.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedHotspot(hotspot);
+                      }}
+                      style={{
+                        top: posStyle.top,
+                        left: posStyle.left
+                      }}
+                      className={`absolute z-30 transform -translate-x-1/2 -translate-y-1/2 group/pin transition-all duration-300 ${
+                        isSelected ? 'scale-125' : 'hover:scale-110'
+                      }`}
+                    >
+                      <span className={`block w-5 h-5 rounded-full border-2 ${
+                        isSelected ? 'border-[#ff7a1a] bg-[#ff7a1a]/40' : 'border-[#83cffb] bg-[#83cffb]/20'
+                      } animate-pulse`} />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Active Hotspot Description Card */}
             {selectedHotspot && (
@@ -270,26 +329,28 @@ export default function EngineBlueprintInspector({ onAddToCart, onViewPartDetail
             )}
           </div>
 
-          {/* Bottom Interactive 360° Angle Slider */}
-          <div className="p-4 border-t border-[#584236]/30 bg-[#131314]/90 flex items-center gap-4">
-            <span className="font-technical-data text-xs text-[#a78b7d] whitespace-nowrap">
-              TURNTABLE ANGLE:
-            </span>
-            <input 
-              type="range"
-              min="0"
-              max="359"
-              value={normalizedAngle}
-              onChange={(e) => {
-                setIsAutoSpinning(false);
-                setRotationY(parseFloat(e.target.value));
-              }}
-              className="w-full accent-[#ff7a1a] cursor-pointer"
-            />
-            <span className="font-technical-data text-xs text-[#ff7a1a] font-bold w-12 text-right">
-              {normalizedAngle}°
-            </span>
-          </div>
+          {/* Bottom Control Bar */}
+          {viewMode === 'turntable' && (
+            <div className="p-4 border-t border-[#584236]/30 bg-[#131314]/90 flex items-center gap-4">
+              <span className="font-technical-data text-xs text-[#a78b7d] whitespace-nowrap">
+                TURNTABLE ANGLE:
+              </span>
+              <input 
+                type="range"
+                min="0"
+                max="359"
+                value={normalizedAngle}
+                onChange={(e) => {
+                  setIsAutoSpinning(false);
+                  setRotationY(parseFloat(e.target.value));
+                }}
+                className="w-full accent-[#ff7a1a] cursor-pointer"
+              />
+              <span className="font-technical-data text-xs text-[#ff7a1a] font-bold w-12 text-right">
+                {normalizedAngle}°
+              </span>
+            </div>
+          )}
 
         </div>
 
