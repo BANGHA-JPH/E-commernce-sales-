@@ -18,6 +18,14 @@ import Footer from './components/Footer';
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [authToken, setAuthToken] = useState(null);
+  const [adminToken, setAdminToken] = useState(null);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isGuidedSearchOpen, setIsGuidedSearchOpen] = useState(false);
+  const [activeModalPart, setActiveModalPart] = useState(null);
+
   const [cartItems, setCartItems] = useState([]);
   const [wishlistIds, setWishlistIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -172,15 +180,6 @@ export default function App() {
     setCurrentPage('shop');
   };
   
-  // Modals & Drawers state
-  const [isGuidedSearchOpen, setIsGuidedSearchOpen] = useState(false);
-  const [activeModalPart, setActiveModalPart] = useState(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
-  const [adminToken, setAdminToken] = useState(null);
-
   // Refresh trigger for parts catalog after admin edit/delete
   const [refreshKey, setRefreshKey] = useState(0);
   const handleRefreshCatalog = () => setRefreshKey(prev => prev + 1);
