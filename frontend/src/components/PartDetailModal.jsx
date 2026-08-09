@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, ShoppingBag, ShieldCheck, CheckCircle2, Award, Cpu, FileText, Wrench } from 'lucide-react';
+import { X, ShoppingBag, ShieldCheck, CheckCircle2, Award, Cpu, FileText, Wrench, Box, MessageCircle, Phone } from 'lucide-react';
 
-export default function PartDetailModal({ part, onClose, onAddToCart }) {
+export default function PartDetailModal({ part, onClose, onAddToCart, onRequestItem, onReserveItem }) {
   if (!part) return null;
 
   return (
@@ -35,14 +35,19 @@ export default function PartDetailModal({ part, onClose, onAddToCart }) {
               <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-2 text-xs font-mono">
                 <div className="flex items-center gap-2 text-amber-400 font-bold">
                   <Award className="w-4 h-4" />
-                  <span>Rarity Score: {part.rarityScore}</span>
+                  <span>Rarity Score: {part.rarityScore || 'Specialist Grade'}</span>
                 </div>
                 <div className="text-slate-400">
-                  CASTING CODE: <span className="text-slate-200">{part.castingCode}</span>
+                  SKU / P/N: <span className="text-slate-200">{part.sku || part.oemNumber || 'NOS-GENUINE'}</span>
                 </div>
                 <div className="text-slate-400">
-                  OEM NUMBER: <span className="text-slate-200">{part.oemNumber}</span>
+                  SYSTEM / SUB: <span className="text-slate-200">{part.partSubcategory || part.specificPartCategory || part.systemCategory || 'Engine System'}</span>
                 </div>
+                {part.storageLocation && (
+                  <div className="text-slate-400">
+                    LOCATION: <span className="text-slate-200">{part.storageLocation}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -55,8 +60,9 @@ export default function PartDetailModal({ part, onClose, onAddToCart }) {
           {/* Right Column: Part Specs & Details */}
           <div className="md:col-span-7 p-6 space-y-6 flex flex-col justify-between">
             <div>
-              <div className="text-xs font-mono text-amber-400 uppercase tracking-wide mb-1">
-                {part.carModelName} • {part.era}
+              <div className="text-xs font-mono text-amber-400 uppercase tracking-wide mb-1 flex items-center justify-between">
+                <span>{part.carModelName || part.modelYearRange || 'VW Air-Cooled'} • {part.era || part.modelYearRange || 'All Years'}</span>
+                <span className="text-emerald-400 font-bold">{part.status || (part.inStock ? 'Available' : 'Out of Stock')}</span>
               </div>
 
               <h2 className="text-2xl font-bold text-white font-display mb-2">
@@ -64,62 +70,103 @@ export default function PartDetailModal({ part, onClose, onAddToCart }) {
               </h2>
 
               <div className="text-2xl font-extrabold text-amber-400 font-display mb-4">
-                ${part.price.toLocaleString()} USD
+                ${part.price ? part.price.toLocaleString() : '0.00'} USD
               </div>
 
-              {/* Provenance Story */}
+              {/* Provenance / Technical Description */}
               <div className="bg-slate-950/80 rounded-xl p-3.5 border border-slate-800 mb-4">
                 <div className="text-[10px] font-mono text-amber-400 uppercase mb-1 flex items-center gap-1">
-                  <FileText className="w-3 h-3" /> PROVENANCE & CONDITION HISTORY
+                  <FileText className="w-3 h-3" /> PROVENANCE & TECHNICAL DESCRIPTION
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  {part.provenance}
+                  {part.description || part.provenance || 'No description provided.'}
                 </p>
               </div>
 
               {/* Technical Specifications List */}
-              <div className="space-y-2 mb-6">
-                <div className="text-xs font-mono text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                  <Wrench className="w-3.5 h-3.5 text-amber-400" /> Technical Specifications:
+              {Array.isArray(part.specifications) && part.specifications.length > 0 && (
+                <div className="space-y-2 mb-6">
+                  <div className="text-xs font-mono text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <Wrench className="w-3.5 h-3.5 text-amber-400" /> Technical Specifications:
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                    {part.specifications.map((spec, i) => (
+                      <div key={i} className="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                        <span className="text-slate-500 block text-[10px]">{spec.key}</span>
+                        <span className="text-slate-200 font-semibold">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
-                  {part.specifications.map((spec, i) => (
-                    <div key={i} className="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
-                      <span className="text-slate-500 block text-[10px]">{spec.key}</span>
-                      <span className="text-slate-200 font-semibold">{spec.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
 
-              {/* Engine Compatibility List */}
+              {/* Engine & Vehicle Compatibility List */}
               <div className="space-y-2 mb-6">
                 <div className="text-xs font-mono text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                  <Cpu className="w-3.5 h-3.5 text-amber-400" /> Engine Compatibility Matrix:
+                  <Cpu className="w-3.5 h-3.5 text-amber-400" /> Compatibility Matrix:
                 </div>
                 <ul className="text-xs text-slate-300 space-y-1 font-mono pl-2">
-                  {(part.compatibleVehicles || part.compatibleEngines || []).map((v, i) => (
+                  {(part.compatibleModels || part.compatibleVehicles || [part.modelYearRange || 'Universal Fitment']).map((v, i) => (
                     <li key={i} className="flex items-center gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                       <span>{v}</span>
                     </li>
                   ))}
+                  {Array.isArray(part.compatibleEngineSizes) && part.compatibleEngineSizes.length > 0 && (
+                    <li className="flex items-center gap-2 text-amber-400">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                      <span>Engines: {part.compatibleEngineSizes.join(', ')}</span>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
 
             {/* Action Bar */}
-            <div className="pt-4 border-t border-slate-800 flex items-center gap-4">
-              <button
-                onClick={() => {
-                  onAddToCart(part);
-                  onClose();
-                }}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-amber-500/20 transition-all"
-              >
-                <ShoppingBag className="w-5 h-5" />
-                <span>Add To Guest Cart (${part.price.toLocaleString()})</span>
-              </button>
+            <div className="pt-4 border-t border-slate-800 space-y-3">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    if (onRequestItem) onRequestItem(part);
+                    onClose();
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black py-3 rounded-xl font-bold text-sm shadow-xl transition-all uppercase tracking-wider"
+                >
+                  <Box className="w-4 h-4" />
+                  <span>Request Item (${part.price.toLocaleString()})</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (onReserveItem) onReserveItem(part);
+                    onClose();
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 bg-purple-600/30 hover:bg-purple-600 border border-purple-500/50 text-purple-200 hover:text-white py-3 rounded-xl font-bold text-sm transition-all uppercase tracking-wider"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Reserve Item</span>
+                </button>
+              </div>
+
+              <div className="flex gap-2">
+                <a
+                  href={`https://wa.me/15550198822?text=${encodeURIComponent(`Hello! I have a direct inquiry regarding "${part.title}" (SKU: ${part.sku || 'N/A'}, Price: $${part.price}).`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl font-bold text-xs transition-all uppercase"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>WhatsApp Inquiry</span>
+                </a>
+
+                <a
+                  href="tel:+15550198822"
+                  className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2.5 rounded-xl font-bold text-xs transition-all uppercase"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span>Call Seller</span>
+                </a>
+              </div>
             </div>
 
           </div>

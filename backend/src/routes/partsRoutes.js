@@ -1,61 +1,76 @@
 import express from 'express';
-import { SPARE_PARTS, VINTAGE_CARS, ENGINE_HOTSPOTS, YOUTUBE_SHOWCASE } from '../data/db.js';
+import { dbService } from '../config/supabase.js';
+import { ENGINE_HOTSPOTS, YOUTUBE_SHOWCASE } from '../data/db.js';
 
 const router = express.Router();
 
 // GET /api/parts - Search & filter spare parts (Guest Accessible)
-router.get('/parts', (req, res) => {
-  const { search, era, category, carModelId, sortBy } = req.query;
+router.get('/parts', async (req, res) => {
+  try {
+    const { search, era, category, carModelId, sortBy } = req.query;
+    let partsList = await dbService.getParts();
+    let results = [...partsList];
 
-  let results = [...SPARE_PARTS];
+    if (search) {
+      const q = search.toLowerCase();
+      results = results.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        (p.oemNumber && p.oemNumber.toLowerCase().includes(q)) ||
+        (p.carModelName && p.carModelName.toLowerCase().includes(q)) ||
+        (p.castingCode && p.castingCode.toLowerCase().includes(q))
+      );
+    }
 
-  if (search) {
-    const q = search.toLowerCase();
-    results = results.filter(p =>
-      p.title.toLowerCase().includes(q) ||
-      p.oemNumber.toLowerCase().includes(q) ||
-      p.carModelName.toLowerCase().includes(q) ||
-      p.castingCode.toLowerCase().includes(q)
-    );
+    if (era && era !== 'ALL') {
+      results = results.filter(p => p.era === era);
+    }
+
+    if (category && category !== 'ALL') {
+      results = results.filter(p => p.category === category);
+    }
+
+    if (carModelId && carModelId !== 'ALL') {
+      results = results.filter(p => p.carModelId === carModelId);
+    }
+
+    if (sortBy === 'PRICE_LOW') {
+      results.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'PRICE_HIGH') {
+      results.sort((a, b) => b.price - a.price);
+    }
+
+    res.json({
+      success: true,
+      count: results.length,
+      data: results
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-
-  if (era && era !== 'ALL') {
-    results = results.filter(p => p.era === era);
-  }
-
-  if (category && category !== 'ALL') {
-    results = results.filter(p => p.category === category);
-  }
-
-  if (carModelId && carModelId !== 'ALL') {
-    results = results.filter(p => p.carModelId === carModelId);
-  }
-
-  if (sortBy === 'PRICE_LOW') {
-    results.sort((a, b) => a.price - b.price);
-  } else if (sortBy === 'PRICE_HIGH') {
-    results.sort((a, b) => b.price - a.price);
-  }
-
-  res.json({
-    success: true,
-    count: results.length,
-    data: results
-  });
 });
 
 // GET /api/parts/:id
-router.get('/parts/:id', (req, res) => {
-  const part = SPARE_PARTS.find(p => p.id === req.params.id);
-  if (!part) {
-    return res.status(404).json({ success: false, message: 'Spare part not found' });
+router.get('/parts/:id', async (req, res) => {
+  try {
+    const partsList = await dbService.getParts();
+    const part = partsList.find(p => p.id === req.params.id);
+    if (!part) {
+      return res.status(404).json({ success: false, message: 'Spare part not found' });
+    }
+    res.json({ success: true, data: part });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-  res.json({ success: true, data: part });
 });
 
 // GET /api/cars - List all vintage car models
-router.get('/cars', (req, res) => {
-  res.json({ success: true, count: VINTAGE_CARS.length, data: VINTAGE_CARS });
+router.get('/cars', async (req, res) => {
+  try {
+    const carsList = await dbService.getCars();
+    res.json({ success: true, count: carsList.length, data: carsList });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // GET /api/hotspots - Engine diagram hotspot pins

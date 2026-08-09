@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import partsRoutes from './routes/partsRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/api', partsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', orderRoutes);
+app.use('/api', adminRoutes);
 
 // Root health check endpoint
 app.get('/', (req, res) => {

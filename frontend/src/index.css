@@ -36,22 +36,43 @@ body {
 
 .glow-button {
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2);
-  transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, box-shadow 0.2s ease;
 }
 .glow-button:active {
-  transform: scale(0.98);
+  transform: scale(0.95);
+  box-shadow: 0 0 20px rgba(255, 122, 26, 0.6);
 }
 
 .ghost-button {
   border: 1px solid #83cffb;
-  transition: transform 0.1s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, background-color 0.2s ease;
 }
 .ghost-button:hover {
   box-shadow: 0 0 12px rgba(131, 207, 251, 0.3);
   background-color: rgba(131, 207, 251, 0.1);
 }
 .ghost-button:active {
-  transform: scale(0.98);
+  transform: scale(0.95);
+}
+
+/* Tactile On-Click Animations */
+.click-press {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.click-press:active {
+  transform: scale(0.96) translateY(2px);
+}
+
+/* Card Selection Pulse */
+.card-active-pulse {
+  animation: cardPulse 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes cardPulse {
+  0% { transform: scale(0.98); box-shadow: 0 0 0 rgba(255, 122, 26, 0.8); }
+  50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(255, 122, 26, 0.5); }
+  100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 122, 26, 0.2); }
 }
 
 /* Custom Scrollbar */
@@ -81,3 +102,37 @@ body {
   scrollbar-width: none;
 }
 
+/* Staggered Brand Logo Letter Jump & Swing Animation */
+@keyframes letterJumpSwing {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  15% {
+    transform: translateY(-11px) scale(1.18) rotate(4deg);
+    color: #ffffff;
+    text-shadow: 0 0 14px rgba(255, 122, 26, 0.9);
+  }
+  30% {
+    transform: translateY(-13px) scale(1.22) rotate(-4deg);
+    color: #ffb68e;
+  }
+  45% {
+    transform: translateY(5px) rotate(6deg);
+    color: #ff7a1a;
+  }
+  60% {
+    transform: translateY(-3px) rotate(-3deg);
+  }
+  75% {
+    transform: translateY(1px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    color: #ff7a1a;
+  }
+}
+
+.animate-jump-swing {
+  display: inline-block;
+  animation: letterJumpSwing 2.4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}

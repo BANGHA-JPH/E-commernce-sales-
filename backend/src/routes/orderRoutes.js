@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { ORDERS } from '../data/db.js';
+import { dbService } from '../config/supabase.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'vintage_secret';
@@ -23,38 +23,46 @@ const authenticate = (req, res, next) => {
 };
 
 // POST /api/orders - Place a vintage parts order (Protected Route)
-router.post('/orders', authenticate, (req, res) => {
-  const { items, totalAmount, shippingAddress } = req.body;
+router.post('/orders', authenticate, async (req, res) => {
+  try {
+    const { items, totalAmount, shippingAddress } = req.body;
 
-  if (!items || items.length === 0) {
-    return res.status(400).json({ success: false, message: 'Cart items cannot be empty' });
+    if (!items || items.length === 0) {
+      return res.status(400).json({ success: false, message: 'Cart items cannot be empty' });
+    }
+
+    const orderInput = {
+      id: `ORD-VINTAGE-${Math.floor(100000 + Math.random() * 900000)}`,
+      userId: req.user.id,
+      userName: req.user.name || 'Vintage Collector',
+      userEmail: req.user.email,
+      items,
+      totalAmount,
+      shippingAddress: shippingAddress || '123 Classic Restorer Blvd, Detroit MI',
+      status: 'AUTHENTICATED & PROCESSING',
+      createdAt: new Date().toISOString()
+    };
+
+    const createdOrder = await dbService.addOrder(orderInput);
+
+    res.status(201).json({
+      success: true,
+      message: 'Vintage parts order successfully created!',
+      data: createdOrder
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-
-  const order = {
-    id: `ORD-VINTAGE-${Math.floor(100000 + Math.random() * 900000)}`,
-    userId: req.user.id,
-    userName: req.user.name,
-    userEmail: req.user.email,
-    items,
-    totalAmount,
-    shippingAddress: shippingAddress || '123 Classic Restorer Blvd, Detroit MI',
-    status: 'AUTHENTICATED & PROCESSING',
-    createdAt: new Date().toISOString()
-  };
-
-  ORDERS.push(order);
-
-  res.status(201).json({
-    success: true,
-    message: 'Vintage parts order successfully created!',
-    data: order
-  });
 });
 
 // GET /api/orders - Get user orders
-router.get('/orders', authenticate, (req, res) => {
-  const userOrders = ORDERS.filter(o => o.userId === req.user.id);
-  res.json({ success: true, count: userOrders.length, data: userOrders });
+router.get('/orders', authenticate, async (req, res) => {
+  try {
+    const userOrders = await dbService.getOrders(req.user.id);
+    res.json({ success: true, count: userOrders.length, data: userOrders });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 export default router;

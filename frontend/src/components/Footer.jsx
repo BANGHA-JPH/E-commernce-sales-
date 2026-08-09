@@ -1,6 +1,7 @@
 import React from 'react';
+import { Lock } from 'lucide-react';
 
-export default function Footer() {
+export default function Footer({ onOpenAdminLogin }) {
   return (
     <footer className="w-full mt-24 bg-[#0e0e0f] border-t border-[#584236]/20 text-[#e0c0b1]">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 px-6 md:px-16 py-16 max-w-[1440px] mx-auto font-body-md text-sm">
@@ -17,14 +18,13 @@ export default function Footer() {
 
         {/* Navigation Links */}
         <div className="flex flex-col gap-3 font-label-caps text-xs tracking-wider uppercase">
-          <a className="hover:text-[#ff7a1a] transition-colors" href="#catalog">Catalog</a>
-          <a className="hover:text-[#ff7a1a] transition-colors" href="#blueprint">Blueprint Inspector</a>
-          <a className="hover:text-[#ff7a1a] transition-colors" href="#engines">Engines</a>
+          <a className="hover:text-[#ff7a1a] transition-colors" href="#vintage-cars">Vintage Cars</a>
+          <a className="hover:text-[#ff7a1a] transition-colors" href="#catalog">Parts Catalog</a>
+          <a className="hover:text-[#ff7a1a] transition-colors" href="#reviews">Customer Reviews</a>
         </div>
 
         <div className="flex flex-col gap-3 font-label-caps text-xs tracking-wider uppercase">
           <a className="hover:text-[#ff7a1a] transition-colors" href="#workshop">Showcase</a>
-          <a className="hover:text-[#ff7a1a] transition-colors" href="#reviews">Customer Reviews</a>
           <a className="hover:text-[#ff7a1a] transition-colors" href="#support">Contact Support</a>
         </div>
 
