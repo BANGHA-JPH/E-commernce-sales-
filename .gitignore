@@ -11,3 +11,5 @@ dist/
 build/
 .DS_Store
 *.log
+backend/src/data/storage.json
+storage.json
