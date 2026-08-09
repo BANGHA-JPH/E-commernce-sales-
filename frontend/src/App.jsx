@@ -43,8 +43,11 @@ export default function App() {
   const [adminRequests, setAdminRequests] = useState([]);
 
   const fetchAdminRequests = async () => {
+    if (!adminToken) return;
     try {
-      const res = await fetch('http://localhost:5000/api/admin/requests');
+      const res = await fetch('http://localhost:5000/api/admin/requests', {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+      });
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
         setAdminRequests(data.data);
@@ -55,10 +58,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (isAdminPanelOpen) {
+    if (isAdminPanelOpen && adminToken) {
       fetchAdminRequests();
     }
-  }, [isAdminPanelOpen]);
+  }, [isAdminPanelOpen, adminToken]);
 
   // Sync state whenever currentUser changes (Login / Logout / Switch User)
   useEffect(() => {
@@ -328,10 +331,14 @@ export default function App() {
   };
 
   const handleUpdateUserRequestStatus = async (reqId, newStatus) => {
+    if (!adminToken) return;
     try {
       const res = await fetch(`http://localhost:5000/api/admin/requests/${reqId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`
+        },
         body: JSON.stringify({ status: newStatus })
       });
       const data = await res.json();
@@ -578,6 +585,7 @@ export default function App() {
         onRefreshCatalog={handleRefreshCatalog}
         userRequests={adminRequests}
         onUpdateUserRequestStatus={handleUpdateUserRequestStatus}
+        adminToken={adminToken}
       />
 
     </div>

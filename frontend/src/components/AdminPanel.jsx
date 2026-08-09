@@ -21,7 +21,8 @@ export default function AdminPanel({
   onClose, 
   onRefreshCatalog,
   userRequests = [],
-  onUpdateUserRequestStatus
+  onUpdateUserRequestStatus,
+  adminToken
 }) {
   const [sidebarTab, setSidebarTab] = useState('inventory'); // 'inventory', 'orders', 'compatibility', 'settings'
   const [activeTab, setActiveTab] = useState('add-part'); // 'add-part', 'parts-list'
@@ -362,9 +363,14 @@ export default function AdminPanel({
         ? `http://localhost:5000/api/admin/parts/${editingPartId}` 
         : 'http://localhost:5000/api/admin/parts';
 
+      const headers = { 'Content-Type': 'application/json' };
+      if (adminToken) {
+        headers['Authorization'] = `Bearer ${adminToken}`;
+      }
+
       const res = await fetch(apiUrl, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(newPart)
       });
       const data = await res.json();
@@ -406,8 +412,14 @@ export default function AdminPanel({
 
     try {
       setIsLoading(true);
+      const headers = {};
+      if (adminToken) {
+        headers['Authorization'] = `Bearer ${adminToken}`;
+      }
+
       await fetch(`http://localhost:5000/api/admin/parts/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers
       });
     } catch (err) {
       console.warn('Backend delete sync');

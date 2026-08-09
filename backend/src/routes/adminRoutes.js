@@ -1,11 +1,34 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import { dbService } from '../config/supabase.js';
 
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'vintage_secret';
+
+// Admin Auth Middleware
+const authenticateAdmin = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'Admin authentication token required' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userRole = (decoded.role || '').toUpperCase();
+    if (userRole !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Admin access required' });
+    }
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ success: false, message: 'Invalid or expired admin token' });
+  }
+};
 
 // --- SPARE PARTS CRUD ---
 
-// 1. GET ALL PARTS
+// 1. GET ALL PARTS (Public)
 router.get('/admin/parts', async (req, res) => {
   try {
     const parts = await dbService.getParts();
@@ -15,8 +38,8 @@ router.get('/admin/parts', async (req, res) => {
   }
 });
 
-// 2. ADD NEW PART / POST
-router.post('/admin/parts', async (req, res) => {
+// 2. ADD NEW PART / POST (Admin Protected)
+router.post('/admin/parts', authenticateAdmin, async (req, res) => {
   try {
     const newPart = await dbService.addPart(req.body);
     res.status(201).json({ 
@@ -29,8 +52,8 @@ router.post('/admin/parts', async (req, res) => {
   }
 });
 
-// 3. UPDATE PART / POST
-router.put('/admin/parts/:id', async (req, res) => {
+// 3. UPDATE PART / PUT (Admin Protected)
+router.put('/admin/parts/:id', authenticateAdmin, async (req, res) => {
   try {
     const updated = await dbService.updatePart(req.params.id, req.body);
     res.json({ 
@@ -43,8 +66,8 @@ router.put('/admin/parts/:id', async (req, res) => {
   }
 });
 
-// 4. DELETE PART / POST
-router.delete('/admin/parts/:id', async (req, res) => {
+// 4. DELETE PART / DELETE (Admin Protected)
+router.delete('/admin/parts/:id', authenticateAdmin, async (req, res) => {
   try {
     await dbService.deletePart(req.params.id);
     res.json({ 
@@ -56,10 +79,9 @@ router.delete('/admin/parts/:id', async (req, res) => {
   }
 });
 
-
 // --- VINTAGE CARS CRUD ---
 
-// 5. GET ALL CARS
+// 5. GET ALL CARS (Public)
 router.get('/admin/cars', async (req, res) => {
   try {
     const cars = await dbService.getCars();
@@ -69,8 +91,8 @@ router.get('/admin/cars', async (req, res) => {
   }
 });
 
-// 6. ADD NEW CAR MODEL
-router.post('/admin/cars', async (req, res) => {
+// 6. ADD NEW CAR MODEL (Admin Protected)
+router.post('/admin/cars', authenticateAdmin, async (req, res) => {
   try {
     const newCar = await dbService.addCar(req.body);
     res.status(201).json({ 
@@ -83,8 +105,8 @@ router.post('/admin/cars', async (req, res) => {
   }
 });
 
-// 7. DELETE CAR MODEL
-router.delete('/admin/cars/:id', async (req, res) => {
+// 7. DELETE CAR MODEL (Admin Protected)
+router.delete('/admin/cars/:id', authenticateAdmin, async (req, res) => {
   try {
     await dbService.deleteCar(req.params.id);
     res.json({ 

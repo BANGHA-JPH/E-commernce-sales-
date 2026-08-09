@@ -22,6 +22,27 @@ const authenticate = (req, res, next) => {
   }
 };
 
+// Admin Auth Middleware
+const authenticateAdmin = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'Admin authentication token required' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userRole = (decoded.role || '').toUpperCase();
+    if (userRole !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Admin access required' });
+    }
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ success: false, message: 'Invalid or expired admin token' });
+  }
+};
+
 // POST /api/requests - Create a part request / reservation (Protected Route)
 router.post('/requests', authenticate, async (req, res) => {
   try {
@@ -72,8 +93,8 @@ router.get('/requests', authenticate, async (req, res) => {
   }
 });
 
-// GET /api/admin/requests - Return ALL requests for Admin Panel
-router.get('/admin/requests', async (req, res) => {
+// GET /api/admin/requests - Return ALL requests for Admin Panel (Admin Protected)
+router.get('/admin/requests', authenticateAdmin, async (req, res) => {
   try {
     const allRequests = await dbService.getRequests();
     res.json({ success: true, count: allRequests.length, data: allRequests });
@@ -82,8 +103,8 @@ router.get('/admin/requests', async (req, res) => {
   }
 });
 
-// PUT /api/admin/requests/:id - Update request status
-router.put('/admin/requests/:id', async (req, res) => {
+// PUT /api/admin/requests/:id - Update request status (Admin Protected)
+router.put('/admin/requests/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
