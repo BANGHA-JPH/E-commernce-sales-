@@ -28,6 +28,7 @@ let memoryParts = [...INITIAL_PARTS];
 let memoryCars = [...INITIAL_CARS];
 let memoryOrders = [...INITIAL_ORDERS];
 let memoryUsers = [];
+let memoryRequests = [];
 
 // Helper Data Mappers for SQL snake_case <-> Frontend camelCase
 export function mapPartFromDb(row) {
@@ -171,6 +172,47 @@ export function mapUserToDb(user) {
     role: user.role || 'USER',
     phone: user.phone || '',
     city: user.city || ''
+  };
+}
+
+export function mapRequestFromDb(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    userId: row.user_id || row.userId || '',
+    userName: row.user_name || row.userName || '',
+    userEmail: row.user_email || row.userEmail || '',
+    userPhone: row.user_phone || row.userPhone || '',
+    userCity: row.user_city || row.userCity || '',
+    partId: row.part_id || row.partId || '',
+    partTitle: row.part_title || row.partTitle || '',
+    partImage: row.part_image || row.partImage || '',
+    sku: row.sku || '',
+    price: parseFloat(row.price) || 0,
+    compatibility: row.compatibility || '',
+    type: row.type || 'REQUEST',
+    status: row.status || 'Pending',
+    createdAt: row.created_at || row.createdAt || new Date().toISOString(),
+    date: new Date(row.created_at || row.createdAt || Date.now()).toLocaleDateString()
+  };
+}
+
+export function mapRequestToDb(req) {
+  return {
+    id: req.id,
+    user_id: req.userId || req.user_id || '',
+    user_name: req.userName || req.user_name || '',
+    user_email: req.userEmail || req.user_email || '',
+    user_phone: req.userPhone || req.user_phone || '',
+    user_city: req.userCity || req.user_city || '',
+    part_id: req.partId || req.part_id || '',
+    part_title: req.partTitle || req.part_title || '',
+    part_image: req.partImage || req.part_image || '',
+    sku: req.sku || '',
+    price: parseFloat(req.price) || 0,
+    compatibility: req.compatibility || '',
+    type: req.type || 'REQUEST',
+    status: req.status || 'Pending'
   };
 }
 
@@ -404,5 +446,71 @@ export const dbService = {
 
     memoryUsers.push(rawUser);
     return mapUserFromDb(rawUser);
+  },
+
+  // --- REQUESTS ---
+  async getRequests(userId) {
+    if (isSupabaseConfigured) {
+      try {
+        let query = supabase.from('requests').select('*').order('created_at', { ascending: false });
+        if (userId) query = query.eq('user_id', userId);
+        const { data, error } = await query;
+        if (!error && data) return data.map(mapRequestFromDb);
+      } catch (err) {
+        console.warn('Supabase requests query fallback to memory store:', err.message);
+      }
+    }
+    let results = memoryRequests;
+    if (userId) results = results.filter(r => r.userId === userId);
+    return results.map(mapRequestFromDb).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  },
+
+  async addRequest(requestData) {
+    const rawReq = {
+      id: requestData.id || `REQ-${Math.floor(1000 + Math.random() * 9000)}`,
+      userId: requestData.userId || '',
+      userName: requestData.userName || '',
+      userEmail: requestData.userEmail || '',
+      userPhone: requestData.userPhone || '',
+      userCity: requestData.userCity || '',
+      partId: requestData.partId || '',
+      partTitle: requestData.partTitle || '',
+      partImage: requestData.partImage || '',
+      sku: requestData.sku || '',
+      price: parseFloat(requestData.price) || 0,
+      compatibility: requestData.compatibility || '',
+      type: requestData.type || 'REQUEST',
+      status: requestData.status || 'Pending',
+      createdAt: requestData.createdAt || new Date().toISOString()
+    };
+
+    if (isSupabaseConfigured) {
+      try {
+        const dbRow = mapRequestToDb(rawReq);
+        const { data, error } = await supabase.from('requests').insert([dbRow]).select();
+        if (!error && data && data[0]) return mapRequestFromDb(data[0]);
+      } catch (err) {
+        console.warn('Supabase requests insert fallback to memory store:', err.message);
+      }
+    }
+    memoryRequests.unshift(rawReq);
+    return mapRequestFromDb(rawReq);
+  },
+
+  async updateRequestStatus(id, status) {
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase.from('requests').update({ status }).eq('id', id).select();
+        if (!error && data && data[0]) return mapRequestFromDb(data[0]);
+      } catch (err) {
+        console.warn('Supabase requests update fallback to memory store:', err.message);
+      }
+    }
+    const idx = memoryRequests.findIndex(r => r.id === id);
+    if (idx !== -1) {
+      memoryRequests[idx].status = status;
+      return mapRequestFromDb(memoryRequests[idx]);
+    }
+    return null;
   }
 };

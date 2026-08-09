@@ -39,23 +39,33 @@ export default function App() {
   const [notifications, setNotifications] = useState([]);
   const [userProfile, setUserProfile] = useState({ name: '', email: '', phone: '', city: '' });
 
-  // Global Store for Admin Panel to see all requests across all users
-  const [allCustomerRequests, setAllCustomerRequests] = useState(() => {
-    const saved = localStorage.getItem('all_customer_requests');
-    if (saved) return JSON.parse(saved);
-    return [];
-  });
+  // Admin Panel requests store (fetched from GET /api/admin/requests)
+  const [adminRequests, setAdminRequests] = useState([]);
+
+  const fetchAdminRequests = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/admin/requests');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setAdminRequests(data.data);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch admin requests:', err.message);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem('all_customer_requests', JSON.stringify(allCustomerRequests));
-  }, [allCustomerRequests]);
+    if (isAdminPanelOpen) {
+      fetchAdminRequests();
+    }
+  }, [isAdminPanelOpen]);
 
   // Sync state whenever currentUser changes (Login / Logout / Switch User)
   useEffect(() => {
     if (currentUser && currentUser.id) {
       const userKey = `user_${currentUser.id}`;
 
-      // 1. User Requests from LocalStorage
+      // 1. User Requests fallback from LocalStorage
       const savedRequests = localStorage.getItem(`${userKey}_requests`);
       const initialReqs = savedRequests ? JSON.parse(savedRequests) : [];
 
@@ -90,32 +100,15 @@ export default function App() {
         });
       }
 
-      // 5. Fetch Cloud Orders from Backend API
+      // 5. Fetch User Requests from Backend Database API
       if (authToken) {
-        fetch('http://localhost:5000/api/orders', {
+        fetch('http://localhost:5000/api/requests', {
           headers: { 'Authorization': `Bearer ${authToken}` }
         })
           .then(res => res.json())
           .then(data => {
             if (data.success && Array.isArray(data.data)) {
-              const apiOrdersMapped = data.data.map(ord => ({
-                id: ord.id,
-                partId: ord.items && ord.items.length > 0 ? ord.items[0].id : 'order-part',
-                partTitle: ord.items && ord.items.length > 0 ? ord.items.map(i => i.title).join(', ') : 'Vintage Parts Bundle',
-                partImage: ord.items && ord.items.length > 0 ? ord.items[0].image : 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
-                sku: ord.id,
-                price: ord.totalAmount,
-                compatibility: 'Verified Order',
-                status: ord.status || 'CONFIRMED',
-                date: new Date(ord.createdAt).toLocaleDateString()
-              }));
-
-              setUserRequests(prev => {
-                const combined = [...apiOrdersMapped, ...prev];
-                const uniqueMap = new Map();
-                combined.forEach(item => uniqueMap.set(item.id, item));
-                return Array.from(uniqueMap.values());
-              });
+              setUserRequests(data.data);
             } else {
               setUserRequests(initialReqs);
             }
@@ -218,8 +211,13 @@ export default function App() {
   };
 
   // Item Request & Reservation Handlers
-  const handleRequestItem = (part) => {
-    const newReq = {
+  const handleRequestItem = async (part) => {
+    if (!currentUser || !authToken) {
+      setIsAuthOpen(true);
+      return;
+    }
+
+    const reqPayload = {
       id: `REQ-${Math.floor(1000 + Math.random() * 9000)}`,
       partId: part.id,
       partTitle: part.title,
@@ -227,22 +225,38 @@ export default function App() {
       sku: part.sku || part.oemNumber || 'N/A',
       price: part.price || 0,
       compatibility: part.compatibleModels && part.compatibleModels.length > 0 ? part.compatibleModels[0] : (part.modelYearRange || 'VW Beetle / Bus'),
+      type: 'REQUEST',
       status: 'Pending',
-      userName: currentUser ? currentUser.name : (userProfile.name || 'Restorer Member'),
-      userEmail: currentUser ? currentUser.email : (userProfile.email || 'customer@vintagemotors.com'),
-      userPhone: currentUser ? (currentUser.phone || userProfile.phone || '+1 (555) 019-2834') : (userProfile.phone || '+1 (555) 019-2834'),
-      userCity: userProfile.city || 'Los Angeles, CA',
-      userId: currentUser ? currentUser.id : null,
-      date: new Date().toLocaleDateString()
+      userName: currentUser.name || userProfile.name || 'Restorer Member',
+      userEmail: currentUser.email || userProfile.email || '',
+      userPhone: currentUser.phone || userProfile.phone || '',
+      userCity: userProfile.city || ''
     };
 
-    setUserRequests(prev => [newReq, ...prev]);
-    setAllCustomerRequests(prev => [newReq, ...prev]);
+    let record = reqPayload;
+    try {
+      const res = await fetch('http://localhost:5000/api/requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify(reqPayload)
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        record = data.data;
+      }
+    } catch (err) {
+      console.warn('API request creation failed, using offline fallback:', err);
+    }
+
+    setUserRequests(prev => [record, ...prev.filter(r => r.id !== record.id)]);
 
     setNotifications(prev => [
       {
         title: 'Item Request Submitted',
-        message: `Your request for "${part.title}" has been submitted (ID: #${newReq.id}).`,
+        message: `Your request for "${part.title}" has been submitted (ID: #${record.id}).`,
         timestamp: 'Just now'
       },
       ...prev
@@ -251,8 +265,13 @@ export default function App() {
     handleOpenUserDashboard();
   };
 
-  const handleReserveItem = (part) => {
-    const newReq = {
+  const handleReserveItem = async (part) => {
+    if (!currentUser || !authToken) {
+      setIsAuthOpen(true);
+      return;
+    }
+
+    const reqPayload = {
       id: `REQ-${Math.floor(1000 + Math.random() * 9000)}`,
       partId: part.id,
       partTitle: part.title,
@@ -260,17 +279,33 @@ export default function App() {
       sku: part.sku || part.oemNumber || 'N/A',
       price: part.price || 0,
       compatibility: part.compatibleModels && part.compatibleModels.length > 0 ? part.compatibleModels[0] : (part.modelYearRange || 'VW Beetle / Bus'),
+      type: 'RESERVE',
       status: 'Reserved',
-      userName: currentUser ? currentUser.name : (userProfile.name || 'Restorer Member'),
-      userEmail: currentUser ? currentUser.email : (userProfile.email || 'customer@vintagemotors.com'),
-      userPhone: currentUser ? (currentUser.phone || userProfile.phone || '+1 (555) 019-2834') : (userProfile.phone || '+1 (555) 019-2834'),
-      userCity: userProfile.city || 'Los Angeles, CA',
-      userId: currentUser ? currentUser.id : null,
-      date: new Date().toLocaleDateString()
+      userName: currentUser.name || userProfile.name || 'Restorer Member',
+      userEmail: currentUser.email || userProfile.email || '',
+      userPhone: currentUser.phone || userProfile.phone || '',
+      userCity: userProfile.city || ''
     };
 
-    setUserRequests(prev => [newReq, ...prev]);
-    setAllCustomerRequests(prev => [newReq, ...prev]);
+    let record = reqPayload;
+    try {
+      const res = await fetch('http://localhost:5000/api/requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify(reqPayload)
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        record = data.data;
+      }
+    } catch (err) {
+      console.warn('API reservation creation failed, using offline fallback:', err);
+    }
+
+    setUserRequests(prev => [record, ...prev.filter(r => r.id !== record.id)]);
 
     setNotifications(prev => [
       {
@@ -292,28 +327,27 @@ export default function App() {
     setSavedVehicles(prev => prev.filter(v => v.id !== vehId));
   };
 
-  const handleUpdateUserRequestStatus = (reqId, newStatus) => {
-    // 1. Update in global allCustomerRequests
-    setAllCustomerRequests(prev =>
+  const handleUpdateUserRequestStatus = async (reqId, newStatus) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/requests/${reqId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchAdminRequests();
+      }
+    } catch (err) {
+      console.error('Failed to update request status via API:', err);
+    }
+
+    setAdminRequests(prev =>
       prev.map(r => r.id === reqId ? { ...r, status: newStatus } : r)
     );
-
-    // 2. Update in current user requests
     setUserRequests(prev =>
       prev.map(r => r.id === reqId ? { ...r, status: newStatus } : r)
     );
-
-    // 3. Update target user's requests store if user-scoped
-    const targetReq = allCustomerRequests.find(r => r.id === reqId);
-    if (targetReq && targetReq.userId) {
-      const userKey = `user_${targetReq.userId}_requests`;
-      const savedUserReqs = localStorage.getItem(userKey);
-      if (savedUserReqs) {
-        const parsed = JSON.parse(savedUserReqs);
-        const updated = parsed.map(r => r.id === reqId ? { ...r, status: newStatus } : r);
-        localStorage.setItem(userKey, JSON.stringify(updated));
-      }
-    }
 
     setNotifications(prev => [
       {
@@ -363,23 +397,6 @@ export default function App() {
         alert(`Order placed successfully for ${currentUser.name}! Confirmation email sent.`);
       }
 
-      const checkoutReq = {
-        id: orderId,
-        partId: cartItems[0]?.id || 'order-bundle',
-        partTitle: cartItems.map(i => i.title).join(', '),
-        partImage: cartItems[0]?.image || 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
-        sku: orderId,
-        price: cartTotal,
-        compatibility: 'Direct Checkout Order',
-        status: 'Approved',
-        userName: currentUser.name,
-        userEmail: currentUser.email,
-        userId: currentUser.id,
-        date: new Date().toLocaleDateString()
-      };
-
-      setUserRequests(prev => [checkoutReq, ...prev]);
-      setAllCustomerRequests(prev => [checkoutReq, ...prev]);
       setCartItems([]);
       setIsCartOpen(false);
       handleOpenUserDashboard();
@@ -559,7 +576,7 @@ export default function App() {
         isOpen={isAdminPanelOpen}
         onClose={() => setIsAdminPanelOpen(false)}
         onRefreshCatalog={handleRefreshCatalog}
-        userRequests={allCustomerRequests}
+        userRequests={adminRequests}
         onUpdateUserRequestStatus={handleUpdateUserRequestStatus}
       />
 

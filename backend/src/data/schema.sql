@@ -71,11 +71,31 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 5. Create Requests Table (Item Requests & Reservations)
+CREATE TABLE IF NOT EXISTS requests (
+  id TEXT PRIMARY KEY,
+  user_id TEXT,
+  user_name TEXT,
+  user_email TEXT,
+  user_phone TEXT,
+  user_city TEXT,
+  part_id TEXT,
+  part_title TEXT,
+  part_image TEXT,
+  sku TEXT,
+  price NUMERIC(10, 2),
+  compatibility TEXT,
+  type TEXT DEFAULT 'REQUEST',
+  status TEXT DEFAULT 'Pending',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE spare_parts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vintage_cars ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE requests ENABLE ROW LEVEL SECURITY;
 
 -- Clean Policies
 DROP POLICY IF EXISTS "Allow public read access to spare_parts" ON spare_parts;
@@ -84,11 +104,13 @@ DROP POLICY IF EXISTS "Allow public all access to spare_parts" ON spare_parts;
 DROP POLICY IF EXISTS "Allow public all access to vintage_cars" ON vintage_cars;
 DROP POLICY IF EXISTS "Allow all actions for orders" ON orders;
 DROP POLICY IF EXISTS "Allow all actions for users" ON users;
+DROP POLICY IF EXISTS "Allow all actions for requests" ON requests;
 
 CREATE POLICY "Allow public all access to spare_parts" ON spare_parts FOR ALL USING (true);
 CREATE POLICY "Allow public all access to vintage_cars" ON vintage_cars FOR ALL USING (true);
 CREATE POLICY "Allow all actions for orders" ON orders FOR ALL USING (true);
 CREATE POLICY "Allow all actions for users" ON users FOR ALL USING (true);
+CREATE POLICY "Allow all actions for requests" ON requests FOR ALL USING (true);
 
 -- 4. Initial Seed Data (Vintage Cars)
 INSERT INTO vintage_cars (id, name, era, make, model, year_range, engine_name, engine_type, car_image, engine_image, horsepower, torque, description)
