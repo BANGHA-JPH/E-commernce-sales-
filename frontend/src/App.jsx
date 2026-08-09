@@ -426,28 +426,30 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#131314] text-[#e5e2e3] font-technical-data selection:bg-[#ff7a1a] selection:text-black">
       
-      {/* Sticky Top Volkswagen Navigation Bar with Hover Mega Dropdown */}
-      <Navbar
-        cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-        userRequestsCount={userRequests.length}
-        wishlistCount={wishlistIds.length}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenUserDashboard={handleOpenUserDashboard}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onOpenAuth={() => setIsAuthOpen(true)}
-        onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
-        activeFilter={activeFilter}
-        onSelectFilter={(filterObj, options) => {
-          setCurrentPage('shop');
-          handleSelectFilter(filterObj, options);
-        }}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-        onNavigateToShop={() => setCurrentPage('shop')}
-      />
+      {/* Sticky Top Volkswagen Navigation Bar (Hidden on User Dashboard Portal) */}
+      {currentPage !== 'dashboard' && (
+        <Navbar
+          cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+          userRequestsCount={userRequests.length}
+          wishlistCount={wishlistIds.length}
+          onOpenCart={() => setIsCartOpen(true)}
+          onOpenUserDashboard={handleOpenUserDashboard}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onOpenAuth={() => setIsAuthOpen(true)}
+          onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+          activeFilter={activeFilter}
+          onSelectFilter={(filterObj, options) => {
+            setCurrentPage('shop');
+            handleSelectFilter(filterObj, options);
+          }}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+          onNavigateToShop={() => setCurrentPage('shop')}
+        />
+      )}
 
-      <main className="pt-24 md:pt-28 min-h-[80vh]">
+      <main className={currentPage === 'dashboard' ? "min-h-screen py-4" : "pt-24 md:pt-28 min-h-[80vh]"}>
         {currentPage === 'dashboard' ? (
           <UserDashboard
             isOpen={true}
