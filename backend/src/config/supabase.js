@@ -10,7 +10,9 @@ const supabaseKey = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY |
 export const isSupabaseConfigured = Boolean(
   supabaseUrl && 
   supabaseKey && 
-  !supabaseUrl.includes('your-supabase-url')
+  (supabaseUrl.startsWith('http://') || supabaseUrl.startsWith('https://')) &&
+  !supabaseUrl.includes('your-supabase-url') &&
+  !supabaseUrl.includes('<<PASTE')
 );
 
 export const supabase = isSupabaseConfigured 

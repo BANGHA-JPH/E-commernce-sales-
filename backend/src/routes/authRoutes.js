@@ -61,39 +61,65 @@ router.post('/login', async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    const masterAdminEmail = (ADMIN_EMAIL || 'admin@rustyaircooled.com').toLowerCase();
+    const isMasterAdmin = cleanEmail === masterAdminEmail || cleanEmail === 'admin@rustyaircooled.com';
+
     let user = await dbService.getUserByEmail(cleanEmail);
-    const isMasterAdmin = cleanEmail === ADMIN_EMAIL.toLowerCase() || cleanEmail === 'admin@rustyaircooled.com';
-    const userRole = isMasterAdmin ? 'ADMIN' : (user?.role || 'USER');
 
     if (!user) {
-      // Auto-register new user on first login for seamless onboarding
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(password, salt);
+      if (isMasterAdmin && password === ADMIN_PASSWORD) {
+        // Initial setup for master admin if not in DB yet
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, salt);
 
-      user = await dbService.createUser({
-        name: isMasterAdmin ? 'Master Engineer' : (cleanEmail.split('@')[0] || 'Vintage Restorer'),
-        email: cleanEmail,
-        passwordHash,
-        role: userRole
-      });
+        user = await dbService.createUser({
+          name: 'Master Engineer',
+          email: cleanEmail,
+          passwordHash,
+          role: 'ADMIN'
+        });
+      } else {
+        return res.status(401).json({ success: false, message: 'Invalid email or password' });
+      }
     } else {
-      user.role = userRole;
-      if (user.passwordHash) {
-        // Verify password if hash exists
+      if (isMasterAdmin) {
+        user.role = 'ADMIN';
+        if (user.passwordHash) {
+          const isMatch = await bcrypt.compare(password, user.passwordHash);
+          if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'Invalid email or password' });
+          }
+        } else {
+          if (password !== ADMIN_PASSWORD) {
+            return res.status(401).json({ success: false, message: 'Invalid email or password' });
+          }
+          const salt = await bcrypt.genSalt(10);
+          user.passwordHash = await bcrypt.hash(ADMIN_PASSWORD, salt);
+        }
+      } else {
+        if (!user.passwordHash) {
+          return res.status(401).json({ success: false, message: 'Invalid email or password' });
+        }
         const isMatch = await bcrypt.compare(password, user.passwordHash);
-        if (!isMatch && password !== ADMIN_PASSWORD && password !== 'admin123' && password !== 'admin') {
+        if (!isMatch) {
           return res.status(401).json({ success: false, message: 'Invalid email or password' });
         }
       }
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email, name: user.name, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    const role = isMasterAdmin ? 'ADMIN' : (user.role || 'USER');
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, name: user.name, role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
     res.json({
       success: true,
       message: 'Welcome back!',
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+      user: { id: user.id, name: user.name, email: user.email, role }
     });
   } catch (err) {
     console.error('Login Error:', err);
