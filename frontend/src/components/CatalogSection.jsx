@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Filter, Search, ShoppingBag, Eye, Heart, Layers, Check, CheckCircle2, Car, X, Image as ImageIcon, SlidersHorizontal, RotateCcw, ShieldCheck, Wrench, Box } from 'lucide-react';
 import { SPARE_PARTS } from '../data/partsData';
 import { VW_NAV_CATEGORIES, VEHICLE_SYSTEMS, ENGINE_COMPATIBILITIES, USAGE_TYPES } from '../data/vwNavigationData';
+import { API_BASE_URL } from '../config/api';
 
 export default function CatalogSection({ 
   onAddToCart, 
@@ -46,7 +47,7 @@ export default function CatalogSection({
     const fetchCatalogParts = async () => {
       let serverParts = [];
       try {
-        const res = await fetch('http://localhost:5000/api/admin/parts');
+        const res = await fetch(`${API_BASE_URL}/api/admin/parts`);
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           serverParts = data.data;

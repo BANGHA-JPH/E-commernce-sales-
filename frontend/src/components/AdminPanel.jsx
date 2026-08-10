@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 import { 
   X, Plus, Trash2, Edit3, ShieldAlert, Database, Layers, Car, Check, Search, 
   RefreshCw, DollarSign, Package, FileText, CheckCircle2, AlertTriangle, Eye, 
@@ -97,7 +98,7 @@ export default function AdminPanel({
     setIsLoading(true);
     let serverParts = [];
     try {
-      const res = await fetch('http://localhost:5000/api/admin/parts');
+      const res = await fetch(`${API_BASE_URL}/api/admin/parts`);
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
         serverParts = data.data;
@@ -360,8 +361,8 @@ export default function AdminPanel({
 
       const method = editingPartId ? 'PUT' : 'POST';
       const apiUrl = editingPartId 
-        ? `http://localhost:5000/api/admin/parts/${editingPartId}` 
-        : 'http://localhost:5000/api/admin/parts';
+        ? `${API_BASE_URL}/api/admin/parts/${editingPartId}` 
+        : `${API_BASE_URL}/api/admin/parts`;
 
       const headers = { 'Content-Type': 'application/json' };
       if (adminToken) {
@@ -417,7 +418,7 @@ export default function AdminPanel({
         headers['Authorization'] = `Bearer ${adminToken}`;
       }
 
-      await fetch(`http://localhost:5000/api/admin/parts/${id}`, {
+      await fetch(`${API_BASE_URL}/api/admin/parts/${id}`, {
         method: 'DELETE',
         headers
       });

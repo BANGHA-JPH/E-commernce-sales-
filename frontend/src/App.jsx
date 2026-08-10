@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from './config/api';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import FindPartsWizard from './components/FindPartsWizard';
@@ -53,7 +54,7 @@ export default function App() {
   const fetchAdminRequests = async () => {
     if (!adminToken) return;
     try {
-      const res = await fetch('http://localhost:5000/api/admin/requests', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/requests`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
       const data = await res.json();
@@ -113,7 +114,7 @@ export default function App() {
 
       // 5. Fetch User Requests from Backend Database API
       if (authToken) {
-        fetch('http://localhost:5000/api/requests', {
+        fetch(`${API_BASE_URL}/api/requests`, {
           headers: { 'Authorization': `Bearer ${authToken}` }
         })
           .then(res => res.json())
@@ -237,7 +238,7 @@ export default function App() {
 
     let record = reqPayload;
     try {
-      const res = await fetch('http://localhost:5000/api/requests', {
+      const res = await fetch(`${API_BASE_URL}/api/requests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -291,7 +292,7 @@ export default function App() {
 
     let record = reqPayload;
     try {
-      const res = await fetch('http://localhost:5000/api/requests', {
+      const res = await fetch(`${API_BASE_URL}/api/requests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -332,7 +333,7 @@ export default function App() {
   const handleUpdateUserRequestStatus = async (reqId, newStatus) => {
     if (!adminToken) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/requests/${reqId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/requests/${reqId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -381,7 +382,7 @@ export default function App() {
     } else {
       let orderId = `ORD-VINTAGE-${Math.floor(100000 + Math.random() * 900000)}`;
       try {
-        const res = await fetch('http://localhost:5000/api/orders', {
+        const res = await fetch(`${API_BASE_URL}/api/orders`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
