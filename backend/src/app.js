@@ -12,8 +12,12 @@ dotenv.config();
 const app = express();
 
 // Middlewares
+const allowedOrigins = process.env.CLIENT_ORIGIN 
+  ? [process.env.CLIENT_ORIGIN, 'http://localhost:5173', 'http://localhost:3000']
+  : '*';
+
 app.use(cors({
-  origin: '*',
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

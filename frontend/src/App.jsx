@@ -66,6 +66,38 @@ export default function App() {
     }
   };
 
+  // Restore session from localStorage & verify via GET /api/auth/me on page load
+  useEffect(() => {
+    const savedToken = localStorage.getItem('authToken');
+    const savedUser = localStorage.getItem('currentUser');
+    const savedAdminToken = localStorage.getItem('adminToken');
+
+    if (savedAdminToken) {
+      setAdminToken(savedAdminToken);
+    }
+
+    if (savedToken) {
+      setAuthToken(savedToken);
+      fetch(`${API_BASE_URL}/api/auth/me`, {
+        headers: { 'Authorization': `Bearer ${savedToken}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.user) {
+            setCurrentUser(data.user);
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+          } else if (savedUser) {
+            try { setCurrentUser(JSON.parse(savedUser)); } catch (e) {}
+          }
+        })
+        .catch(() => {
+          if (savedUser) {
+            try { setCurrentUser(JSON.parse(savedUser)); } catch (e) {}
+          }
+        });
+    }
+  }, []);
+
   useEffect(() => {
     if (isAdminPanelOpen && adminToken) {
       fetchAdminRequests();
@@ -175,6 +207,10 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     setAuthToken(null);
+    setAdminToken(null);
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('adminToken');
     setUserRequests([]);
     setSavedVehicles([]);
     setNotifications([]);
@@ -556,13 +592,17 @@ export default function App() {
           const userEmail = (user?.email || '').toLowerCase();
           const isAdmin = userRole === 'admin' || userEmail === 'admin@rustyaircooled.com';
 
+          setCurrentUser(user);
+          setAuthToken(token);
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          if (token) localStorage.setItem('authToken', token);
+
           if (isAdmin) {
             setAdminToken(token || 'master-admin-token-2026');
+            localStorage.setItem('adminToken', token || 'master-admin-token-2026');
             setIsAdminPanelOpen(true);
             setCurrentPage('shop');
           } else {
-            setCurrentUser(user);
-            setAuthToken(token);
             setCurrentPage('dashboard');
           }
         }}
@@ -574,7 +614,13 @@ export default function App() {
         isOpen={isAdminLoginOpen}
         onClose={() => setIsAdminLoginOpen(false)}
         onAdminSuccess={(token, user) => {
-          setAdminToken(token || 'master-admin-token-2026');
+          const adminSessionToken = token || 'master-admin-token-2026';
+          setAdminToken(adminSessionToken);
+          localStorage.setItem('adminToken', adminSessionToken);
+          if (user) {
+            setCurrentUser(user);
+            localStorage.setItem('currentUser', JSON.stringify(user));
+          }
           setIsAdminPanelOpen(true);
           setCurrentPage('shop');
         }}

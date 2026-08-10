@@ -1,76 +1,40 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { SPARE_PARTS as INITIAL_PARTS, VINTAGE_CARS as INITIAL_CARS, ORDERS as INITIAL_ORDERS } from '../data/db.js';
-
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const STORAGE_FILE = path.join(__dirname, '../data/storage.json');
-
 const supabaseUrl = (process.env.SUPABASE_URL || '').trim();
-const supabaseKey = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || '').trim();
+const supabaseKey = (
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_KEY ||
+  ''
+).trim();
 
 export const isSupabaseConfigured = Boolean(
-  supabaseUrl && 
-  supabaseKey && 
+  supabaseUrl &&
+  supabaseKey &&
   (supabaseUrl.startsWith('http://') || supabaseUrl.startsWith('https://')) &&
   !supabaseUrl.includes('your-supabase-url') &&
   !supabaseUrl.includes('<<PASTE')
 );
 
-export const supabase = isSupabaseConfigured 
-  ? createClient(supabaseUrl, supabaseKey)
+if (!isSupabaseConfigured) {
+  console.error('❌ CRITICAL ERROR: Supabase environment variables (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY) are missing or invalid.');
+  console.error('Please configure them in your .env file or deployment platform settings.');
+}
+
+export const supabase = isSupabaseConfigured
+  ? createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false }
+    })
   : null;
 
 if (isSupabaseConfigured) {
   console.log('✅ Connected to Supabase Cloud Database:', supabaseUrl);
-} else {
-  console.log('⚠️ Supabase credentials not found in .env — using local persistent file storage.');
 }
 
-// Load local persistent storage file if present
-function loadLocalStore() {
-  try {
-    if (fs.existsSync(STORAGE_FILE)) {
-      const content = fs.readFileSync(STORAGE_FILE, 'utf8');
-      return JSON.parse(content);
-    }
-  } catch (err) {
-    console.warn('⚠️ Could not load storage.json, starting with initial seed:', err.message);
-  }
-  return null;
-}
-
-const initialStore = loadLocalStore();
-
-let memoryParts = initialStore?.parts && initialStore.parts.length > 0 ? initialStore.parts : [...INITIAL_PARTS];
-let memoryCars = initialStore?.cars && initialStore.cars.length > 0 ? initialStore.cars : [...INITIAL_CARS];
-let memoryOrders = initialStore?.orders || [...INITIAL_ORDERS];
-let memoryUsers = initialStore?.users || [];
-let memoryRequests = initialStore?.requests || [];
-
-export function saveLocalStore() {
-  try {
-    const data = {
-      parts: memoryParts,
-      cars: memoryCars,
-      orders: memoryOrders,
-      users: memoryUsers,
-      requests: memoryRequests
-    };
-    fs.writeFileSync(STORAGE_FILE, JSON.stringify(data, null, 2), 'utf8');
-  } catch (err) {
-    console.error('❌ Failed to write storage.json:', err.message);
-  }
-}
-
-
-// Helper Data Mappers for SQL snake_case <-> Frontend camelCase
+// Data Mappers (snake_case DB <-> camelCase App)
 export function mapPartFromDb(row) {
   if (!row) return null;
   return {
@@ -94,7 +58,7 @@ export function mapPartFromDb(row) {
     provenance: row.provenance || '',
     specifications: Array.isArray(row.specifications) ? row.specifications : (typeof row.specifications === 'string' ? JSON.parse(row.specifications) : []),
     compatibleVehicles: Array.isArray(row.compatible_vehicles) ? row.compatible_vehicles : (Array.isArray(row.compatibleVehicles) ? row.compatibleVehicles : []),
-    created_at: row.created_at || new Date().toISOString()
+    createdAt: row.created_at || new Date().toISOString()
   };
 }
 
@@ -139,7 +103,7 @@ export function mapCarFromDb(row) {
     horsepower: row.horsepower || '',
     torque: row.torque || '',
     description: row.description || '',
-    created_at: row.created_at || new Date().toISOString()
+    createdAt: row.created_at || new Date().toISOString()
   };
 }
 
@@ -179,7 +143,7 @@ export function mapOrderFromDb(row) {
 export function mapOrderToDb(order) {
   return {
     id: order.id,
-    user_id: order.userId || order.user_id || '',
+    user_id: order.userId || order.user_id || null,
     user_name: order.userName || order.user_name || '',
     user_email: order.userEmail || order.user_email || '',
     items: order.items || [],
@@ -207,7 +171,7 @@ export function mapUserToDb(user) {
   return {
     id: user.id,
     name: user.name,
-    email: user.email,
+    email: user.email.toLowerCase(),
     password_hash: user.passwordHash || user.password_hash || '',
     role: user.role || 'USER',
     phone: user.phone || '',
@@ -240,7 +204,7 @@ export function mapRequestFromDb(row) {
 export function mapRequestToDb(req) {
   return {
     id: req.id,
-    user_id: req.userId || req.user_id || '',
+    user_id: req.userId || req.user_id || null,
     user_name: req.userName || req.user_name || '',
     user_email: req.userEmail || req.user_email || '',
     user_phone: req.userPhone || req.user_phone || '',
@@ -249,36 +213,34 @@ export function mapRequestToDb(req) {
     part_title: req.partTitle || req.part_title || '',
     part_image: req.partImage || req.part_image || '',
     sku: req.sku || '',
-    price: parseFloat(req.price) || 0,
+    price: parseFloat(rowPrice(req.price)) || 0,
     compatibility: req.compatibility || '',
     type: req.type || 'REQUEST',
     status: req.status || 'Pending'
   };
 }
 
+function rowPrice(val) {
+  return parseFloat(val) || 0;
+}
+
 /**
- * DB Data Access Abstraction Layer
+ * DB Data Access Abstraction Layer (100% Supabase Database)
  */
 export const dbService = {
   // --- SPARE PARTS ---
   async getParts() {
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase.from('spare_parts').select('*').order('created_at', { ascending: false });
-        if (!error && data) {
-          const mapped = data.map(mapPartFromDb);
-          memoryParts = mapped;
-          saveLocalStore();
-          return mapped;
-        }
-      } catch (err) {
-        console.warn('Supabase getParts fallback to local store:', err.message);
-      }
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    const { data, error } = await supabase.from('spare_parts').select('*').order('created_at', { ascending: false });
+    if (error) {
+      console.error('Error fetching spare_parts from Supabase:', error.message);
+      throw error;
     }
-    return memoryParts;
+    return data ? data.map(mapPartFromDb) : [];
   },
 
   async addPart(partData) {
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
     const rawPart = {
       id: partData.id || `part-${Date.now()}`,
       title: partData.title || 'Untitled Part',
@@ -318,87 +280,57 @@ export const dbService = {
       provenance: partData.description || 'Verified by Engine Specialist Mechanics.',
       description: partData.description || '',
       specifications: partData.specifications || [
-        { key: 'Material', value: partData.material || 'Aluminum Alloy' },
-        { key: 'Weight', value: partData.weight || 'N/A' },
-        { key: 'Dimensions', value: partData.dimensions || 'N/A' },
-        { key: 'Finish', value: partData.finish || 'Standard' }
+        { key: 'Material', value: partData.material || 'Aluminum Alloy' }
       ],
       compatibleVehicles: partData.compatibleModels && partData.compatibleModels.length > 0 
         ? partData.compatibleModels 
-        : [partData.modelYearRange || '428 Cobra Jet V8'],
-      created_at: new Date().toISOString()
+        : [partData.modelYearRange || 'VW Air-Cooled']
     };
 
-    memoryParts.unshift(rawPart);
-    saveLocalStore();
-
-    if (isSupabaseConfigured) {
-      try {
-        const dbRow = mapPartToDb(rawPart);
-        const { data, error } = await supabase.from('spare_parts').insert([dbRow]).select();
-        if (!error && data && data[0]) return mapPartFromDb(data[0]);
-      } catch (err) {
-        console.warn('Supabase addPart fallback:', err.message);
-      }
+    const dbRow = mapPartToDb(rawPart);
+    const { data, error } = await supabase.from('spare_parts').insert([dbRow]).select();
+    if (error) {
+      console.error('Error inserting part into Supabase:', error.message);
+      throw error;
     }
-
-    return rawPart;
+    return data && data[0] ? mapPartFromDb(data[0]) : rawPart;
   },
 
   async updatePart(id, updates) {
-    const index = memoryParts.findIndex(p => p.id === id);
-    if (index !== -1) {
-      memoryParts[index] = { ...memoryParts[index], ...updates };
-      saveLocalStore();
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    const dbRow = mapPartToDb({ ...updates, id });
+    delete dbRow.id; // Don't overwrite PK
+    const { data, error } = await supabase.from('spare_parts').update(dbRow).eq('id', id).select();
+    if (error) {
+      console.error('Error updating part in Supabase:', error.message);
+      throw error;
     }
-
-    if (isSupabaseConfigured) {
-      try {
-        const dbRow = mapPartToDb({ ...updates, id });
-        const { data, error } = await supabase.from('spare_parts').update(dbRow).eq('id', id).select();
-        if (!error && data && data[0]) return mapPartFromDb(data[0]);
-      } catch (err) {
-        console.warn('Supabase updatePart fallback:', err.message);
-      }
-    }
-
-    return index !== -1 ? memoryParts[index] : null;
+    return data && data[0] ? mapPartFromDb(data[0]) : null;
   },
 
   async deletePart(id) {
-    memoryParts = memoryParts.filter(p => p.id !== id);
-    saveLocalStore();
-
-    if (isSupabaseConfigured) {
-      try {
-        await supabase.from('spare_parts').delete().eq('id', id);
-      } catch (err) {
-        console.warn('Supabase deletePart fallback:', err.message);
-      }
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    const { error } = await supabase.from('spare_parts').delete().eq('id', id);
+    if (error) {
+      console.error('Error deleting part from Supabase:', error.message);
+      throw error;
     }
-
     return true;
   },
 
-  // --- VINTAGE CARS / ENGINES ---
+  // --- VINTAGE CARS ---
   async getCars() {
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase.from('vintage_cars').select('*');
-        if (!error && data) {
-          const mapped = data.map(mapCarFromDb);
-          memoryCars = mapped;
-          saveLocalStore();
-          return mapped;
-        }
-      } catch (err) {
-        console.warn('Supabase getCars fallback:', err.message);
-      }
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    const { data, error } = await supabase.from('vintage_cars').select('*');
+    if (error) {
+      console.error('Error fetching vintage_cars from Supabase:', error.message);
+      throw error;
     }
-    return memoryCars;
+    return data ? data.map(mapCarFromDb) : [];
   },
 
   async addCar(carData) {
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
     const rawCar = {
       id: `car-${Date.now()}`,
       name: carData.name,
@@ -415,150 +347,117 @@ export const dbService = {
       description: carData.description || 'Vintage engine engineering architecture.'
     };
 
-    memoryCars.push(rawCar);
-    saveLocalStore();
-
-    if (isSupabaseConfigured) {
-      try {
-        const dbRow = mapCarToDb(rawCar);
-        const { data, error } = await supabase.from('vintage_cars').insert([dbRow]).select();
-        if (!error && data && data[0]) return mapCarFromDb(data[0]);
-      } catch (err) {
-        console.warn('Supabase addCar fallback:', err.message);
-      }
+    const dbRow = mapCarToDb(rawCar);
+    const { data, error } = await supabase.from('vintage_cars').insert([dbRow]).select();
+    if (error) {
+      console.error('Error inserting car into Supabase:', error.message);
+      throw error;
     }
-
-    return rawCar;
+    return data && data[0] ? mapCarFromDb(data[0]) : rawCar;
   },
 
   async deleteCar(id) {
-    memoryCars = memoryCars.filter(c => c.id !== id);
-    saveLocalStore();
-
-    if (isSupabaseConfigured) {
-      try {
-        await supabase.from('vintage_cars').delete().eq('id', id);
-      } catch (err) {
-        console.warn('Supabase deleteCar fallback:', err.message);
-      }
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    const { error } = await supabase.from('vintage_cars').delete().eq('id', id);
+    if (error) {
+      console.error('Error deleting car from Supabase:', error.message);
+      throw error;
     }
-
     return true;
   },
 
   // --- ORDERS ---
   async getOrders(userId) {
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
-        if (userId) query = query.eq('user_id', userId);
-        const { data, error } = await query;
-        if (!error && data) {
-          return data.map(mapOrderFromDb);
-        }
-      } catch (err) {
-        console.warn('Supabase getOrders fallback:', err.message);
-      }
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
+    if (userId) query = query.eq('user_id', userId);
+    const { data, error } = await query;
+    if (error) {
+      console.error('Error fetching orders from Supabase:', error.message);
+      throw error;
     }
-    return userId ? memoryOrders.filter(o => o.userId === userId) : memoryOrders;
+    return data ? data.map(mapOrderFromDb) : [];
   },
 
   async addOrder(orderData) {
-    memoryOrders.unshift(orderData);
-    saveLocalStore();
-
-    if (isSupabaseConfigured) {
-      try {
-        const dbRow = mapOrderToDb(orderData);
-        const { data, error } = await supabase.from('orders').insert([dbRow]).select();
-        if (!error && data && data[0]) return mapOrderFromDb(data[0]);
-      } catch (err) {
-        console.warn('Supabase addOrder fallback:', err.message);
-      }
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    const dbRow = mapOrderToDb(orderData);
+    const { data, error } = await supabase.from('orders').insert([dbRow]).select();
+    if (error) {
+      console.error('Error inserting order into Supabase:', error.message);
+      throw error;
     }
-
-    return orderData;
+    return data && data[0] ? mapOrderFromDb(data[0]) : mapOrderFromDb(dbRow);
   },
 
   // --- USERS ---
   async getUserByEmail(email) {
     if (!email) return null;
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
     const cleanEmail = email.trim().toLowerCase();
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase.from('users').select('*').eq('email', cleanEmail).maybeSingle();
-        if (!error && data) return mapUserFromDb(data);
-      } catch (err) {
-        console.warn('Supabase users query fallback:', err.message);
-      }
+    const { data, error } = await supabase.from('users').select('*').eq('email', cleanEmail).maybeSingle();
+    if (error) {
+      console.error('Error querying user by email in Supabase:', error.message);
+      throw error;
     }
-    const match = memoryUsers.find(u => u.email.toLowerCase() === cleanEmail);
-    return match ? mapUserFromDb(match) : null;
+    return data ? mapUserFromDb(data) : null;
   },
 
   async getUserById(id) {
     if (!id) return null;
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase.from('users').select('*').eq('id', id).maybeSingle();
-        if (!error && data) return mapUserFromDb(data);
-      } catch (err) {
-        console.warn('Supabase users query fallback:', err.message);
-      }
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    const { data, error } = await supabase.from('users').select('*').eq('id', id).maybeSingle();
+    if (error) {
+      console.error('Error querying user by id in Supabase:', error.message);
+      throw error;
     }
-    const match = memoryUsers.find(u => u.id === id);
-    return match ? mapUserFromDb(match) : null;
+    return data ? mapUserFromDb(data) : null;
   },
 
   async createUser(userData) {
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
     const rawUser = {
       id: userData.id || `user-${Date.now()}`,
       name: userData.name || 'Vintage Collector',
       email: userData.email.trim().toLowerCase(),
-      password_hash: userData.passwordHash || userData.password_hash || '',
+      passwordHash: userData.passwordHash || userData.password_hash || '',
       role: userData.role || 'USER',
       phone: userData.phone || '',
-      city: userData.city || '',
-      created_at: new Date().toISOString()
+      city: userData.city || ''
     };
 
-    memoryUsers.push(rawUser);
-    saveLocalStore();
-
-    if (isSupabaseConfigured) {
-      try {
-        const dbRow = mapUserToDb(rawUser);
-        const { data, error } = await supabase.from('users').insert([dbRow]).select();
-        if (!error && data && data[0]) return mapUserFromDb(data[0]);
-      } catch (err) {
-        console.warn('Supabase users insert fallback:', err.message);
-      }
+    const dbRow = mapUserToDb(rawUser);
+    const { data, error } = await supabase.from('users').insert([dbRow]).select();
+    if (error) {
+      console.error('Error creating user in Supabase:', error.message);
+      throw error;
     }
-
-    return mapUserFromDb(rawUser);
+    return data && data[0] ? mapUserFromDb(data[0]) : mapUserFromDb(dbRow);
   },
 
   // --- REQUESTS ---
   async getRequests(userId) {
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('requests').select('*').order('created_at', { ascending: false });
-        if (userId) query = query.eq('user_id', userId);
-        const { data, error } = await query;
-        if (!error && data) return data.map(mapRequestFromDb);
-      } catch (err) {
-        console.warn('Supabase requests query fallback:', err.message);
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    try {
+      let query = supabase.from('requests').select('*').order('created_at', { ascending: false });
+      if (userId) query = query.eq('user_id', userId);
+      const { data, error } = await query;
+      if (error) {
+        console.warn('Requests query warning (run backend/supabase_schema.sql if table missing):', error.message);
+        return [];
       }
+      return data ? data.map(mapRequestFromDb) : [];
+    } catch (err) {
+      console.warn('Requests query caught exception:', err.message);
+      return [];
     }
-    let results = memoryRequests;
-    if (userId) results = results.filter(r => r.userId === userId);
-    return results.map(mapRequestFromDb).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   },
 
   async addRequest(requestData) {
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
     const rawReq = {
       id: requestData.id || `REQ-${Math.floor(1000 + Math.random() * 9000)}`,
-      userId: requestData.userId || '',
+      userId: requestData.userId || null,
       userName: requestData.userName || '',
       userEmail: requestData.userEmail || '',
       userPhone: requestData.userPhone || '',
@@ -570,43 +469,33 @@ export const dbService = {
       price: parseFloat(requestData.price) || 0,
       compatibility: requestData.compatibility || '',
       type: requestData.type || 'REQUEST',
-      status: requestData.status || 'Pending',
-      createdAt: requestData.createdAt || new Date().toISOString()
+      status: requestData.status || 'Pending'
     };
 
-    memoryRequests.unshift(rawReq);
-    saveLocalStore();
-
-    if (isSupabaseConfigured) {
-      try {
-        const dbRow = mapRequestToDb(rawReq);
-        const { data, error } = await supabase.from('requests').insert([dbRow]).select();
-        if (!error && data && data[0]) return mapRequestFromDb(data[0]);
-      } catch (err) {
-        console.warn('Supabase requests insert fallback:', err.message);
+    try {
+      const dbRow = mapRequestToDb(rawReq);
+      const { data, error } = await supabase.from('requests').insert([dbRow]).select();
+      if (error) {
+        console.warn('Requests insert warning (run backend/supabase_schema.sql if table missing):', error.message);
+        return mapRequestFromDb(dbRow);
       }
+      return data && data[0] ? mapRequestFromDb(data[0]) : mapRequestFromDb(dbRow);
+    } catch (err) {
+      return mapRequestFromDb(mapRequestToDb(rawReq));
     }
-
-    return mapRequestFromDb(rawReq);
   },
 
   async updateRequestStatus(id, status) {
-    const idx = memoryRequests.findIndex(r => r.id === id);
-    if (idx !== -1) {
-      memoryRequests[idx].status = status;
-      saveLocalStore();
-    }
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase.from('requests').update({ status }).eq('id', id).select();
-        if (!error && data && data[0]) return mapRequestFromDb(data[0]);
-      } catch (err) {
-        console.warn('Supabase requests update fallback:', err.message);
+    if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    try {
+      const { data, error } = await supabase.from('requests').update({ status }).eq('id', id).select();
+      if (error) {
+        console.warn('Requests update warning:', error.message);
+        return null;
       }
+      return data && data[0] ? mapRequestFromDb(data[0]) : null;
+    } catch (err) {
+      return null;
     }
-
-    return idx !== -1 ? mapRequestFromDb(memoryRequests[idx]) : null;
   }
 };
-
