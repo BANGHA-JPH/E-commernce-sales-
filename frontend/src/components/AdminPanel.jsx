@@ -5,7 +5,7 @@ import {
   RefreshCw, DollarSign, Package, FileText, CheckCircle2, AlertTriangle, Eye, 
   Upload, Tag, Box, MapPin, Calendar, Cpu, Wrench, Bell, HelpCircle, User, 
   Sliders, Settings, ShoppingCart, ArrowLeft, Image as ImageIcon, Flame, Disc, Menu,
-  Video, UploadCloud, Layers3, Sparkles
+  Video, UploadCloud, Layers3, Sparkles, LogOut
 } from 'lucide-react';
 import { SPARE_PARTS } from '../data/partsData';
 import { 
@@ -20,6 +20,7 @@ import {
 export default function AdminPanel({ 
   isOpen, 
   onClose, 
+  onLogout,
   onRefreshCatalog,
   userRequests = [],
   onUpdateUserRequestStatus,
@@ -513,11 +514,11 @@ export default function AdminPanel({
           </button>
 
           <button
-            onClick={onClose}
-            className="w-full text-left text-[11px] text-[#a78b7d] hover:text-white px-2 py-1.5 flex items-center justify-between"
+            onClick={onLogout || onClose}
+            className="w-full bg-red-900/40 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/40 py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Exit Dashboard</span>
-            <X className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5" />
+            <span>SIGN OUT</span>
           </button>
         </div>
       </aside>
@@ -574,6 +575,14 @@ export default function AdminPanel({
               }`}
             >
               + Add Item
+            </button>
+            <button 
+              onClick={onLogout || onClose}
+              className="bg-red-600 hover:bg-red-700 text-white font-mono text-xs font-bold px-3 py-1.5 rounded-xs flex items-center gap-1.5 transition-all border border-red-500 shadow-md cursor-pointer ml-1"
+              title="Sign out completely from Admin Portal"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>SIGN OUT</span>
             </button>
           </div>
         </header>

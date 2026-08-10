@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Heart, Search, User, Menu, X, Wrench, ChevronDown, ChevronRight, Layers, Sparkles, Lock } from 'lucide-react';
+import { ShoppingBag, Heart, Search, User, Menu, X, Wrench, ChevronDown, ChevronRight, Layers, Sparkles, Lock, LogOut } from 'lucide-react';
 import { VW_NAV_CATEGORIES } from '../data/vwNavigationData';
 import MegaMenu from './MegaMenu';
 
@@ -153,9 +153,10 @@ export default function Navbar({
               {onLogout && (
                 <button 
                   onClick={onLogout}
-                  className="hidden sm:flex items-center gap-1 font-label-caps text-xs text-[#a78b7d] hover:text-[#ff7a1a] border border-[#584236]/40 px-2.5 py-1.5 uppercase font-bold tracking-wider rounded-xs"
+                  className="flex items-center gap-1 font-label-caps text-xs bg-[#201f20] hover:bg-red-600 hover:text-white border border-red-500/40 text-red-400 px-3 py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all cursor-pointer shadow-sm"
                   title="Sign Out"
                 >
+                  <LogOut className="w-3.5 h-3.5" />
                   <span>Sign Out</span>
                 </button>
               )}

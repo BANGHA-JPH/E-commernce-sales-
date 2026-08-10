@@ -651,6 +651,7 @@ export default function App() {
       <AdminPanel
         isOpen={isAdminPanelOpen}
         onClose={() => setIsAdminPanelOpen(false)}
+        onLogout={handleLogout}
         onRefreshCatalog={handleRefreshCatalog}
         userRequests={adminRequests}
         onUpdateUserRequestStatus={handleUpdateUserRequestStatus}
