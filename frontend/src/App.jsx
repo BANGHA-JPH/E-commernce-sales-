@@ -66,6 +66,21 @@ export default function App() {
     }
   };
 
+  const refreshUserRequests = async () => {
+    if (!authToken) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/requests`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setUserRequests(data.data);
+      }
+    } catch (err) {
+      console.warn('Failed to refresh user requests:', err.message);
+    }
+  };
+
   // Restore session from localStorage & verify via GET /api/auth/me on page load
   useEffect(() => {
     const savedToken = localStorage.getItem('authToken');
@@ -291,6 +306,8 @@ export default function App() {
     }
 
     setUserRequests(prev => [record, ...prev.filter(r => r.id !== record.id)]);
+    refreshUserRequests();
+    if (adminToken) fetchAdminRequests();
 
     setNotifications(prev => [
       {
@@ -345,11 +362,13 @@ export default function App() {
     }
 
     setUserRequests(prev => [record, ...prev.filter(r => r.id !== record.id)]);
+    refreshUserRequests();
+    if (adminToken) fetchAdminRequests();
 
     setNotifications(prev => [
       {
         title: 'Item Reserved',
-        message: `"${part.title}" is reserved for you. Our specialist will confirm availability.`,
+        message: `Your reservation for "${part.title}" has been placed (ID: #${record.id}).`,
         timestamp: 'Just now'
       },
       ...prev
@@ -442,6 +461,8 @@ export default function App() {
 
       setCartItems([]);
       setIsCartOpen(false);
+      refreshUserRequests();
+      if (adminToken) fetchAdminRequests();
       handleOpenUserDashboard();
     }
   };

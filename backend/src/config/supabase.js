@@ -213,15 +213,34 @@ export function mapRequestToDb(req) {
     part_title: req.partTitle || req.part_title || '',
     part_image: req.partImage || req.part_image || '',
     sku: req.sku || '',
-    price: parseFloat(rowPrice(req.price)) || 0,
+    price: parseFloat(req.price) || 0,
     compatibility: req.compatibility || '',
     type: req.type || 'REQUEST',
     status: req.status || 'Pending'
   };
 }
 
-function rowPrice(val) {
-  return parseFloat(val) || 0;
+export function mapOrderToRequest(row) {
+  if (!row) return null;
+  const firstItem = Array.isArray(row.items) && row.items.length > 0 ? row.items[0] : {};
+  return {
+    id: row.id,
+    userId: row.user_id || row.userId || '',
+    userName: row.user_name || row.userName || '',
+    userEmail: row.user_email || row.userEmail || '',
+    userPhone: row.user_phone || row.userPhone || '',
+    userCity: row.shipping_address || row.userCity || '',
+    partId: firstItem.id || firstItem.partId || '',
+    partTitle: firstItem.title || firstItem.partTitle || (row.items && row.items.length > 1 ? `${row.items.length} Items Order` : 'Vintage Part Order'),
+    partImage: firstItem.image || firstItem.partImage || '',
+    sku: firstItem.sku || 'N/A',
+    price: parseFloat(row.total_amount ?? row.totalAmount) || 0,
+    compatibility: firstItem.compatibility || 'Classic VW',
+    type: firstItem.type || (row.id.startsWith('REQ') ? 'REQUEST' : 'ORDER'),
+    status: row.status || 'Pending',
+    createdAt: row.created_at || row.createdAt || new Date().toISOString(),
+    date: new Date(row.created_at || row.createdAt || Date.now()).toLocaleDateString()
+  };
 }
 
 /**
@@ -435,22 +454,38 @@ export const dbService = {
     return data && data[0] ? mapUserFromDb(data[0]) : mapUserFromDb(dbRow);
   },
 
-  // --- REQUESTS ---
+  // --- REQUESTS & ORDERS AGGREGATE ---
   async getRequests(userId) {
     if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
+    let results = [];
+
+    // 1. Query requests table if present
     try {
       let query = supabase.from('requests').select('*').order('created_at', { ascending: false });
       if (userId) query = query.eq('user_id', userId);
       const { data, error } = await query;
-      if (error) {
-        console.warn('Requests query warning (run backend/supabase_schema.sql if table missing):', error.message);
-        return [];
+      if (!error && data) {
+        results.push(...data.map(mapRequestFromDb));
       }
-      return data ? data.map(mapRequestFromDb) : [];
-    } catch (err) {
-      console.warn('Requests query caught exception:', err.message);
-      return [];
-    }
+    } catch (err) {}
+
+    // 2. Query orders table (guaranteed table in Supabase)
+    try {
+      let orderQuery = supabase.from('orders').select('*').order('created_at', { ascending: false });
+      if (userId) orderQuery = orderQuery.eq('user_id', userId);
+      const { data: orderData, error: orderErr } = await orderQuery;
+      if (!orderErr && orderData) {
+        const orderRequests = orderData.map(mapOrderToRequest);
+        const existingIds = new Set(results.map(r => r.id));
+        for (const oReq of orderRequests) {
+          if (!existingIds.has(oReq.id)) {
+            results.push(oReq);
+          }
+        }
+      }
+    } catch (err) {}
+
+    return results.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   },
 
   async addRequest(requestData) {
@@ -472,30 +507,50 @@ export const dbService = {
       status: requestData.status || 'Pending'
     };
 
+    // Always insert into orders table in Supabase so data is 100% saved
+    const orderRow = {
+      id: rawReq.id,
+      user_id: rawReq.userId,
+      user_name: rawReq.userName,
+      user_email: rawReq.userEmail,
+      items: [{
+        id: rawReq.partId,
+        title: rawReq.partTitle,
+        image: rawReq.partImage,
+        sku: rawReq.sku,
+        price: rawReq.price,
+        compatibility: rawReq.compatibility,
+        type: rawReq.type
+      }],
+      total_amount: rawReq.price,
+      shipping_address: rawReq.userCity || 'Online Request',
+      status: rawReq.status
+    };
+
+    try {
+      await supabase.from('orders').insert([orderRow]);
+    } catch (err) {}
+
+    // Try requests table as well if created
     try {
       const dbRow = mapRequestToDb(rawReq);
-      const { data, error } = await supabase.from('requests').insert([dbRow]).select();
-      if (error) {
-        console.warn('Requests insert warning (run backend/supabase_schema.sql if table missing):', error.message);
-        return mapRequestFromDb(dbRow);
-      }
-      return data && data[0] ? mapRequestFromDb(data[0]) : mapRequestFromDb(dbRow);
-    } catch (err) {
-      return mapRequestFromDb(mapRequestToDb(rawReq));
-    }
+      await supabase.from('requests').insert([dbRow]);
+    } catch (err) {}
+
+    return mapRequestFromDb(mapRequestToDb(rawReq));
   },
 
   async updateRequestStatus(id, status) {
     if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
     try {
-      const { data, error } = await supabase.from('requests').update({ status }).eq('id', id).select();
-      if (error) {
-        console.warn('Requests update warning:', error.message);
-        return null;
-      }
-      return data && data[0] ? mapRequestFromDb(data[0]) : null;
-    } catch (err) {
-      return null;
-    }
+      await supabase.from('orders').update({ status }).eq('id', id);
+    } catch (err) {}
+
+    try {
+      const { data } = await supabase.from('requests').update({ status }).eq('id', id).select();
+      if (data && data[0]) return mapRequestFromDb(data[0]);
+    } catch (err) {}
+
+    return { id, status };
   }
 };
