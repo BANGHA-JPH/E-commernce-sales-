@@ -92,7 +92,7 @@ export default function Navbar({
                   key={index}
                   className="animate-jump-swing"
                   style={{
-                    animationDelay: `${index * 0.08}s`,
+                    animationDelay: `${index * 0.12}s`,
                     display: 'inline-block',
                     width: char === ' ' ? '0.3em' : 'auto'
                   }}

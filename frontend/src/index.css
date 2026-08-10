@@ -102,37 +102,37 @@ body {
   scrollbar-width: none;
 }
 
-/* Staggered Brand Logo Letter Jump & Swing Animation */
+/* Gentle, Slow Brand Logo Letter Wave Animation */
 @keyframes letterJumpSwing {
   0% {
     transform: translateY(0) rotate(0deg);
   }
-  15% {
-    transform: translateY(-11px) scale(1.18) rotate(4deg);
+  8% {
+    transform: translateY(-4px) scale(1.04) rotate(1.5deg);
     color: #ffffff;
-    text-shadow: 0 0 14px rgba(255, 122, 26, 0.9);
+    text-shadow: 0 0 10px rgba(255, 122, 26, 0.7);
   }
-  30% {
-    transform: translateY(-13px) scale(1.22) rotate(-4deg);
+  16% {
+    transform: translateY(-5px) scale(1.05) rotate(-1.5deg);
     color: #ffb68e;
   }
-  45% {
-    transform: translateY(5px) rotate(6deg);
+  24% {
+    transform: translateY(1px) rotate(1deg);
     color: #ff7a1a;
   }
-  60% {
-    transform: translateY(-3px) rotate(-3deg);
-  }
-  75% {
-    transform: translateY(1px) rotate(1deg);
-  }
-  100% {
+  32%, 100% {
     transform: translateY(0) rotate(0deg);
     color: #ff7a1a;
+    text-shadow: none;
   }
 }
 
 .animate-jump-swing {
   display: inline-block;
-  animation: letterJumpSwing 2.4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  animation: letterJumpSwing 10s ease-in-out infinite;
 }
+
+.group:hover .animate-jump-swing {
+  animation: letterJumpSwing 2s ease-in-out;
+}
+
