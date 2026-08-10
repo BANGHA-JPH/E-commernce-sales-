@@ -3,7 +3,7 @@ import {
   X, User, Box, Car, Heart, Bell, Navigation, MessageSquare, Settings, 
   Clock, CheckCircle2, AlertCircle, Truck, PackageCheck, Phone, MessageCircle, 
   ExternalLink, Search, Plus, Trash2, ShieldCheck, ChevronRight, Filter, Sparkles,
-  ArrowUpRight, RefreshCw, Layers, Wrench, Check
+  ArrowUpRight, RefreshCw, Layers, Wrench, Check, LogOut
 } from 'lucide-react';
 
 export default function UserDashboard({ 
@@ -185,9 +185,11 @@ export default function UserDashboard({
           {onLogout && (
             <button
               onClick={onLogout}
-              className="bg-[#201f20] hover:bg-red-500/20 text-[#a78b7d] hover:text-red-400 border border-[#584236]/40 hover:border-red-500/40 px-3 py-1.5 text-xs uppercase font-bold tracking-wider transition-all rounded-xs"
+              className="bg-red-600 hover:bg-red-700 text-white border border-red-500 px-3.5 py-1.5 text-xs font-mono font-bold uppercase tracking-wider transition-all rounded-xs shadow-md cursor-pointer flex items-center gap-1.5"
+              title="Sign Out of Your Restorer Account"
             >
-              Sign Out
+              <LogOut className="w-4 h-4" />
+              <span>SIGN OUT</span>
             </button>
           )}
         </div>

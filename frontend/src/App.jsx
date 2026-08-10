@@ -223,6 +223,7 @@ export default function App() {
     setCurrentUser(null);
     setAuthToken(null);
     setAdminToken(null);
+    setIsAdminPanelOpen(false);
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUser');
     localStorage.removeItem('adminToken');
