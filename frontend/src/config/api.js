@@ -1,8 +1,8 @@
-// Central API configuration for Full-Stack Vercel + Local Development
+// Central API configuration for Dedicated Backend + Frontend
 // Dynamic API_BASE_URL resolution:
-// 1. Uses VITE_API_URL environment variable if set (e.g. external backend)
+// 1. Uses VITE_API_URL environment variable if set (e.g. https://your-backend-host.com)
 // 2. In local development mode (DEV), defaults to 'http://localhost:5000'
-// 3. On Vercel / production, defaults to '' (same-origin relative /api routes handled serverlessly)
+// 3. In production, reads VITE_API_URL directly
 
 const getApiBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
@@ -12,7 +12,7 @@ const getApiBaseUrl = () => {
   if (import.meta.env.DEV) {
     return 'http://localhost:5000';
   }
-  return ''; // On Vercel, requests to /api/... route seamlessly to serverless Express backend
+  return '';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
