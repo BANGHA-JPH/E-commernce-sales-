@@ -12,13 +12,10 @@ dotenv.config();
 
 const app = express();
 
-// Middlewares
-const allowedOrigins = process.env.CLIENT_ORIGIN 
-  ? [process.env.CLIENT_ORIGIN, 'http://localhost:5173', 'http://localhost:3000']
-  : '*';
-
+// Middlewares - Permissive CORS to allow Vercel, Netlify, Render, and Localhost
 app.use(cors({
-  origin: allowedOrigins,
+  origin: true,
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
