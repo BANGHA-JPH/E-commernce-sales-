@@ -1,8 +1,8 @@
-// Central API configuration for Render backend + Vercel frontend
+// Central API configuration for Full-Stack Vercel + Local Development
 // Dynamic API_BASE_URL resolution:
-// 1. Uses VITE_API_URL environment variable if set (e.g., https://vw-works.onrender.com)
+// 1. Uses VITE_API_URL environment variable if set (e.g. external backend)
 // 2. In local development mode (DEV), defaults to 'http://localhost:5000'
-// 3. In production mode, defaults to 'https://vw-works.onrender.com'
+// 3. On Vercel / production, defaults to '' (same-origin relative /api routes handled serverlessly)
 
 const getApiBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
@@ -12,7 +12,7 @@ const getApiBaseUrl = () => {
   if (import.meta.env.DEV) {
     return 'http://localhost:5000';
   }
-  return 'https://vw-works.onrender.com';
+  return ''; // On Vercel, requests to /api/... route seamlessly to serverless Express backend
 };
 
 export const API_BASE_URL = getApiBaseUrl();
