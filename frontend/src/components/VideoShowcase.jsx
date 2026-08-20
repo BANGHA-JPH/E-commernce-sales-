@@ -57,13 +57,22 @@ export default function VideoShowcase() {
               {/* Viewport */}
               <div className="relative aspect-video bg-[#0e0e0f] border border-[#584236]/40 shadow-inner">
                 {isPlaying ? (
-                  <iframe
-                    src={`https://www.youtube.com/embed/${currentYoutubeId}?autoplay=1&rel=0`}
-                    title={activeVideo.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full border-0"
-                  />
+                  activeVideo?.videoUrl ? (
+                    <video
+                      src={activeVideo.videoUrl}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-contain bg-black"
+                    />
+                  ) : (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${currentYoutubeId}?autoplay=1&rel=0`}
+                      title={activeVideo?.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full border-0"
+                    />
+                  )
                 ) : (
                   <div className="relative w-full h-full flex items-center justify-center">
                     <img

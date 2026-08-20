@@ -9,7 +9,7 @@ export default function Footer({ onOpenAdminLogin }) {
         {/* Brand Column */}
         <div className="col-span-1 md:col-span-1">
           <div className="font-h3 text-lg text-[#ff7a1a] font-bold mb-3 tracking-tighter">
-            RUSTY AIRCOOLED VW WORKS
+            CLASSIC AIRCOOLED VW WORKS
           </div>
           <p className="font-technical-data text-xs text-[#a78b7d] max-w-xs leading-relaxed">
             Precision OEM-grade components verified against original mechanical blueprints for air-cooled restorations.
@@ -26,13 +26,16 @@ export default function Footer({ onOpenAdminLogin }) {
         <div className="flex flex-col gap-3 font-label-caps text-xs tracking-wider uppercase">
           <a className="hover:text-[#ff7a1a] transition-colors" href="#workshop">Showcase</a>
           <a className="hover:text-[#ff7a1a] transition-colors" href="#support">Contact Support</a>
+          <button onClick={onOpenAdminLogin} className="hover:text-[#ff7a1a] text-left transition-colors flex items-center gap-1.5 cursor-pointer uppercase">
+            <Lock className="w-3 h-3 text-[#ff7a1a]" /> Admin Portal
+          </button>
         </div>
 
         {/* Technical Specs Footer Note */}
         <div className="flex flex-col gap-2 font-technical-data text-xs text-[#a78b7d]">
           <span className="text-[#83cffb] font-bold">SYSTEM STATUS // ONLINE</span>
           <span>Casting Verification Active</span>
-          <span>© {new Date().getFullYear()} RUSTY AIRCOOLED VW WORKS. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} CLASSIC AIRCOOLED VW WORKS. All rights reserved.</span>
         </div>
 
       </div>

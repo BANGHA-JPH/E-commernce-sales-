@@ -93,6 +93,8 @@ router.get('/requests', authenticate, async (req, res) => {
   }
 });
 
+import { emailService } from '../services/emailService.js';
+
 // GET /api/admin/requests - Return ALL requests for Admin Panel (Admin Protected)
 router.get('/admin/requests', authenticateAdmin, async (req, res) => {
   try {
@@ -103,11 +105,11 @@ router.get('/admin/requests', authenticateAdmin, async (req, res) => {
   }
 });
 
-// PUT /api/admin/requests/:id - Update request status (Admin Protected)
+// PUT /api/admin/requests/:id - Update request status with automatic email & chat notification
 router.put('/admin/requests/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, customNotes } = req.body;
 
     if (!status) {
       return res.status(400).json({ success: false, message: 'Status is required' });
@@ -118,10 +120,66 @@ router.put('/admin/requests/:id', authenticateAdmin, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Request not found' });
     }
 
+    // 1. Post automated message to user's in-app chat thread
+    if (updated.userId) {
+      try {
+        await dbService.addMessage({
+          userId: updated.userId,
+          userName: updated.userName || 'Restorer Member',
+          userEmail: updated.userEmail || '',
+          senderRole: 'ADMIN',
+          senderName: 'Master Admin Engineer',
+          message: `🔔 STATUS UPDATE: Your request for "${updated.partTitle}" (ID: #${updated.id}) has been updated to "${status.toUpperCase()}". ${customNotes ? `\n\nAdmin Note: ${customNotes}` : ''}`
+        });
+      } catch (chatErr) {
+        console.warn('Failed to add status update chat message:', chatErr.message);
+      }
+    }
+
+    // 2. Dispatch automated email to customer
+    let emailResult = null;
+    if (updated.userEmail) {
+      try {
+        emailResult = await emailService.sendRequestStatusEmail({
+          to: updated.userEmail,
+          userName: updated.userName,
+          requestId: updated.id,
+          partTitle: updated.partTitle,
+          price: updated.price,
+          newStatus: status,
+          customNotes
+        });
+      } catch (mailErr) {
+        console.warn('Email dispatch failed:', mailErr.message);
+      }
+    }
+
     res.json({
       success: true,
-      message: `Request #${id} status updated to ${status}`,
-      data: updated
+      message: `Request #${id} status updated to ${status}. Notification sent to customer.`,
+      data: updated,
+      emailSent: emailResult?.success || false
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /api/admin/requests/email-direct - Admin sends custom direct email to customer
+router.post('/admin/requests/email-direct', authenticateAdmin, async (req, res) => {
+  try {
+    const { to, userName, subject, message } = req.body;
+
+    if (!to || !message) {
+      return res.status(400).json({ success: false, message: 'Recipient email and message content are required' });
+    }
+
+    const result = await emailService.sendDirectEmail({ to, userName, subject, message });
+
+    res.json({
+      success: true,
+      message: `Email dispatched to ${to}`,
+      result
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

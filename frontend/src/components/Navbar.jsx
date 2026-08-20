@@ -87,12 +87,12 @@ export default function Navbar({
           </div>
           <div>
             <div className="font-h2 text-base md:text-lg font-bold tracking-tighter text-[#ff7a1a] flex items-center leading-none select-none">
-              {"RUSTY AIRCOOLED".split('').map((char, index) => (
+              {"CLASSIC AIRCOOLED".split('').map((char, index) => (
                 <span
                   key={index}
                   className="animate-jump-swing"
                   style={{
-                    animationDelay: `${index * 0.12}s`,
+                    animationDelay: `${index * 0.1}s`,
                     display: 'inline-block',
                     width: char === ' ' ? '0.3em' : 'auto'
                   }}
@@ -102,7 +102,7 @@ export default function Navbar({
               ))}
             </div>
             <span className="text-[9px] tracking-widest text-[#a78b7d] uppercase font-technical-data font-bold block mt-0.5">
-              VINTAGE VOLKSWAGEN SPARE PARTS
+              VW WORKS // ENGINES, PARTS & RESTORATION
             </span>
           </div>
         </button>

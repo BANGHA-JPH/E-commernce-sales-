@@ -1,296 +1,385 @@
-// Vintage Car & Spare Parts Database Storage (Seed Data)
+// Vintage Air-Cooled Volkswagen Car & Spare Parts Database Storage (Seed Data)
 
 export const VINTAGE_CARS = [
   {
-    id: 'shelby-gt500-1967',
-    name: '1967 Ford Mustang Shelby GT500',
-    era: '1960s',
-    make: 'Ford / Shelby',
-    engineName: '7.0L V8 Cobra Jet (428 cu in)',
-    engineType: 'V8 Big Block',
-    image: 'https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=1200&q=80',
-    horsepower: '355 HP @ 5400 RPM',
-    torque: '420 lb-ft @ 3200 RPM',
-    description: 'The pinnacle of American muscle engineering with high-rise aluminum intake manifolds and twin Holley 4-barrel carburetors.'
-  },
-  {
-    id: 'mercedes-300sl-1954',
-    name: '1954 Mercedes-Benz 300SL Gullwing',
-    era: '1950s',
-    make: 'Mercedes-Benz',
-    engineName: '3.0L Inline-6 M198 Direct Injection',
-    engineType: 'Inline-6 Dry Sump',
-    image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80',
-    horsepower: '240 HP @ 6100 RPM',
-    torque: '217 lb-ft @ 4800 RPM',
-    description: 'Pioneered mechanical direct fuel injection on a production car with tubular spaceframe chassis compatibility.'
-  },
-  {
-    id: 'jaguar-etype-1961',
-    name: '1961 Jaguar E-Type Series 1 3.8',
-    era: '1960s',
-    make: 'Jaguar',
-    engineName: '3.8L XK Inline-6 Twin-Cam',
-    engineType: 'DOHC Inline-6',
-    image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80',
-    horsepower: '265 HP @ 5500 RPM',
-    torque: '260 lb-ft @ 4000 RPM',
-    description: 'Hemispherical aluminum cylinder head with triple SU HD8 carburetors and dual overhead camshafts.'
-  },
-  {
-    id: 'corvette-stingray-1963',
-    name: '1963 Chevrolet Corvette Stingray Split-Window',
-    era: '1960s',
-    make: 'Chevrolet',
-    engineName: '5.4L L84 327 cu in V8 Fuelie',
-    engineType: 'Small Block V8',
-    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80',
-    horsepower: '360 HP @ 6000 RPM',
-    torque: '352 lb-ft @ 4000 RPM',
-    description: 'Iconic Rochester mechanical fuel injection small block V8 with high-compression domed pistons.'
-  },
-  {
-    id: 'porsche-911s-1970',
-    name: '1970 Porsche 911 S 2.2L Coupe',
+    id: 'rogue-super-beetle-1979',
+    name: '1979 VW Super Beetle Convertible "ROGUE"',
     era: '1970s',
-    make: 'Porsche',
-    engineName: '2.2L Air-Cooled Flat-6 (M901)',
-    engineType: 'Air-Cooled Boxer-6',
-    image: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1200&q=80',
-    horsepower: '180 HP @ 6500 RPM',
-    torque: '147 lb-ft @ 5200 RPM',
-    description: 'Bosch mechanical fuel injection with dry-sump lubrication and magnesium alloy crankcase.'
+    make: 'Volkswagen',
+    model: 'Super Beetle (1302/1303)',
+    yearRange: '1971–1979',
+    engineName: '2.0L Performance Air-Cooled Boxer-4',
+    engineType: 'Air-Cooled Type 1 Flat-4',
+    carImage: '/pictures/WhatsApp Image 2026-08-03 at 7.49.52 PM (1).jpeg',
+    engineImage: '/pictures/WhatsApp Image 2026-08-05 at 1.10.06 PM.jpeg',
+    horsepower: '165 HP @ 6200 RPM',
+    torque: '178 lb-ft @ 4100 RPM',
+    description: 'Award-winning custom show convertible build by Metamorphosis Customs. Features dual Weber carburetors, Porsche 911 upright fan shroud, four-wheel Wilwood disc brakes, and custom interior.'
+  },
+  {
+    id: 'vw-bus-t1-patina-1964',
+    name: '1964 VW Bus T1 Split-Screen 11-Window Restomod',
+    era: '1960s',
+    make: 'Volkswagen',
+    model: 'Bus T1 Split Screen (1950–1967)',
+    yearRange: '1950–1967',
+    engineName: '1835cc Dual-Port Air-Cooled Flat-4',
+    engineType: 'Air-Cooled Flat-4',
+    carImage: '/pictures/WhatsApp Image 2026-08-03 at 7.49.46 PM.jpeg',
+    engineImage: '/pictures/WhatsApp Image 2026-08-05 at 1.10.06 PM.jpeg',
+    horsepower: '95 HP @ 5200 RPM',
+    torque: '115 lb-ft @ 3400 RPM',
+    description: 'Iconic authentic patina finish with safari pop-out windshields, dropped straight-axle suspension, Vintage Speed exhaust, and roof-mounted spotlight.'
+  },
+  {
+    id: 'vw-beetle-cal-look-1967',
+    name: '1967 VW Beetle Cal-Look Sky Blue Coupe',
+    era: '1960s',
+    make: 'Volkswagen',
+    model: 'Beetle 1958–1967',
+    yearRange: '1958–1967',
+    engineName: '1776cc Dual Weber 40 IDF Flat-4',
+    engineType: 'Air-Cooled Flat-4',
+    carImage: '/pictures/WhatsApp Image 2026-08-03 at 7.49.50 PM.jpeg',
+    engineImage: '/pictures/WhatsApp Image 2026-08-05 at 1.10.06 PM.jpeg',
+    horsepower: '110 HP @ 5800 RPM',
+    torque: '124 lb-ft @ 3800 RPM',
+    description: 'Pure 1960s California Look restoration with narrow front beam, EMPI 5-spoke polished wheels, vintage wood slat roof rack, and ivory steering wheel.'
+  },
+  {
+    id: 'karmann-ghia-coupe-1969',
+    name: '1969 VW Karmann Ghia Sport Coupé',
+    era: '1960s',
+    make: 'Volkswagen',
+    model: 'Karmann Ghia Coupé (1955–1974)',
+    yearRange: '1955–1974',
+    engineName: '1600cc Dual Port Air-Cooled Boxer',
+    engineType: 'Air-Cooled Flat-4',
+    carImage: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80',
+    engineImage: '/pictures/WhatsApp Image 2026-08-03 at 7.49.45 PM.jpeg',
+    horsepower: '60 HP @ 4400 RPM',
+    torque: '82 lb-ft @ 3000 RPM',
+    description: 'Italian styling hand-crafted by Ghia and built by Karmann in Osnabrück. Features pristine dual-port induction and IRS rear suspension.'
   }
 ];
 
 export const ENGINE_HOTSPOTS = [
   {
-    id: 'hotspot-carb',
-    name: 'Dual Holley 4-Barrel Carburetors',
-    x: 50,
-    y: 28,
-    partId: 'part-001',
-    category: 'Fuel & Carburetion',
-    shortDesc: 'Matched pair 600 CFM vacuum secondary carbs for Cobra Jet V8.'
-  },
-  {
-    id: 'hotspot-intake',
-    name: 'Cobra Jet High-Rise Aluminum Intake Manifold',
+    id: 'hotspot-turbo',
+    name: 'Garrett T3 Turbocharger System',
     x: 48,
+    y: 72,
+    partId: 'part-vw-turbo-engine-2276',
+    category: 'Engine Block & Internals',
+    shortDesc: 'Custom blow-through turbocharging setup producing 220+ HP.'
+  },
+  {
+    id: 'hotspot-fan',
+    name: 'Porsche 911 Upright Cooling Shroud & Fan',
+    x: 52,
     y: 38,
-    partId: 'part-002',
+    partId: 'part-vw-turbo-engine-2276',
     category: 'Engine Block & Internals',
-    shortDesc: 'Cast C8OE-9425-K dual-plane performance manifold.'
+    shortDesc: 'Cast aluminum 11-blade upright Porsche axial cooling fan assembly.'
   },
   {
-    id: 'hotspot-distributor',
-    name: 'Autolite Dual-Point Mechanical Distributor',
-    x: 68,
-    y: 32,
-    partId: 'part-003',
-    category: 'Ignition & Electrical',
-    shortDesc: 'Original vacuum advance distributor with phenolic rotor.'
+    id: 'hotspot-crossbar',
+    name: 'Dual Weber Cross-Bar Billet Breather Intake',
+    x: 50,
+    y: 18,
+    partId: 'part-vw-crossbar-breather',
+    category: 'Fuel & Carburetion',
+    shortDesc: 'CNC billet balance breather connecting dual Weber carburetors.'
   },
   {
-    id: 'hotspot-headers',
-    name: 'Tubular Steel Exhaust Headers (Chrome Finish)',
-    x: 28,
-    y: 52,
-    partId: 'part-004',
-    category: 'Exhaust & Manifold',
-    shortDesc: 'Equal-length primary tubes for optimal backpressure release.'
-  },
-  {
-    id: 'hotspot-valve-covers',
-    name: 'Forged Cobra Le Mans Aluminum Valve Covers',
-    x: 62,
-    y: 45,
-    partId: 'part-005',
-    category: 'Engine Block & Internals',
-    shortDesc: 'Finned aluminum covers with oil breather caps.'
+    id: 'hotspot-hat',
+    name: 'Finned Billet Velocity Stack Air Cleaner Hat',
+    x: 18,
+    y: 22,
+    partId: 'part-vw-velocity-stack-hat',
+    category: 'Fuel & Carburetion',
+    shortDesc: 'Polished finned air filter cap with high-flow mesh filtration.'
   }
 ];
 
 export const SPARE_PARTS = [
   {
-    id: 'part-001',
-    title: 'Dual Holley 4-Barrel Carburetor Assembly (428 Cobra Jet)',
-    oemNumber: 'C8OF-9510-AA / List-4279',
-    carModelId: 'shelby-gt500-1967',
-    carModelName: '1967 Ford Mustang Shelby GT500',
-    engineType: '7.0L V8 Cobra Jet',
-    category: 'Fuel & Carburetion',
-    era: '1960s',
-    price: 3450,
-    rating: 4.9,
-    reviewsCount: 14,
-    condition: 'NOS (New Old Stock)',
-    rarityScore: 'Extremely Rare (98/100)',
+    id: 'part-vw-turbo-engine-2276',
+    title: 'Complete 2276cc Turbocharged Air-Cooled VW Type 1 Engine',
+    oemNumber: 'ENG-TURBO-2276-CB',
+    carModelId: 'type-1',
+    carModelName: 'Type 1 (Beetle)',
+    engineType: '2276cc Turbocharged Boxer-4',
+    category: 'Engine Block & Internals',
+    era: 'Custom Build',
+    price: 9450,
+    rating: 5.0,
+    reviewsCount: 18,
+    condition: 'Rebuilt / Restored',
+    rarityScore: 'Competition Grade (99/100)',
     stock: 2,
     inStock: true,
-    image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
-    castingCode: 'C8OF-9510-AA',
-    provenance: 'Acquired from private collector inventory in Dearborn, MI. Factory vacuum sealed in original Ford blue box.',
+    image: '/pictures/WhatsApp Image 2026-08-05 at 1.10.06 PM.jpeg',
+    castingCode: 'AS41-MAG-DUAL-RELIEF',
+    provenance: 'Hand-built competition motor with forged 82mm crankshaft, 94mm Mahle pistons, Porsche 911 upright cooling shroud, Garrett T3 turbo, and dual blow-through Weber carbs.',
     specifications: [
-      { key: 'Choke Type', value: 'Manual Dual Choke' },
-      { key: 'Air Flow Rate', value: '600 CFM Per Unit' },
-      { key: 'Material', value: 'Die-Cast Zinc Alloy / Brass Jets' },
-      { key: 'Mounting Flange', value: 'Square Bore 4-Bolt' },
-      { key: 'Weight', value: '14.2 lbs (6.4 kg)' }
+      { key: 'Displacement', value: '2276cc (82mm x 94mm)' },
+      { key: 'Output', value: '220+ HP @ 6500 RPM (12 PSI Boost)' },
+      { key: 'Cooling System', value: 'Porsche 911 Upright Shroud & 11-Blade Fan' },
+      { key: 'Carburetion', value: 'Dual Weber 44 IDF with Polished Hats' },
+      { key: 'Crankcase', value: 'New AS41 Dual-Relief Magnesium Alloy' }
     ],
     compatibleVehicles: [
-      '1967 Ford Mustang Shelby GT500 (428 V8)',
-      '1968 Ford Fairlane Cobra Jet 428',
-      '1968 Mercury Cougar XR7-G 428'
+      'Type 1 Beetle (1946–1979)',
+      'Super Beetle (1302/1303)',
+      'Karmann Ghia (1955–1974)',
+      'Bus T1 / T2 (1950–1979)'
     ]
   },
   {
-    id: 'part-002',
-    title: 'Cobra Jet High-Rise Aluminum Intake Manifold',
-    oemNumber: 'C8OE-9425-K',
-    carModelId: 'shelby-gt500-1967',
-    carModelName: '1967 Ford Mustang Shelby GT500',
-    engineType: '7.0L V8 Cobra Jet',
-    category: 'Engine Block & Internals',
+    id: 'part-vw-crossbar-breather',
+    title: 'Dual Carburetor Cross-Bar Balance Intake & Velocity Breather Assembly',
+    oemNumber: 'CB-XBAR-6701',
+    carModelId: 'type-1',
+    carModelName: 'Type 1 (Beetle)',
+    engineType: '1600cc - 2276cc Dual Carb',
+    category: 'Fuel & Carburetion',
+    era: '1970s',
+    price: 345,
+    rating: 4.9,
+    reviewsCount: 27,
+    condition: 'New',
+    rarityScore: 'High Demand (88/100)',
+    stock: 8,
+    inStock: true,
+    image: '/pictures/WhatsApp Image 2026-08-03 at 7.49.45 PM.jpeg',
+    castingCode: 'CB-BILLET-ALUM',
+    provenance: 'CNC-machined 6061-T6 billet aluminum cross-bar intake balancer with high-flow dual-stage foam filtration element and stainless steel clamps.',
+    specifications: [
+      { key: 'Material', value: '6061-T6 Billet Aluminum' },
+      { key: 'Fitment', value: 'Dual Weber 40/44 IDF & Dellorto DRLA' },
+      { key: 'Filter Media', value: 'Dual-Layer Reusable Foam Filter' },
+      { key: 'Finish', value: 'High Mirror Polish' }
+    ],
+    compatibleVehicles: [
+      'Type 1 Beetle (1958–1979)',
+      'Bus T1 / T2 (1950–1979)',
+      'Karmann Ghia (1955–1974)'
+    ]
+  },
+  {
+    id: 'part-vw-velocity-stack-hat',
+    title: 'Finned Billet Aluminum Air Cleaner Top Hat for Weber IDF / Dellorto',
+    oemNumber: 'IDF-HAT-FIN-01',
+    carModelId: 'type-1',
+    carModelName: 'Type 1 (Beetle)',
+    engineType: 'Air-Cooled Type 1 / Type 4',
+    category: 'Fuel & Carburetion',
     era: '1960s',
-    price: 2150,
+    price: 185,
     rating: 4.8,
-    reviewsCount: 9,
-    condition: 'Factory Restored',
-    rarityScore: 'Rare (85/100)',
-    stock: 3,
+    reviewsCount: 15,
+    condition: 'New',
+    rarityScore: 'Custom Finish (82/100)',
+    stock: 12,
+    inStock: true,
+    image: '/pictures/WhatsApp Image 2026-08-03 at 7.49.44 PM.jpeg',
+    castingCode: 'VW-AIR-HAT-127',
+    provenance: 'Vintage finned design with engraved serial stamping. Provides superior laminar airflow into velocity stacks while protecting carb jets.',
+    specifications: [
+      { key: 'Flange Pattern', value: 'Weber 40/44/48 IDF Oval Base' },
+      { key: 'Style', value: 'Classic Finned Cal-Look Top' },
+      { key: 'Finish', value: 'Polished Mirror with Machined Ribs' },
+      { key: 'Height', value: '65 mm Clearance' }
+    ],
+    compatibleVehicles: [
+      'VW Beetle Type 1',
+      'VW Karmann Ghia Type 14',
+      'VW Bus Type 2'
+    ]
+  },
+  {
+    id: 'part-vw-cylinder-heads-dualport',
+    title: 'High-Performance Dual Port Cylinder Head Pair (40mm x 35.5mm Valves)',
+    oemNumber: '043-101-375-HP',
+    carModelId: 'type-1',
+    carModelName: 'Type 1 (Beetle)',
+    engineType: '1600cc / 1776cc / 1835cc',
+    category: 'Engine Block & Internals',
+    era: '1970s',
+    price: 780,
+    rating: 4.9,
+    reviewsCount: 21,
+    condition: 'New',
+    rarityScore: 'Performance Grade (90/100)',
+    stock: 6,
+    inStock: true,
+    image: '/pictures/sample_restoration_photo.jpg',
+    castingCode: '043-MEX-DP',
+    provenance: 'High-flow stainless steel 40mm intake & 35.5mm exhaust valves with dual hi-rev valve springs, chromoly retainers, and hardened valve seats.',
+    specifications: [
+      { key: 'Intake Valve', value: '40 mm Stainless Steel' },
+      { key: 'Exhaust Valve', value: '35.5 mm Stainless Steel' },
+      { key: 'Chamber Volume', value: '55cc Semi-Hemi' },
+      { key: 'Spark Plug Thread', value: '14mm x 1/2" Reach' }
+    ],
+    compatibleVehicles: [
+      'VW Beetle 1600 Dual Port',
+      'Super Beetle 1302/1303',
+      'Bus T2 Bay Window 1600 DP',
+      'Type 3 Fastback / Squareback'
+    ]
+  },
+  {
+    id: 'part-vw-weber-44-kit',
+    title: 'Genuine Weber 44 IDF Dual Carburetor Complete Kit with Hex-Bar Linkage',
+    oemNumber: '18990-035-KIT',
+    carModelId: 'type-1',
+    carModelName: 'Type 1 (Beetle)',
+    engineType: '1776cc - 2276cc',
+    category: 'Fuel & Carburetion',
+    era: '1970s',
+    price: 1420,
+    rating: 5.0,
+    reviewsCount: 34,
+    condition: 'New',
+    rarityScore: 'Iconic (95/100)',
+    stock: 4,
+    inStock: true,
+    image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80',
+    castingCode: 'WEBER-BOLOGNA-44',
+    provenance: 'Authentic matched pair of Weber 44 IDF carburetors with offset aluminum intake manifolds, aircraft-grade ball-joint hex-bar linkage, and mesh filters.',
+    specifications: [
+      { key: 'Venturi Size', value: '36mm Main Venturis' },
+      { key: 'Main Jet', value: '135' },
+      { key: 'Air Corrector', value: '175' },
+      { key: 'Idle Jet', value: '55' }
+    ],
+    compatibleVehicles: [
+      'Type 1 Beetle 1776cc - 2276cc',
+      'Karmann Ghia Coupé & Convertible',
+      'VW Bus T1 & T2'
+    ]
+  },
+  {
+    id: 'part-vw-forged-crankshaft-69',
+    title: 'EMPI 69mm Counterweighted Forged 4140 Chromoly Crankshaft (8-Dowel)',
+    oemNumber: 'EMPI-8106-69',
+    carModelId: 'type-1',
+    carModelName: 'Type 1 (Beetle)',
+    engineType: '1600cc / 1776cc / 1835cc / 1914cc',
+    category: 'Engine Block & Internals',
+    era: '1970s',
+    price: 495,
+    rating: 4.8,
+    reviewsCount: 19,
+    condition: 'New',
+    rarityScore: 'Restorer Favorite (89/100)',
+    stock: 7,
     inStock: true,
     image: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=800&q=80',
-    castingCode: 'C8OE-9425-K',
-    provenance: 'Ultrasonically cleaned, pressure tested to 45 PSI, and vapor blasted to original factory matte aluminum finish.',
+    castingCode: '4140-FORGED-CW',
+    provenance: 'Precision forged from high-tensile 4140 chromoly steel, dynamic spin-balanced to 8,500 RPM, cross-drilled with chamfered oil holes.',
     specifications: [
-      { key: 'Configuration', value: 'Dual-Plane High Rise' },
-      { key: 'Carburetor Fitment', value: 'Dual 4-Barrel Square Flange' },
-      { key: 'Material', value: 'A356 T6 Aircraft Grade Aluminum' },
-      { key: 'Port Size', value: '2.10" x 1.34" Oval Intake Ports' }
+      { key: 'Stroke', value: '69.0 mm Stock Stroke' },
+      { key: 'Material', value: 'Forged 4140 Chromoly' },
+      { key: 'Flywheel Mounting', value: 'SP 8-Dowel Pattern' },
+      { key: 'Journal Size', value: 'Standard VW Main & Rod' }
     ],
     compatibleVehicles: [
-      '1967-1969 Shelby GT500 428 V8',
-      '1968 Ford Mustang GT 428 Cobra Jet'
+      'All Air-Cooled VW Type 1, 2, 3 Engines'
     ]
   },
   {
-    id: 'part-003',
-    title: 'Autolite Dual-Point Mechanical Distributor Assembly',
-    oemNumber: 'C7OF-12127-D',
-    carModelId: 'shelby-gt500-1967',
-    carModelName: '1967 Ford Mustang Shelby GT500',
-    engineType: '7.0L V8 Cobra Jet',
+    id: 'part-vw-bosch-009-distributor',
+    title: 'Genuine Bosch 009 Centrifugal Advance Ignition Distributor Assembly',
+    oemNumber: '0-231-178-009',
+    carModelId: 'type-1',
+    carModelName: 'Type 1 (Beetle)',
+    engineType: 'All Air-Cooled Engines',
     category: 'Ignition & Electrical',
     era: '1960s',
-    price: 980,
-    rating: 4.7,
-    reviewsCount: 22,
+    price: 260,
+    rating: 4.9,
+    reviewsCount: 42,
     condition: 'NOS (New Old Stock)',
-    rarityScore: 'Uncommon (72/100)',
+    rarityScore: 'Collector Item (92/100)',
     stock: 5,
     inStock: true,
     image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80',
-    castingCode: 'C7OF-12127-D',
-    provenance: 'Unused vintage stock with original copper contacts and phenolic rotor button intact.',
+    castingCode: 'BOSCH-JFU4-009',
+    provenance: 'Legendary genuine cast-iron Bosch Germany 009 mechanical advance distributor with original condenser, points, and phenolic cap.',
     specifications: [
-      { key: 'Advance Mechanism', value: 'Centrifugal Mechanical & Vacuum' },
-      { key: 'Contact Points', value: 'Tungsten Dual Points' },
-      { key: 'Housing Material', value: 'Cast Iron with Phenolic Cap' }
+      { key: 'Advance Type', value: 'All-Mechanical Centrifugal' },
+      { key: 'Maximum Advance', value: '28° @ 3000 RPM' },
+      { key: 'Cap Color', value: 'Vintage Brown Bakelite' }
     ],
     compatibleVehicles: [
-      '1967 Shelby GT500 428 V8',
-      '1967 Ford Galaxie 500 427 V8'
+      'Beetle, Karmann Ghia, Bus, Fastback, Squareback'
     ]
   },
   {
-    id: 'part-004',
-    title: 'Bosch Mechanical Direct Fuel Injection Pump (M198)',
-    oemNumber: 'PES-6KL-70/300-R11',
-    carModelId: 'mercedes-300sl-1954',
-    carModelName: '1954 Mercedes-Benz 300SL Gullwing',
-    engineType: '3.0L Inline-6 M198',
-    category: 'Fuel & Carburetion',
-    era: '1950s',
-    price: 8900,
+    id: 'part-vw-vintage-speed-exhaust',
+    title: 'Vintage Speed Superflow Stainless Steel Sport Exhaust System',
+    oemNumber: 'VS-EXH-TYPE1-SS',
+    carModelId: 'type-1',
+    carModelName: 'Type 1 (Beetle)',
+    engineType: '1600cc - 2276cc',
+    category: 'Brakes & Exhaust',
+    era: '1970s',
+    price: 890,
     rating: 5.0,
-    reviewsCount: 6,
-    condition: 'Factory Restored',
-    rarityScore: 'Ultra Museum Grade (99/100)',
-    stock: 1,
+    reviewsCount: 29,
+    condition: 'New',
+    rarityScore: 'Top Tier (96/100)',
+    stock: 3,
     inStock: true,
     image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80',
-    castingCode: 'PES6KL70-R11',
-    provenance: 'Precision calibrated on Bosch bench in Stuttgart, Germany with certified flow test results included.',
+    castingCode: 'TIG-304-STAINLESS',
+    provenance: '100% hand TIG-welded #304 stainless steel chambered muffler with twin tailpipes designed to exit through stock rear apron cutouts.',
     specifications: [
-      { key: 'Plunger Diameter', value: '7.0 mm Micro-ground' },
-      { key: 'Operating Pressure', value: '45 Bar Injection' },
-      { key: 'Lubrication', value: 'Engine Oil Circuit Fed' }
+      { key: 'Material', value: '#304 High-Polished Stainless Steel' },
+      { key: 'Header Flange', value: '1-1/2" (38mm) Thick Flanges' },
+      { key: 'Tailpipes', value: 'Dual Factory Style 35mm Tips' },
+      { key: 'Sound Profile', value: 'Deep Throaty Boxer Rumble' }
     ],
     compatibleVehicles: [
-      '1954-1957 Mercedes-Benz 300SL Gullwing W198',
-      '1957-1963 Mercedes-Benz 300SL Roadster W198 II'
-    ]
-  },
-  {
-    id: 'part-005',
-    title: 'Jaguar XK Triple SU HD8 Carburetor Setup on Intake',
-    oemNumber: 'AUC-9488-TRIPLE',
-    carModelId: 'jaguar-etype-1961',
-    carModelName: '1961 Jaguar E-Type Series 1 3.8',
-    engineType: '3.8L XK Inline-6 Twin-Cam',
-    category: 'Fuel & Carburetion',
-    era: '1960s',
-    price: 4200,
-    rating: 4.9,
-    reviewsCount: 11,
-    condition: 'NOS (New Old Stock)',
-    rarityScore: 'Extremely Rare (94/100)',
-    stock: 2,
-    inStock: true,
-    image: 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80',
-    castingCode: 'SU-HD8-2INCH',
-    provenance: 'Matched trio of 2-inch SU HD8 carbs mounted on factory polished intake manifold with throttle linkages.',
-    specifications: [
-      { key: 'Throat Diameter', value: '2.00 Inches (50.8 mm)' },
-      { key: 'Needle Code', value: 'UM Constant Vacuum' },
-      { key: 'Damper Cap', value: 'Brass Knurled Tops' }
-    ],
-    compatibleVehicles: [
-      '1961-1964 Jaguar E-Type Series 1 3.8L',
-      '1964-1967 Jaguar E-Type Series 1 4.2L',
-      '1960 Jaguar MK II 3.8 Sports Saloon'
+      'Type 1 Beetle (1955–1979)',
+      'Karmann Ghia Coupé & Convertible'
     ]
   }
 ];
 
 export const YOUTUBE_SHOWCASE = [
   {
-    id: 'dyno-run-v8',
-    title: '428 Cobra Jet V8 Dyno Test & Full Throttle Sound',
-    description: 'Listen to the raw roaring sound of a fully restored 1967 Shelby GT500 engine on the dyno producing 435 HP.',
+    id: 'turbo-vw-dyno-run',
+    title: '2276cc Turbo Air-Cooled VW Type 1 Engine Dyno Test & Revs',
+    description: 'Listen to the roaring turbo spool and crisp dual Weber response on this 220 HP air-cooled engine with Porsche 911 upright fan shroud.',
+    videoUrl: '/pictures/WhatsApp Video 2026-08-05 at 1.10.25 PM.mp4',
     youtubeId: '3G8mS7wE0bM',
-    duration: '04:12',
+    duration: '03:45',
     category: 'Dyno & Sound Test',
-    thumbnail: 'https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=800&q=80'
+    thumbnail: '/pictures/WhatsApp Image 2026-08-05 at 1.10.06 PM.jpeg'
   },
   {
-    id: 'carb-tuning-guide',
-    title: 'Restoring Dual Holley 4-Barrel Carburetors (Step-by-Step)',
-    description: 'Master master restorer walkthrough on disassembling, sonic cleaning, re-jetting, and tuning vintage carbs.',
+    id: 'rogue-beetle-walkaround',
+    title: '1979 "ROGUE" Super Beetle Convertible Custom Show Walkthrough',
+    description: 'Detailed showcase of the peacock blue custom bodywork, four-wheel disc brake setup, and hand-built 2.0L engine compartment.',
+    videoUrl: '/pictures/WhatsApp Video 2026-08-05 at 1.10.26 PM.mp4',
     youtubeId: 'dDk5_Erh0mY',
-    duration: '08:45',
-    category: 'Restoration Workshop',
-    thumbnail: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80'
+    duration: '05:20',
+    category: 'Vehicle Showcase',
+    thumbnail: '/pictures/WhatsApp Image 2026-08-03 at 7.49.52 PM (1).jpeg'
   },
   {
-    id: 'gullwing-unboxing',
-    title: 'Unboxing $50,000 NOS Parts for 1954 Mercedes 300SL Gullwing',
-    description: 'Inspection of direct fuel injection pumps, tubular spaceframe brackets, and rare original factory chrome.',
+    id: 'bus-patina-test-drive',
+    title: '1964 Split-Screen VW Bus T1 Patina Cruiser Engine Sound',
+    description: 'Raw exhaust sound clips and driving impressions of the dropped safari bus powered by an 1835cc dual-port engine.',
+    videoUrl: '/pictures/WhatsApp Video 2026-08-05 at 1.10.27 PM.mp4',
     youtubeId: 'L_LUpnjgPso',
-    duration: '06:30',
-    category: 'Unboxing & Authentication',
-    thumbnail: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80'
+    duration: '04:10',
+    category: 'Restoration Workshop',
+    thumbnail: '/pictures/WhatsApp Image 2026-08-03 at 7.49.46 PM.jpeg'
   }
 ];
 

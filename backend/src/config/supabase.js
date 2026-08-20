@@ -1,7 +1,40 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const MESSAGES_FILE = path.join(__dirname, '../data/messages.json');
+
+// Helper to safely load messages from disk backup
+function loadDiskMessages() {
+  try {
+    if (fs.existsSync(MESSAGES_FILE)) {
+      const data = fs.readFileSync(MESSAGES_FILE, 'utf8');
+      return JSON.parse(data || '[]');
+    }
+  } catch (err) {
+    console.warn('Note reading messages.json:', err.message);
+  }
+  return [];
+}
+
+// Helper to safely write messages to disk backup
+function saveDiskMessages(msgs) {
+  try {
+    const dir = path.dirname(MESSAGES_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(MESSAGES_FILE, JSON.stringify(msgs, null, 2), 'utf8');
+  } catch (err) {
+    console.warn('Note writing messages.json:', err.message);
+  }
+}
 
 const supabaseUrl = (process.env.SUPABASE_URL || '').trim();
 const supabaseKey = (
@@ -243,6 +276,40 @@ export function mapOrderToRequest(row) {
   };
 }
 
+export function mapMessageFromDb(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    userId: row.user_id || row.userId || '',
+    userName: row.user_name || row.userName || 'Restorer Member',
+    userEmail: row.user_email || row.userEmail || '',
+    senderRole: (row.sender_role || row.senderRole || 'USER').toUpperCase(),
+    senderName: row.sender_name || row.senderName || (row.sender_role === 'ADMIN' ? 'Master Admin Engineer' : row.user_name || 'Restorer'),
+    message: row.message || '',
+    isRead: Boolean(row.is_read ?? row.isRead ?? false),
+    createdAt: row.created_at || row.createdAt || new Date().toISOString()
+  };
+}
+
+export function mapMessageToDb(msg) {
+  return {
+    id: msg.id || `MSG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    user_id: msg.userId,
+    user_name: msg.userName || 'Restorer Member',
+    user_email: msg.userEmail || '',
+    sender_role: (msg.senderRole || 'USER').toUpperCase(),
+    sender_name: msg.senderName || (msg.senderRole === 'ADMIN' ? 'Master Admin Engineer' : msg.userName || 'Restorer'),
+    message: msg.message,
+    is_read: Boolean(msg.isRead ?? false),
+    created_at: msg.createdAt || new Date().toISOString()
+  };
+}
+
+/**
+ * In-memory fallback message storage initialized from disk
+ */
+let inMemoryMessages = loadDiskMessages();
+
 /**
  * DB Data Access Abstraction Layer (100% Supabase Database)
  */
@@ -388,7 +455,7 @@ export const dbService = {
   // --- ORDERS ---
   async getOrders(userId) {
     if (!isSupabaseConfigured) throw new Error('Supabase credentials missing');
-    let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
+    let query = supabase.from('orders').select('*').neq('status', 'CHAT_MESSAGE').order('created_at', { ascending: false });
     if (userId) query = query.eq('user_id', userId);
     const { data, error } = await query;
     if (error) {
@@ -471,7 +538,7 @@ export const dbService = {
 
     // 2. Query orders table (guaranteed table in Supabase)
     try {
-      let orderQuery = supabase.from('orders').select('*').order('created_at', { ascending: false });
+      let orderQuery = supabase.from('orders').select('*').neq('status', 'CHAT_MESSAGE').order('created_at', { ascending: false });
       if (userId) orderQuery = orderQuery.eq('user_id', userId);
       const { data: orderData, error: orderErr } = await orderQuery;
       if (!orderErr && orderData) {
@@ -552,5 +619,286 @@ export const dbService = {
     } catch (err) {}
 
     return { id, status };
+  },
+
+  // --- LIVE CHAT & MESSAGING (100% PERSISTENT ACROSS RESTARTS & CLOUD DEPLOYS) ---
+  async addMessage(msgInput) {
+    const rawMsg = {
+      id: msgInput.id || `MSG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      userId: msgInput.userId,
+      userName: msgInput.userName || 'Restorer Member',
+      userEmail: msgInput.userEmail || '',
+      senderRole: (msgInput.senderRole || 'USER').toUpperCase(),
+      senderName: msgInput.senderName || (msgInput.senderRole === 'ADMIN' ? 'Master Admin Engineer' : msgInput.userName || 'Restorer'),
+      message: msgInput.message,
+      isRead: Boolean(msgInput.isRead ?? false),
+      createdAt: msgInput.createdAt || new Date().toISOString()
+    };
+
+    // 1. Save to in-memory array & local disk backup
+    const existingIndex = inMemoryMessages.findIndex(m => m.id === rawMsg.id);
+    if (existingIndex >= 0) {
+      inMemoryMessages[existingIndex] = rawMsg;
+    } else {
+      inMemoryMessages.push(rawMsg);
+    }
+    saveDiskMessages(inMemoryMessages);
+
+    // 2. Save directly to Supabase Cloud Database
+    if (isSupabaseConfigured) {
+      // Primary: 'messages' table in Supabase
+      try {
+        const dbRow = mapMessageToDb(rawMsg);
+        const { data, error } = await supabase.from('messages').insert([dbRow]).select();
+        if (!error && data && data[0]) {
+          return mapMessageFromDb(data[0]);
+        }
+      } catch (err) {}
+
+      // Cloud Backup: 'orders' table in Supabase (Guarantees online cloud persistence)
+      try {
+        const cloudRow = {
+          id: rawMsg.id,
+          user_id: rawMsg.userId,
+          user_name: rawMsg.userName,
+          user_email: rawMsg.userEmail,
+          items: [rawMsg],
+          total_amount: 0,
+          shipping_address: 'In-App Live Chat',
+          status: 'CHAT_MESSAGE'
+        };
+        await supabase.from('orders').upsert([cloudRow]);
+      } catch (err) {
+        console.warn('Supabase cloud backup note:', err.message);
+      }
+    }
+
+    return rawMsg;
+  },
+
+  async getUserMessages(userId, userEmail = '') {
+    if (!userId && !userEmail) return [];
+    const resultMap = new Map();
+    const cleanEmail = (userEmail || '').trim().toLowerCase();
+
+    // 1. Read from local disk store first
+    for (const msg of inMemoryMessages) {
+      const msgEmail = (msg.userEmail || '').trim().toLowerCase();
+      const isMatch = (userId && msg.userId === userId) || (cleanEmail && msgEmail && msgEmail === cleanEmail);
+      if (isMatch) {
+        resultMap.set(msg.id, msg);
+      }
+    }
+
+    // 2. Query Supabase Cloud Database
+    if (isSupabaseConfigured) {
+      // From 'messages' table
+      try {
+        let query = supabase.from('messages').select('*');
+        if (userId && cleanEmail) {
+          query = query.or(`user_id.eq.${userId},user_email.eq.${cleanEmail}`);
+        } else if (userId) {
+          query = query.eq('user_id', userId);
+        } else if (cleanEmail) {
+          query = query.eq('user_email', cleanEmail);
+        }
+        const { data, error } = await query.order('created_at', { ascending: true });
+        if (!error && Array.isArray(data)) {
+          for (const row of data) {
+            const mapped = mapMessageFromDb(row);
+            if (mapped && mapped.id) resultMap.set(mapped.id, mapped);
+          }
+        }
+      } catch (err) {}
+
+      // From cloud 'orders' chat backup
+      try {
+        let cloudQuery = supabase.from('orders').select('*').eq('status', 'CHAT_MESSAGE');
+        if (userId && cleanEmail) {
+          cloudQuery = cloudQuery.or(`user_id.eq.${userId},user_email.eq.${cleanEmail}`);
+        } else if (userId) {
+          cloudQuery = cloudQuery.eq('user_id', userId);
+        } else if (cleanEmail) {
+          cloudQuery = cloudQuery.eq('user_email', cleanEmail);
+        }
+        const { data: cloudData, error: cloudErr } = await cloudQuery.order('created_at', { ascending: true });
+        if (!cloudErr && Array.isArray(cloudData)) {
+          for (const orderRow of cloudData) {
+            if (Array.isArray(orderRow.items) && orderRow.items.length > 0) {
+              const msgItem = orderRow.items[0];
+              const normalized = {
+                id: orderRow.id,
+                userId: orderRow.user_id,
+                userName: orderRow.user_name || msgItem.userName || 'Restorer Member',
+                userEmail: orderRow.user_email || msgItem.userEmail || '',
+                senderRole: (msgItem.senderRole || msgItem.sender_role || 'USER').toUpperCase(),
+                senderName: msgItem.senderName || msgItem.sender_name || (msgItem.senderRole === 'ADMIN' ? 'Master Admin Engineer' : orderRow.user_name || 'Restorer'),
+                message: msgItem.message || '',
+                isRead: Boolean(msgItem.isRead || msgItem.is_read || false),
+                createdAt: orderRow.created_at || msgItem.createdAt || new Date().toISOString()
+              };
+              resultMap.set(normalized.id, normalized);
+            }
+          }
+        }
+      } catch (err) {}
+    }
+
+    const messages = Array.from(resultMap.values()).sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+
+    // Synchronize disk and memory
+    for (const msg of messages) {
+      if (!inMemoryMessages.some(m => m.id === msg.id)) {
+        inMemoryMessages.push(msg);
+      }
+    }
+    saveDiskMessages(inMemoryMessages);
+
+    return messages;
+  },
+
+  async getAllConversations() {
+    const resultMap = new Map();
+
+    // 1. Read from disk store
+    for (const msg of inMemoryMessages) {
+      resultMap.set(msg.id, msg);
+    }
+
+    // 2. Query Supabase Cloud Database
+    if (isSupabaseConfigured) {
+      // From 'messages' table
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .order('created_at', { ascending: true });
+        if (!error && Array.isArray(data)) {
+          for (const row of data) {
+            const mapped = mapMessageFromDb(row);
+            if (mapped && mapped.id) resultMap.set(mapped.id, mapped);
+          }
+        }
+      } catch (err) {}
+
+      // From cloud 'orders' chat backup
+      try {
+        const { data: cloudData, error: cloudErr } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('status', 'CHAT_MESSAGE')
+          .order('created_at', { ascending: true });
+        if (!cloudErr && Array.isArray(cloudData)) {
+          for (const orderRow of cloudData) {
+            if (Array.isArray(orderRow.items) && orderRow.items.length > 0) {
+              const msgItem = orderRow.items[0];
+              const normalized = {
+                id: orderRow.id,
+                userId: orderRow.user_id,
+                userName: orderRow.user_name || msgItem.userName || 'Restorer Member',
+                userEmail: orderRow.user_email || msgItem.userEmail || '',
+                senderRole: (msgItem.senderRole || msgItem.sender_role || 'USER').toUpperCase(),
+                senderName: msgItem.senderName || msgItem.sender_name || (msgItem.senderRole === 'ADMIN' ? 'Master Admin Engineer' : orderRow.user_name || 'Restorer'),
+                message: msgItem.message || '',
+                isRead: Boolean(msgItem.isRead || msgItem.is_read || false),
+                createdAt: orderRow.created_at || msgItem.createdAt || new Date().toISOString()
+              };
+              resultMap.set(normalized.id, normalized);
+            }
+          }
+        }
+      } catch (err) {}
+    }
+
+    const allMsgs = Array.from(resultMap.values()).sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+
+    // Synchronize disk and memory
+    inMemoryMessages = allMsgs;
+    saveDiskMessages(inMemoryMessages);
+
+    // Group into conversation threads stably
+    const conversationsMap = new Map();
+    for (const msg of allMsgs) {
+      const cleanEmail = (msg.userEmail || '').trim().toLowerCase();
+      const groupKey = cleanEmail ? `email_${cleanEmail}` : (msg.userId || 'guest');
+      if (!conversationsMap.has(groupKey)) {
+        conversationsMap.set(groupKey, {
+          userId: msg.userId || groupKey,
+          userName: msg.userName || 'Restorer Member',
+          userEmail: msg.userEmail || '',
+          lastMessage: msg.message,
+          lastMessageTime: msg.createdAt,
+          unreadCount: 0,
+          messages: []
+        });
+      }
+      const convo = conversationsMap.get(groupKey);
+      convo.messages.push(msg);
+      convo.lastMessage = msg.message;
+      convo.lastMessageTime = msg.createdAt;
+      if (msg.senderRole === 'USER' && !msg.isRead) {
+        convo.unreadCount += 1;
+      }
+    }
+
+    return Array.from(conversationsMap.values()).sort(
+      (a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
+    );
+  },
+
+  async markMessagesAsRead(userId, readerRole = 'ADMIN', userEmail = '') {
+    if (!userId && !userEmail) return;
+    const targetSenderRole = readerRole === 'ADMIN' ? 'USER' : 'ADMIN';
+    const cleanEmail = (userEmail || '').trim().toLowerCase();
+
+    // 1. Update in-memory & disk
+    inMemoryMessages.forEach(m => {
+      const msgEmail = (m.userEmail || '').trim().toLowerCase();
+      const isMatch = (userId && m.userId === userId) || (cleanEmail && msgEmail && msgEmail === cleanEmail);
+      if (isMatch && m.senderRole === targetSenderRole) {
+        m.isRead = true;
+      }
+    });
+    saveDiskMessages(inMemoryMessages);
+
+    // 2. Update Supabase Cloud Database
+    if (isSupabaseConfigured) {
+      try {
+        let query = supabase.from('messages').update({ is_read: true }).eq('sender_role', targetSenderRole);
+        if (userId && cleanEmail) {
+          query = query.or(`user_id.eq.${userId},user_email.eq.${cleanEmail}`);
+        } else if (userId) {
+          query = query.eq('user_id', userId);
+        } else {
+          query = query.eq('user_email', cleanEmail);
+        }
+        await query;
+      } catch (err) {}
+
+      try {
+        const { data: cloudMsgs } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('status', 'CHAT_MESSAGE');
+        if (cloudMsgs && Array.isArray(cloudMsgs)) {
+          for (const row of cloudMsgs) {
+            const isMatch = (userId && row.user_id === userId) || (cleanEmail && row.user_email && row.user_email.toLowerCase() === cleanEmail);
+            if (isMatch && Array.isArray(row.items) && row.items.length > 0) {
+              const item = row.items[0];
+              if ((item.senderRole || item.sender_role || '').toUpperCase() === targetSenderRole) {
+                item.isRead = true;
+                item.is_read = true;
+                await supabase.from('orders').update({ items: [item] }).eq('id', row.id);
+              }
+            }
+          }
+        }
+      } catch (err) {}
+    }
   }
 };
+

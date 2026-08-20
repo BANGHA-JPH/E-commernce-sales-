@@ -90,12 +90,26 @@ CREATE TABLE IF NOT EXISTS requests (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 6. Create Messages Table (Customer & Admin Live Chat)
+CREATE TABLE IF NOT EXISTS messages (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  user_name TEXT,
+  user_email TEXT,
+  sender_role TEXT NOT NULL DEFAULT 'USER',
+  sender_name TEXT,
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE spare_parts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vintage_cars ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
 -- Clean Policies
 DROP POLICY IF EXISTS "Allow public read access to spare_parts" ON spare_parts;
@@ -105,12 +119,14 @@ DROP POLICY IF EXISTS "Allow public all access to vintage_cars" ON vintage_cars;
 DROP POLICY IF EXISTS "Allow all actions for orders" ON orders;
 DROP POLICY IF EXISTS "Allow all actions for users" ON users;
 DROP POLICY IF EXISTS "Allow all actions for requests" ON requests;
+DROP POLICY IF EXISTS "Allow all actions for messages" ON messages;
 
 CREATE POLICY "Allow public all access to spare_parts" ON spare_parts FOR ALL USING (true);
 CREATE POLICY "Allow public all access to vintage_cars" ON vintage_cars FOR ALL USING (true);
 CREATE POLICY "Allow all actions for orders" ON orders FOR ALL USING (true);
 CREATE POLICY "Allow all actions for users" ON users FOR ALL USING (true);
 CREATE POLICY "Allow all actions for requests" ON requests FOR ALL USING (true);
+CREATE POLICY "Allow all actions for messages" ON messages FOR ALL USING (true);
 
 -- 4. Initial Seed Data (Vintage Cars)
 INSERT INTO vintage_cars (id, name, era, make, model, year_range, engine_name, engine_type, car_image, engine_image, horsepower, torque, description)

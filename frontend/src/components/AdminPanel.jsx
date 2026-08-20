@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { API_BASE_URL } from '../config/api';
 import { 
   X, Plus, Trash2, Edit3, ShieldAlert, Database, Layers, Car, Check, Search, 
   RefreshCw, DollarSign, Package, FileText, CheckCircle2, AlertTriangle, Eye, 
   Upload, Tag, Box, MapPin, Calendar, Cpu, Wrench, Bell, HelpCircle, User, 
   Sliders, Settings, ShoppingCart, ArrowLeft, Image as ImageIcon, Flame, Disc, Menu,
-  Video, UploadCloud, Layers3, Sparkles, LogOut
+  Video, UploadCloud, Layers3, Sparkles, LogOut, MessageSquare, Send, Mail, Phone, Clock
 } from 'lucide-react';
 import { SPARE_PARTS } from '../data/partsData';
 import { 
@@ -26,8 +26,8 @@ export default function AdminPanel({
   onUpdateUserRequestStatus,
   adminToken
 }) {
-  const [sidebarTab, setSidebarTab] = useState('inventory'); // 'inventory', 'orders', 'compatibility', 'settings'
-  const [activeTab, setActiveTab] = useState('add-part'); // 'add-part', 'parts-list'
+  const [sidebarTab, setSidebarTab] = useState('inventory'); // 'inventory', 'orders', 'chat', 'settings'
+  const [activeTab, setActiveTab] = useState('add-part'); // 'add-part', 'parts-list', 'requests-manage', 'customer-chat'
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [parts, setParts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +36,176 @@ export default function AdminPanel({
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [editingPartId, setEditingPartId] = useState(null);
   const [selectedCustomerReq, setSelectedCustomerReq] = useState(null);
+
+  // Chat & Direct Messages State
+  const [conversations, setConversations] = useState([]);
+  const [selectedUserThread, setSelectedUserThread] = useState(null);
+  const selectedThreadRef = useRef(null);
+  selectedThreadRef.current = selectedUserThread;
+
+  const [threadMessages, setThreadMessages] = useState([]);
+  const [adminReplyText, setAdminReplyText] = useState('');
+  const [isSendingReply, setIsSendingReply] = useState(false);
+  const [chatSearchQuery, setChatSearchQuery] = useState('');
+  const adminChatContainerRef = useRef(null);
+
+  // Auto-scroll admin chat container ONLY (never moves page/modal)
+  const scrollToAdminChatBottom = (smooth = true) => {
+    if (adminChatContainerRef.current) {
+      adminChatContainerRef.current.scrollTo({
+        top: adminChatContainerRef.current.scrollHeight,
+        behavior: smooth ? 'smooth' : 'auto'
+      });
+    }
+  };
+
+  // Fetch all customer conversations without mutating or jumping selected thread
+  const fetchConversations = async () => {
+    const token = adminToken || localStorage.getItem('adminToken') || 'master-admin-token-2026';
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/chat/conversations`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setConversations(data.data);
+        localStorage.setItem('admin_chat_conversations', JSON.stringify(data.data));
+      }
+    } catch (err) {
+      console.warn('Admin fetch conversations note:', err.message);
+      const cached = localStorage.getItem('admin_chat_conversations');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) setConversations(parsed);
+        } catch (e) {}
+      }
+    }
+  };
+
+  // Fetch thread messages for a specific user
+  const fetchThreadMessages = async (userId, userEmail = '') => {
+    if (!userId && !userEmail) return;
+    const token = adminToken || localStorage.getItem('adminToken') || 'master-admin-token-2026';
+    if (!token) return;
+    try {
+      const emailQuery = userEmail ? `?userEmail=${encodeURIComponent(userEmail)}` : '';
+      const res = await fetch(`${API_BASE_URL}/api/admin/chat/messages/${encodeURIComponent(userId || 'user')}${emailQuery}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setThreadMessages(data.data);
+        localStorage.setItem(`admin_chat_thread_${userId}`, JSON.stringify(data.data));
+      }
+    } catch (err) {
+      console.warn('Admin fetch thread error:', err.message);
+      const cached = localStorage.getItem(`admin_chat_thread_${userId}`);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) setThreadMessages(parsed);
+        } catch (e) {}
+      }
+    }
+  };
+
+  // Polling for live chat in admin panel - stable timer that does NOT switch threads
+  useEffect(() => {
+    const cachedConvos = localStorage.getItem('admin_chat_conversations');
+    if (cachedConvos) {
+      try {
+        const parsed = JSON.parse(cachedConvos);
+        if (Array.isArray(parsed) && parsed.length > 0) setConversations(parsed);
+      } catch (e) {}
+    }
+    fetchConversations();
+    const interval = setInterval(() => {
+      fetchConversations();
+      if (selectedThreadRef.current?.userId) {
+        fetchThreadMessages(selectedThreadRef.current.userId, selectedThreadRef.current.userEmail);
+      }
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [adminToken]);
+
+  const handleSelectConversation = (convo) => {
+    if (!convo) return;
+    setSelectedUserThread(convo);
+    fetchThreadMessages(convo.userId, convo.userEmail);
+    setConversations(prev => prev.map(c => (c.userId === convo.userId || (convo.userEmail && c.userEmail === convo.userEmail)) ? { ...c, unreadCount: 0 } : c));
+    setTimeout(() => scrollToAdminChatBottom(false), 80);
+  };
+
+  const handleOpenChatForRequest = (req) => {
+    const targetUserId = req.userId || `user-${(req.userEmail || 'guest').replace(/[^a-zA-Z0-9]/g, '_')}`;
+    const convo = {
+      userId: targetUserId,
+      userName: req.userName || 'Restorer Member',
+      userEmail: req.userEmail || '',
+      lastMessage: `Inquiry regarding Request #${req.id} (${req.partTitle})`,
+      unreadCount: 0
+    };
+    setSelectedCustomerReq(null);
+    setSidebarTab('chat');
+    setActiveTab('customer-chat');
+    handleSelectConversation(convo);
+  };
+
+  const handleSendAdminReply = async (presetText) => {
+    const textToSend = presetText || adminReplyText;
+    if (!textToSend || !textToSend.trim() || !selectedUserThread) return;
+
+    const trimmed = textToSend.trim();
+    setAdminReplyText('');
+    setIsSendingReply(true);
+
+    const token = adminToken || localStorage.getItem('adminToken') || 'master-admin-token-2026';
+    const newMsg = {
+      id: `MSG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      userId: selectedUserThread.userId,
+      userName: selectedUserThread.userName,
+      userEmail: selectedUserThread.userEmail,
+      senderRole: 'ADMIN',
+      senderName: 'Master Admin Engineer',
+      message: trimmed,
+      createdAt: new Date().toISOString()
+    };
+
+    setThreadMessages(prev => [...prev, newMsg]);
+
+    const threadKey = `admin_chat_thread_${selectedUserThread.userId}`;
+    const prevList = JSON.parse(localStorage.getItem(threadKey) || '[]');
+    localStorage.setItem(threadKey, JSON.stringify([...prevList, newMsg]));
+
+    if (token) {
+      try {
+        await fetch(`${API_BASE_URL}/api/admin/chat/reply`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            userId: selectedUserThread.userId,
+            userName: selectedUserThread.userName,
+            userEmail: selectedUserThread.userEmail,
+            message: trimmed
+          })
+        });
+        fetchConversations();
+        fetchThreadMessages(selectedUserThread.userId);
+      } catch (err) {
+        console.warn('Admin reply error:', err.message);
+      }
+    }
+
+    setIsSendingReply(false);
+    setTimeout(() => scrollToAdminChatBottom(true), 60);
+  };
+
+  const totalUnreadChatCount = conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
 
   // 10-Section Form State
   const [formData, setFormData] = useState({
@@ -480,7 +650,7 @@ export default function AdminPanel({
             <button
               onClick={() => { setSidebarTab('inventory'); setActiveTab('add-part'); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xs transition-all ${
-                sidebarTab === 'inventory' 
+                activeTab === 'add-part' 
                   ? 'bg-[#ff7a1a] text-black shadow-md' 
                   : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
               }`}
@@ -492,13 +662,51 @@ export default function AdminPanel({
             <button
               onClick={() => { setSidebarTab('orders'); setActiveTab('parts-list'); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xs transition-all ${
-                sidebarTab === 'orders' 
+                activeTab === 'parts-list' 
                   ? 'bg-[#ff7a1a] text-black shadow-md' 
                   : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
               }`}
             >
               <ShoppingCart className="w-4 h-4" />
-              <span>Catalog Database ({parts.length})</span>
+              <span>Catalog ({parts.length})</span>
+            </button>
+
+            <button
+              onClick={() => { setSidebarTab('requests'); setActiveTab('requests-manage'); }}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xs transition-all ${
+                activeTab === 'requests-manage' 
+                  ? 'bg-[#ff7a1a] text-black shadow-md' 
+                  : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <FileText className="w-4 h-4" />
+                <span>Requests</span>
+              </div>
+              {userRequests.length > 0 && (
+                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-xs bg-[#ff7a1a] text-black">
+                  {userRequests.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => { setSidebarTab('chat'); setActiveTab('customer-chat'); }}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xs transition-all ${
+                activeTab === 'customer-chat' 
+                  ? 'bg-[#ff7a1a] text-black shadow-md' 
+                  : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <MessageSquare className="w-4 h-4" />
+                <span>Live Chat</span>
+              </div>
+              {totalUnreadChatCount > 0 && (
+                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-xs bg-red-500 text-white animate-pulse">
+                  {totalUnreadChatCount} NEW
+                </span>
+              )}
             </button>
           </nav>
         </div>
@@ -541,11 +749,27 @@ export default function AdminPanel({
             </button>
 
             <h2 className="text-xl font-bold font-h2 text-white">
-              Parts Engine Admin
+              Classic Aircooled VW Works Admin
             </h2>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            <button 
+              onClick={() => setActiveTab('customer-chat')}
+              className={`text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xs font-mono font-bold transition-all border flex items-center gap-1.5 ${
+                activeTab === 'customer-chat' 
+                  ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]' 
+                  : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a]'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Live Chat</span>
+              {totalUnreadChatCount > 0 && (
+                <span className="px-1.5 py-0.2 text-[9px] font-bold rounded-xs bg-red-500 text-white">
+                  {totalUnreadChatCount}
+                </span>
+              )}
+            </button>
             <button 
               onClick={() => setActiveTab('requests-manage')}
               className={`text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xs font-mono font-bold transition-all border ${
@@ -1232,14 +1456,33 @@ export default function AdminPanel({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 self-end sm:self-center" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-wrap items-center gap-2 self-end sm:self-center" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenChatForRequest(req)}
+                          className="bg-[#ff7a1a]/15 hover:bg-[#ff7a1a] text-[#ff7a1a] hover:text-black border border-[#ff7a1a]/40 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xs transition-all flex items-center gap-1.5 shadow-sm"
+                          title="Open In-App Live Chat with Customer"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>Message</span>
+                        </button>
+
+                        <a
+                          href={`mailto:${req.userEmail}?subject=${encodeURIComponent(`Classic Aircooled VW Works - Update on Request #${req.id} (${req.partTitle})`)}&body=${encodeURIComponent(`Hello ${req.userName || 'Restorer'},\n\nRegarding your request for ${req.partTitle} (Request ID: #${req.id}):\n\nCurrent Status: ${req.status || 'Pending'}\nPart Value: $${req.price}\n\nBest regards,\nMaster Admin Engineer\nClassic Aircooled VW Works`)}`}
+                          className="bg-[#201f20] hover:bg-emerald-600 hover:text-white border border-emerald-500/40 text-emerald-400 px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xs transition-all flex items-center gap-1.5 shadow-sm"
+                          title="Send Direct Email to Customer"
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                          <span>Email</span>
+                        </a>
+
                         <button
                           type="button"
                           onClick={() => setSelectedCustomerReq(req)}
                           className="bg-[#201f20] hover:bg-[#ff7a1a] hover:text-black border border-[#584236]/60 text-[#e0c0b1] px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-xs transition-all flex items-center gap-1.5 shadow-sm"
                         >
                           <User className="w-3.5 h-3.5" />
-                          <span>Customer Details</span>
+                          <span>Details</span>
                         </button>
 
                         <select
@@ -1368,7 +1611,7 @@ export default function AdminPanel({
                       <span className="text-xs text-[#a78b7d]">Current: <strong className="text-white">{selectedCustomerReq.status || 'Pending'}</strong></span>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                       <select
                         value={selectedCustomerReq.status || 'Pending'}
                         onChange={(e) => {
@@ -1387,13 +1630,27 @@ export default function AdminPanel({
                         <option value="Delivered">Delivered</option>
                       </select>
 
-                      <a
-                        href={`mailto:${selectedCustomerReq.userEmail}?subject=Update regarding your request #${selectedCustomerReq.id}`}
-                        className="bg-[#201f20] hover:bg-[#ff7a1a] hover:text-black border border-[#584236]/60 text-[#e0c0b1] px-4 py-2.5 text-xs font-mono font-bold uppercase rounded-xs transition-all flex items-center gap-1.5"
+                      <button
+                        type="button"
+                        onClick={() => handleOpenChatForRequest(selectedCustomerReq)}
+                        className="bg-[#ff7a1a] hover:bg-[#ffb68e] text-black px-4 py-2.5 text-xs font-mono font-bold uppercase rounded-xs transition-all flex items-center justify-center gap-1.5 shadow-sm"
                       >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>Email Customer</span>
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>Live Chat</span>
+                      </button>
+
+                      <a
+                        href={`mailto:${selectedCustomerReq.userEmail}?subject=${encodeURIComponent(`Classic Aircooled VW Works - Update on Request #${selectedCustomerReq.id} (${selectedCustomerReq.partTitle})`)}&body=${encodeURIComponent(`Hello ${selectedCustomerReq.userName || 'Restorer'},\n\nRegarding your request for ${selectedCustomerReq.partTitle} (Request ID: #${selectedCustomerReq.id}):\n\nCurrent Status: ${selectedCustomerReq.status || 'Pending'}\nPart Value: $${selectedCustomerReq.price}\n\nBest regards,\nMaster Admin Engineer\nClassic Aircooled VW Works`)}`}
+                        className="bg-[#201f20] hover:bg-emerald-600 hover:text-white border border-emerald-500/40 text-emerald-400 px-4 py-2.5 text-xs font-mono font-bold uppercase rounded-xs transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Email</span>
                       </a>
+                    </div>
+
+                    <div className="text-[11px] text-[#a78b7d] bg-[#111112] p-2.5 rounded-xs border border-[#2d2b2e] flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-[#ff7a1a] shrink-0" />
+                      <span>Changing status automatically sends an in-app live chat update and dispatches an email notification to <strong>{selectedCustomerReq.userEmail}</strong>.</span>
                     </div>
                   </div>
 
@@ -1483,6 +1740,235 @@ export default function AdminPanel({
                     </div>
                   ))
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: CUSTOMER LIVE CHAT CONSOLE */}
+          {activeTab === 'customer-chat' && (
+            <div className="h-full flex flex-col space-y-4">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#262426]">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold font-h2 text-white uppercase tracking-tight">
+                      Customer Live Messages & Inquiry Portal
+                    </h3>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      LIVE DISPATCH
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#a78b7d] mt-0.5">
+                    Real-time direct chat with registered customers and restorer members.
+                  </p>
+                </div>
+
+                <button
+                  onClick={fetchConversations}
+                  className="text-xs text-[#ff7a1a] flex items-center gap-1.5 bg-[#1c1b1c] px-4 py-2 border border-[#3a383a] hover:border-[#ff7a1a] self-start sm:self-auto rounded-xs transition-all"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Refresh Threads
+                </button>
+              </div>
+
+              {/* Two Column Layout */}
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 min-h-0 overflow-hidden">
+                
+                {/* Left Panel: Conversation List */}
+                <div className="md:col-span-1 bg-[#141416] border border-[#262426] rounded-xs flex flex-col overflow-hidden h-[540px]">
+                  {/* Search Bar */}
+                  <div className="p-3 border-b border-[#262426] bg-[#181719]">
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#a78b7d]" />
+                      <input
+                        type="text"
+                        placeholder="Search customers or emails..."
+                        value={chatSearchQuery}
+                        onChange={(e) => setChatSearchQuery(e.target.value)}
+                        className="w-full bg-[#0e0e0f] border border-[#3a383a] rounded-xs pl-8 pr-3 py-1.5 text-xs text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  {/* List of Customers */}
+                  <div className="flex-1 overflow-y-auto divide-y divide-[#262426]">
+                    {conversations
+                      .filter(c => 
+                        !chatSearchQuery || 
+                        c.userName?.toLowerCase().includes(chatSearchQuery.toLowerCase()) ||
+                        c.userEmail?.toLowerCase().includes(chatSearchQuery.toLowerCase()) ||
+                        c.lastMessage?.toLowerCase().includes(chatSearchQuery.toLowerCase())
+                      )
+                      .length === 0 ? (
+                        <div className="p-6 text-center text-xs text-[#a78b7d] space-y-2">
+                          <MessageSquare className="w-6 h-6 mx-auto opacity-40 text-[#ff7a1a]" />
+                          <p>No active customer conversations yet.</p>
+                        </div>
+                      ) : (
+                        conversations
+                          .filter(c => 
+                            !chatSearchQuery || 
+                            c.userName?.toLowerCase().includes(chatSearchQuery.toLowerCase()) ||
+                            c.userEmail?.toLowerCase().includes(chatSearchQuery.toLowerCase()) ||
+                            c.lastMessage?.toLowerCase().includes(chatSearchQuery.toLowerCase())
+                          )
+                          .map((convo) => {
+                            const isSelected = selectedUserThread?.userId === convo.userId;
+                            return (
+                              <button
+                                key={convo.userId}
+                                onClick={() => handleSelectConversation(convo)}
+                                className={`w-full text-left p-3.5 flex items-start gap-3 transition-all ${
+                                  isSelected 
+                                    ? 'bg-[#222022] border-l-4 border-l-[#ff7a1a]' 
+                                    : 'hover:bg-[#1a191b]'
+                                }`}
+                              >
+                                <div className="w-9 h-9 rounded-full bg-[#ff7a1a]/20 border border-[#ff7a1a]/40 text-[#ff7a1a] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                                  {convo.userName ? convo.userName.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center justify-between gap-1">
+                                    <h4 className="text-xs font-bold text-white truncate">{convo.userName}</h4>
+                                    <span className="text-[9px] text-[#a78b7d] font-mono shrink-0">
+                                      {convo.lastMessageTime ? new Date(convo.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                    </span>
+                                  </div>
+                                  <div className="text-[10px] text-[#83cffb] font-mono truncate">{convo.userEmail || 'Customer Member'}</div>
+                                  <p className="text-[11px] text-[#a78b7d] truncate mt-1">{convo.lastMessage}</p>
+                                </div>
+                                {convo.unreadCount > 0 && (
+                                  <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-[#ff7a1a] text-black shrink-0 self-center">
+                                    {convo.unreadCount}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })
+                      )}
+                  </div>
+                </div>
+
+                {/* Right Panel: Active Chat Thread View */}
+                <div className="md:col-span-2 bg-[#141416] border border-[#262426] rounded-xs flex flex-col overflow-hidden h-[540px]">
+                  {selectedUserThread ? (
+                    <>
+                      {/* Thread Header */}
+                      <div className="p-3.5 bg-[#181719] border-b border-[#262426] flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-[#ff7a1a]/20 border border-[#ff7a1a]/40 text-[#ff7a1a] flex items-center justify-center font-bold text-xs">
+                            {selectedUserThread.userName ? selectedUserThread.userName.charAt(0).toUpperCase() : 'U'}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-xs font-bold text-white">{selectedUserThread.userName}</h4>
+                              <span className="text-[9px] px-1.5 py-0.2 bg-[#83cffb]/20 text-[#83cffb] border border-[#83cffb]/30 rounded-xs font-mono">
+                                Restorer
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-[#a78b7d] font-mono block">
+                              ✉️ {selectedUserThread.userEmail} • User ID: #{selectedUserThread.userId}
+                            </span>
+                          </div>
+                        </div>
+
+                        <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                          Thread Active
+                        </span>
+                      </div>
+
+                      {/* Quick Admin Canned Responses */}
+                      <div className="p-2 bg-[#1b1a1c] border-b border-[#262426] flex items-center gap-2 overflow-x-auto text-[11px] font-mono no-scrollbar">
+                        <span className="text-[#a78b7d] uppercase text-[9px] shrink-0 font-bold flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-[#ff7a1a]" /> Quick Reply:
+                        </span>
+                        <button 
+                          onClick={() => handleSendAdminReply("Hello! Yes, that item is in stock and crated ready for global dispatch.")}
+                          className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2 py-0.5 rounded-xs border border-[#3a383a] transition-all text-[10px]"
+                        >
+                          📦 In Stock & Ready
+                        </button>
+                        <button 
+                          onClick={() => handleSendAdminReply("Please send your engine case casting code (AS41, Single/Dual relief) so we can verify exact fitment.")}
+                          className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2 py-0.5 rounded-xs border border-[#3a383a] transition-all text-[10px]"
+                        >
+                          🔧 Request Casting Code
+                        </button>
+                        <button 
+                          onClick={() => handleSendAdminReply("We can offer a special 10% restorer bundle discount for this complete set.")}
+                          className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2 py-0.5 rounded-xs border border-[#3a383a] transition-all text-[10px]"
+                        >
+                          💰 10% Bundle Discount
+                        </button>
+                      </div>
+
+                      {/* Messages Scroll Area */}
+                      <div ref={adminChatContainerRef} className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#101011]">
+                        {threadMessages.map((msg, idx) => {
+                          const isAdmin = msg.senderRole === 'ADMIN';
+                          return (
+                            <div 
+                              key={msg.id || idx}
+                              className={`flex flex-col ${isAdmin ? 'items-end' : 'items-start'}`}
+                            >
+                              <div className="flex items-center gap-1.5 mb-1 px-1 text-[10px] text-[#a78b7d] font-mono">
+                                <span>{isAdmin ? 'Master Admin Engineer (You)' : selectedUserThread.userName}</span>
+                                <span>•</span>
+                                <span>{msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}</span>
+                              </div>
+
+                              <div 
+                                className={`max-w-[85%] p-3 rounded-xs text-xs leading-relaxed ${
+                                  isAdmin 
+                                    ? 'bg-[#ff7a1a] text-black font-semibold shadow-md rounded-tr-none'
+                                    : 'bg-[#201f20] text-[#e5e2e3] border border-[#584236]/60 shadow-md rounded-tl-none'
+                                }`}
+                              >
+                                <p className="whitespace-pre-wrap">{msg.message}</p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Reply Input Box */}
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleSendAdminReply();
+                        }}
+                        className="p-3 bg-[#181719] border-t border-[#262426] flex items-center gap-2"
+                      >
+                        <input
+                          type="text"
+                          placeholder={`Reply to ${selectedUserThread.userName} as Master Admin...`}
+                          value={adminReplyText}
+                          onChange={(e) => setAdminReplyText(e.target.value)}
+                          className="flex-1 bg-[#0e0e0f] border border-[#3a383a] rounded-xs px-3.5 py-2.5 text-xs text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
+                        />
+                        <button
+                          type="submit"
+                          disabled={isSendingReply || !adminReplyText.trim()}
+                          className="bg-[#ff7a1a] hover:bg-[#ffb68e] disabled:opacity-40 text-black font-bold text-xs uppercase px-5 py-2.5 rounded-xs transition-all flex items-center gap-1.5 shrink-0"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Reply</span>
+                        </button>
+                      </form>
+                    </>
+                  ) : (
+                    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#a78b7d] space-y-3">
+                      <MessageSquare className="w-10 h-10 text-[#ff7a1a] opacity-50" />
+                      <h4 className="text-sm font-bold text-white uppercase font-mono">Select a Customer Conversation</h4>
+                      <p className="text-xs max-w-xs">
+                        Pick a customer thread from the left panel to review inquiry history and send immediate responses.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
               </div>
             </div>
           )}

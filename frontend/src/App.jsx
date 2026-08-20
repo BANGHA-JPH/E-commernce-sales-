@@ -139,7 +139,7 @@ export default function App() {
       } else {
         setNotifications([
           {
-            title: 'Welcome to Aura Vintage Garage',
+            title: 'Welcome to Classic Aircooled VW Works',
             message: `Hello ${currentUser.name}! Your restorer dashboard is ready. Add vehicles and request parts.`,
             timestamp: 'Just now'
           }
@@ -508,13 +508,14 @@ export default function App() {
         />
       )}
 
-      <main className={currentPage === 'dashboard' ? "min-h-screen py-4" : "pt-24 md:pt-28 min-h-[80vh]"}>
+      <main className={currentPage === 'dashboard' ? "pt-28 md:pt-36 min-h-screen pb-16 bg-[#0e0e0f]" : "pt-24 md:pt-28 min-h-[80vh]"}>
         {currentPage === 'dashboard' ? (
           <UserDashboard
             isOpen={true}
             onClose={() => setCurrentPage('shop')}
             onBackToShop={() => setCurrentPage('shop')}
             currentUser={currentUser}
+            authToken={authToken}
             onOpenAuth={() => setIsAuthOpen(true)}
             onLogout={handleLogout}
             userRequests={userRequests}
@@ -565,6 +566,9 @@ export default function App() {
               activeFilter={activeFilter}
               onSelectFilter={handleSelectFilter}
             />
+
+            {/* Live Engine Workshop & Restoration Video Showcase */}
+            <VideoShowcase />
 
             {/* Verified Customer Reviews */}
             <ReviewsSection />

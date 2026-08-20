@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 
 dotenv.config();
 
@@ -29,12 +30,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', requestRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', chatRoutes);
 
 // Root health check endpoint
 app.get('/', (req, res) => {
   res.json({
     status: 'ONLINE',
-    service: 'Aura Vintage Engineering REST API Server',
+    service: 'Classic Aircooled VW Works REST API Server',
     guestBrowsing: 'ENABLED',
     version: '1.0.0'
   });

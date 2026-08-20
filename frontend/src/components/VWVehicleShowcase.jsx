@@ -106,7 +106,7 @@ export default function VWVehicleShowcase({
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 text-[#ff7a1a] text-xs font-bold mb-3 tracking-wider uppercase">
               <Car className="w-4 h-4" />
-              <span>PRECISION VEHICLE DISCOVERY // RUSTY AIRCOOLED VW WORKS</span>
+              <span>PRECISION VEHICLE DISCOVERY // CLASSIC AIRCOOLED VW WORKS</span>
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-[#e5e2e3] font-h2 tracking-tight">
               Find Parts For Your <span className="text-[#ff7a1a]">Volkswagen</span>

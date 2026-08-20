@@ -150,7 +150,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, cartTotal })
           </form>
 
           <div className="mt-6 text-center text-xs text-slate-400 border-t border-slate-800 pt-4">
-            <span>{isRegister ? 'Already have an account?' : 'New to Rusty Aircooled?'} </span>
+            <span>{isRegister ? 'Already have an account?' : 'New to Classic Aircooled VW Works?'} </span>
             <button
               onClick={() => {
                 setIsRegister(!isRegister);

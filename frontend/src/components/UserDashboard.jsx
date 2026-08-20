@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, User, Box, Car, Heart, Bell, Navigation, MessageSquare, Settings, 
-  Clock, CheckCircle2, AlertCircle, Truck, PackageCheck, Phone, MessageCircle, 
+  Clock, CheckCircle, CheckCircle2, AlertCircle, Truck, PackageCheck, Phone, MessageCircle, 
   ExternalLink, Search, Plus, Trash2, ShieldCheck, ChevronRight, Filter, Sparkles,
-  ArrowUpRight, RefreshCw, Layers, Wrench, Check, LogOut
+  ArrowUpRight, RefreshCw, Layers, Wrench, Check, LogOut, Send, Bot, Mail
 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export default function UserDashboard({ 
   isOpen, 
@@ -24,11 +25,12 @@ export default function UserDashboard({
   onUpdateProfile,
   onOpenCatalog,
   currentUser,
+  authToken,
   onOpenAuth,
   onLogout,
   onBackToShop
 }) {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'requests' | 'vehicles' | 'wishlist' | 'notifications' | 'tracking' | 'contact' | 'profile'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'requests' | 'vehicles' | 'wishlist' | 'notifications' | 'tracking' | 'chat' | 'contact' | 'profile'
   const [trackingSearchInput, setTrackingSearchInput] = useState('');
   const [searchedTrackingResult, setSearchedTrackingResult] = useState(null);
   
@@ -37,6 +39,144 @@ export default function UserDashboard({
   const [newVehCategory, setNewVehCategory] = useState('Type 1 (Beetle)');
   const [newVehModel, setNewVehModel] = useState('Beetle 1968–1979');
   const [newVehEngine, setNewVehEngine] = useState('1600cc');
+
+  // In-App Chat State with Master Admin
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInputText, setChatInputText] = useState('');
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const chatScrollContainerRef = useRef(null);
+
+  // Unread Admin messages count
+  const unreadAdminCount = (chatMessages || []).filter(m => m && m.senderRole === 'ADMIN' && !m.isRead).length;
+
+  // Auto-scroll chat box container ONLY (never scrolls main page)
+  const scrollToChatBottom = (smooth = true) => {
+    if (chatScrollContainerRef.current) {
+      chatScrollContainerRef.current.scrollTo({
+        top: chatScrollContainerRef.current.scrollHeight,
+        behavior: smooth ? 'smooth' : 'auto'
+      });
+    }
+  };
+
+  // Fetch messages from backend or localStorage fallback
+  const fetchUserChatMessages = async () => {
+    if (!currentUser) return;
+    const localKey = `chat_user_${currentUser.id || currentUser.email || 'default'}`;
+    const localSaved = JSON.parse(localStorage.getItem(localKey) || '[]');
+
+    // Show cached messages immediately
+    if (localSaved.length > 0 && chatMessages.length === 0) {
+      setChatMessages(localSaved);
+    }
+
+    const activeToken = authToken || localStorage.getItem('authToken');
+    const queryParams = new URLSearchParams({
+      userId: currentUser.id || '',
+      userName: currentUser.name || userProfile?.name || 'Restorer Member',
+      userEmail: currentUser.email || userProfile?.email || ''
+    }).toString();
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/chat/messages?${queryParams}`, {
+        headers: {
+          ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
+        }
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        if (data.data.length > 0) {
+          setChatMessages(data.data);
+          localStorage.setItem(localKey, JSON.stringify(data.data));
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Live chat API offline, reading local history:', err.message);
+    }
+
+    if (localSaved.length > 0) {
+      setChatMessages(localSaved);
+    } else {
+      // Default welcome message from Admin
+      const initialWelcome = [
+        {
+          id: 'msg-welcome-01',
+          userId: currentUser.id,
+          senderRole: 'ADMIN',
+          senderName: 'Master Admin Engineer',
+          message: `Hello ${currentUser.name || 'Restorer'}! Welcome to Classic Aircooled VW Works. I am the lead engine specialist on duty. How can I assist with your build, casting codes, or parts today?`,
+          createdAt: new Date().toISOString()
+        }
+      ];
+      setChatMessages(initialWelcome);
+      localStorage.setItem(localKey, JSON.stringify(initialWelcome));
+    }
+  };
+
+  useEffect(() => {
+    fetchUserChatMessages();
+  }, [currentUser, authToken]);
+
+  // Polling for new Admin replies without interrupting mouse scrolling
+  useEffect(() => {
+    if (activeTab === 'chat' || activeTab === 'contact') {
+      setTimeout(() => scrollToChatBottom(false), 80);
+      const interval = setInterval(() => {
+        fetchUserChatMessages();
+      }, 3500);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab, currentUser]);
+
+  const handleSendChatMessage = async (presetText) => {
+    const textToSend = presetText || chatInputText;
+    if (!textToSend || !textToSend.trim() || !currentUser) return;
+
+    const trimmedMsg = textToSend.trim();
+    setChatInputText('');
+    setIsSendingMessage(true);
+
+    const tempMsg = {
+      id: `MSG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      userId: currentUser.id || 'user-default',
+      userName: currentUser.name || userProfile?.name || 'Restorer Member',
+      userEmail: currentUser.email || userProfile?.email || '',
+      senderRole: 'USER',
+      senderName: currentUser.name || userProfile?.name || 'Restorer',
+      message: trimmedMsg,
+      createdAt: new Date().toISOString()
+    };
+
+    // Optimistic UI update
+    setChatMessages(prev => [...prev, tempMsg]);
+    const localKey = `chat_user_${currentUser.id || currentUser.email || 'default'}`;
+    const currentList = JSON.parse(localStorage.getItem(localKey) || '[]');
+    localStorage.setItem(localKey, JSON.stringify([...currentList, tempMsg]));
+
+    const activeToken = authToken || localStorage.getItem('authToken');
+    try {
+      await fetch(`${API_BASE_URL}/api/chat/send`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {})
+        },
+        body: JSON.stringify({
+          message: trimmedMsg,
+          userId: currentUser.id || 'user-default',
+          userName: currentUser.name || userProfile?.name || 'Restorer Member',
+          userEmail: currentUser.email || userProfile?.email || ''
+        })
+      });
+      fetchUserChatMessages();
+    } catch (err) {
+      console.warn('Message queued locally:', err.message);
+    }
+
+    setIsSendingMessage(false);
+    setTimeout(() => scrollToChatBottom(true), 60);
+  };
 
   // Contact Form State
   const [contactSubject, setContactSubject] = useState('');
@@ -78,11 +218,11 @@ export default function UserDashboard({
     );
   }
 
-  // Stats Calculations
-  const activeRequestsCount = userRequests.filter(r => r.status === 'Pending' || r.status === 'Approved').length;
-  const reservedItemsCount = userRequests.filter(r => r.status === 'Reserved').length;
-  const completedOrdersCount = userRequests.filter(r => r.status === 'Delivered').length;
-  const savedVehiclesCount = savedVehicles.length;
+  // Safe Stats Calculations
+  const activeRequestsCount = (userRequests || []).filter(r => r && (r.status === 'Pending' || r.status === 'Approved')).length;
+  const reservedItemsCount = (userRequests || []).filter(r => r && r.status === 'Reserved').length;
+  const completedOrdersCount = (userRequests || []).filter(r => r && r.status === 'Delivered').length;
+  const savedVehiclesCount = (savedVehicles || []).length;
 
   // Seller Phone & WhatsApp Credentials
   const SELLER_WHATSAPP_NUMBER = '15550198822'; // Seller WhatsApp formatted
@@ -223,7 +363,7 @@ export default function UserDashboard({
                   activeTab === 'overview' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <User className="w-4 h-4" />
+                <Layers className="w-4 h-4" />
                 <span>Overview</span>
               </button>
 
@@ -234,11 +374,11 @@ export default function UserDashboard({
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Box className="w-4 h-4" />
+                  <Clock className="w-4 h-4" />
                   <span>My Requests</span>
                 </div>
                 {userRequests.length > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.5 font-bold ${activeTab === 'requests' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a] text-black'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.2 font-bold rounded-full ${activeTab === 'requests' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
                     {userRequests.length}
                   </span>
                 )}
@@ -252,10 +392,10 @@ export default function UserDashboard({
               >
                 <div className="flex items-center gap-3">
                   <Car className="w-4 h-4" />
-                  <span>My Vehicles</span>
+                  <span>Garage Vehicles</span>
                 </div>
                 {savedVehicles.length > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.5 font-bold ${activeTab === 'vehicles' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a] text-black'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.2 font-bold rounded-full ${activeTab === 'vehicles' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
                     {savedVehicles.length}
                   </span>
                 )}
@@ -269,10 +409,10 @@ export default function UserDashboard({
               >
                 <div className="flex items-center gap-3">
                   <Heart className="w-4 h-4" />
-                  <span>Saved Parts</span>
+                  <span>Saved Wishlist</span>
                 </div>
                 {wishlistParts.length > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.5 font-bold ${activeTab === 'wishlist' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a] text-black'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.2 font-bold rounded-full ${activeTab === 'wishlist' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
                     {wishlistParts.length}
                   </span>
                 )}
@@ -289,7 +429,9 @@ export default function UserDashboard({
                   <span>Notifications</span>
                 </div>
                 {notifications.length > 0 && (
-                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                  <span className={`text-[10px] px-1.5 py-0.2 font-bold rounded-full ${activeTab === 'notifications' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a]/20 text-[#ff7a1a]'}`}>
+                    {notifications.length}
+                  </span>
                 )}
               </button>
 
@@ -304,13 +446,23 @@ export default function UserDashboard({
               </button>
 
               <button
-                onClick={() => setActiveTab('contact')}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'contact' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                onClick={() => {
+                  setActiveTab('contact');
+                  fetchUserChatMessages();
+                }}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
+                  activeTab === 'contact' || activeTab === 'chat' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <MessageSquare className="w-4 h-4" />
-                <span>Contact Seller</span>
+                <div className="flex items-center gap-3">
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Contact Specialist / Chat</span>
+                </div>
+                {chatMessages.length > 0 && (
+                  <span className={`text-[10px] px-1.5 py-0.5 font-bold ${activeTab === 'contact' || activeTab === 'chat' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a] text-black'}`}>
+                    {unreadAdminCount > 0 ? `${unreadAdminCount} NEW` : chatMessages.length}
+                  </span>
+                )}
               </button>
 
               <button
@@ -319,17 +471,16 @@ export default function UserDashboard({
                   activeTab === 'profile' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <Settings className="w-4 h-4" />
-                <span>Profile Settings</span>
+                <User className="w-4 h-4" />
+                <span>Profile & Settings</span>
               </button>
             </nav>
           </div>
 
           {/* Quick Help Direct WhatsApp Callout */}
           <div className="mt-6 p-3 bg-[#201f20] border border-[#ff7a1a]/40 rounded-xs space-y-2 text-center">
-            <span className="text-[10px] text-[#ff7a1a] uppercase font-bold block">Need Parts Support?</span>
             <a
-              href={`https://wa.me/${SELLER_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hello Rusty Aircooled Seller! I need assistance with vintage VW parts.")}`}
+              href={`https://wa.me/${SELLER_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hello Classic Aircooled VW Works Seller! I need assistance with vintage VW parts.")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-1.5 w-full bg-emerald-600 hover:bg-emerald-500 text-white py-1.5 px-2 text-[11px] font-bold rounded-xs transition-all"
@@ -709,7 +860,7 @@ export default function UserDashboard({
                             className={`text-xs px-3 py-1.5 rounded-xs font-bold uppercase transition-all flex items-center gap-1.5 ${
                               isFilterActive
                                 ? 'bg-[#ff7a1a] text-black'
-                                : 'bg-[#201f20] text-[#e0c0b1] border border-[#584236]/60 hover:border-[#ff7a1a]'
+                          : 'bg-[#201f20] text-[#e0c0b1] border border-[#584236]/60 hover:border-[#ff7a1a]'
                             }`}
                           >
                             {isFilterActive ? <Check className="w-3.5 h-3.5" /> : <Filter className="w-3.5 h-3.5" />}
@@ -880,60 +1031,171 @@ export default function UserDashboard({
             </div>
           )}
 
-          {/* TAB 7: CONTACT / MESSAGES */}
-          {activeTab === 'contact' && (
+          {/* TAB 7: LIVE CHAT & DIRECT MESSAGING */}
+          {(activeTab === 'chat' || activeTab === 'contact') && (
             <div className="space-y-6">
-              <div className="border-b border-[#262426] pb-4">
-                <h2 className="text-xl font-bold text-white uppercase tracking-tight">
-                  Direct Contact & Messaging
-                </h2>
-                <p className="text-xs text-[#a78b7d] mt-0.5">
-                  Get in direct touch with our vintage VW parts specialists via WhatsApp or phone.
-                </p>
+              {/* Header */}
+              <div className="border-b border-[#262426] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-white uppercase tracking-tight">
+                      Specialist Engineering Desk
+                    </h2>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      ONLINE & READY
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#a78b7d] mt-1">
+                    Direct in-app messaging with Master Admin Engineer. Ask about engine builds, casting codes, custom crating, or order status.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs font-mono text-[#a78b7d]">
+                  <Clock className="w-3.5 h-3.5 text-[#ff7a1a]" />
+                  <span>Avg Reply Time: &lt; 15 mins</span>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* WhatsApp Direct Option */}
-                <div className="p-6 bg-[#181719] border border-emerald-500/40 rounded-xs space-y-4">
+              {/* Chat Container */}
+              <div className="bg-[#141416] border border-[#584236]/50 rounded-xs flex flex-col h-[520px] shadow-2xl overflow-hidden">
+                
+                {/* Chat Header Bar */}
+                <div className="p-3.5 bg-[#1a191b] border-b border-[#2d2b2e] flex items-center justify-between text-xs">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5" />
+                    <div className="w-8 h-8 rounded-full bg-[#ff7a1a]/20 border border-[#ff7a1a]/40 text-[#ff7a1a] flex items-center justify-center font-bold">
+                      <Wrench className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-white">WhatsApp Seller</h3>
-                      <span className="text-xs text-emerald-400 font-bold block">Instant Parts Response</span>
+                      <div className="flex items-center gap-1.5 font-bold text-white">
+                        <span>Master Admin Engineer</span>
+                        <CheckCircle className="w-3.5 h-3.5 text-[#83cffb]" />
+                      </div>
+                      <span className="text-[10px] text-[#a78b7d]">Classic Aircooled VW Works Lead Specialist</span>
                     </div>
                   </div>
-                  <p className="text-xs text-[#a78b7d]">
-                    Send direct photo inquiries, casting code verifications, or price negotiation directly on WhatsApp.
-                  </p>
+                  <span className="text-[10px] text-[#a78b7d] font-mono">
+                    Thread ID: #{currentUser?.id || 'REST-001'}
+                  </span>
+                </div>
+
+                {/* Quick Inquiries / Suggestion Chips */}
+                <div className="p-2.5 bg-[#181719] border-b border-[#2d2b2e] flex items-center gap-2 overflow-x-auto text-[11px] font-mono no-scrollbar">
+                  <span className="text-[#a78b7d] uppercase text-[9px] shrink-0 font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#ff7a1a]" /> Quick Ask:
+                  </span>
+                  <button 
+                    onClick={() => handleSendChatMessage("I'd like a quote for a custom 2276cc or 1776cc Turnkey Engine")}
+                    className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all"
+                  >
+                    🏎️ Turnkey Engine Quote
+                  </button>
+                  <button 
+                    onClick={() => handleSendChatMessage("Can you verify cylinder head casting code compatibility for my Type 1?")}
+                    className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all"
+                  >
+                    🔧 Casting Code Check
+                  </button>
+                  <button 
+                    onClick={() => handleSendChatMessage("What is the freight shipping cost for crated parts?")}
+                    className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all"
+                  >
+                    📦 Crated Shipping Cost
+                  </button>
+                </div>
+
+                {/* Messages Scroll Area */}
+                <div ref={chatScrollContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#111112]">
+                  {chatMessages.map((msg, idx) => {
+                    const isFromUser = msg.senderRole === 'USER';
+                    return (
+                      <div 
+                        key={msg.id || idx}
+                        className={`flex flex-col ${isFromUser ? 'items-end' : 'items-start'}`}
+                      >
+                        <div className="flex items-center gap-1.5 mb-1 px-1 text-[10px] text-[#a78b7d] font-mono">
+                          <span>{isFromUser ? 'You' : 'Master Admin Engineer'}</span>
+                          <span>•</span>
+                          <span>{msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}</span>
+                        </div>
+
+                        <div 
+                          className={`max-w-[85%] sm:max-w-[75%] p-3.5 rounded-xs text-xs leading-relaxed ${
+                            isFromUser 
+                              ? 'bg-[#ff7a1a] text-black font-semibold shadow-md rounded-tr-none'
+                              : 'bg-[#201f20] text-[#e5e2e3] border border-[#584236]/50 shadow-md rounded-tl-none'
+                          }`}
+                        >
+                          <p className="whitespace-pre-wrap">{msg.message}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Chat Input Bar */}
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSendChatMessage();
+                  }}
+                  className="p-3 bg-[#181719] border-t border-[#2d2b2e] flex items-center gap-2"
+                >
+                  <input
+                    type="text"
+                    placeholder="Type your message or technical question to Master Admin..."
+                    value={chatInputText}
+                    onChange={(e) => setChatInputText(e.target.value)}
+                    className="flex-1 bg-[#0e0e0f] border border-[#584236]/60 rounded-xs px-3.5 py-2.5 text-xs text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSendingMessage || !chatInputText.trim()}
+                    className="bg-[#ff7a1a] hover:bg-[#ffb68e] disabled:opacity-40 text-black font-bold text-xs uppercase px-5 py-2.5 rounded-xs transition-all flex items-center gap-1.5 shrink-0"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Send</span>
+                  </button>
+                </form>
+              </div>
+
+              {/* Instant WhatsApp & Phone Options */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                {/* WhatsApp Direct Option */}
+                <div className="p-5 bg-[#181719] border border-emerald-500/40 rounded-xs space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
+                      <MessageCircle className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-white">WhatsApp Seller</h3>
+                      <span className="text-[11px] text-emerald-400 font-bold block">Instant Photo / Negotiation</span>
+                    </div>
+                  </div>
                   <a
-                    href={`https://wa.me/${SELLER_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hello Rusty Aircooled! I have an inquiry regarding vintage VW spare parts.")}`}
+                    href={`https://wa.me/${SELLER_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hello Classic Aircooled VW Works! I have an inquiry regarding vintage VW spare parts.")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 text-xs uppercase tracking-wider rounded-xs transition-all shadow-md"
+                    className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 text-xs uppercase tracking-wider rounded-xs transition-all shadow-md"
                   >
                     <MessageCircle className="w-4 h-4" /> Launch WhatsApp Chat
                   </a>
                 </div>
 
-                {/* Call Seller Direct Option */}
-                <div className="p-6 bg-[#181719] border border-[#584236]/40 rounded-xs space-y-4">
+                {/* Call Specialist Desk */}
+                <div className="p-5 bg-[#181719] border border-[#584236]/40 rounded-xs space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#ff7a1a]/20 text-[#ff7a1a] border border-[#ff7a1a]/40 flex items-center justify-center">
-                      <Phone className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-full bg-[#ff7a1a]/20 text-[#ff7a1a] border border-[#ff7a1a]/40 flex items-center justify-center">
+                      <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-white">Call Specialist Desk</h3>
-                      <span className="text-xs text-[#ff7a1a] font-bold block">{SELLER_PHONE_NUMBER}</span>
+                      <h3 className="text-sm font-bold text-white">Call Specialist Desk</h3>
+                      <span className="text-[11px] text-[#ff7a1a] font-bold block">{SELLER_PHONE_NUMBER}</span>
                     </div>
                   </div>
-                  <p className="text-xs text-[#a78b7d]">
-                    Speak directly with a master mechanic regarding technical engine specs, cylinder head compatibility, or shipping details.
-                  </p>
                   <a
                     href={`tel:${SELLER_PHONE_NUMBER}`}
-                    className="inline-flex items-center justify-center gap-2 w-full bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-bold py-3 text-xs uppercase tracking-wider rounded-xs transition-all shadow-md"
+                    className="inline-flex items-center justify-center gap-2 w-full bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-bold py-2.5 text-xs uppercase tracking-wider rounded-xs transition-all shadow-md"
                   >
                     <Phone className="w-4 h-4" /> Call {SELLER_PHONE_NUMBER}
                   </a>

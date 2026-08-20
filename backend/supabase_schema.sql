@@ -104,3 +104,26 @@ CREATE TABLE IF NOT EXISTS public.requests (
 -- Index for request lookups
 CREATE INDEX IF NOT EXISTS idx_requests_user_id ON public.requests(user_id);
 CREATE INDEX IF NOT EXISTS idx_requests_created_at ON public.requests(created_at DESC);
+
+-- 6. Live Chat Messages Table (Customer & Specialist Live Chat)
+CREATE TABLE IF NOT EXISTS public.messages (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  user_name TEXT DEFAULT '',
+  user_email TEXT DEFAULT '',
+  sender_role TEXT NOT NULL DEFAULT 'USER',
+  sender_name TEXT DEFAULT '',
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for chat messages lookups
+CREATE INDEX IF NOT EXISTS idx_messages_user_id ON public.messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON public.messages(created_at ASC);
+
+-- Enable RLS and add public access policies
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all actions for messages" ON public.messages;
+CREATE POLICY "Allow all actions for messages" ON public.messages FOR ALL USING (true);
+
