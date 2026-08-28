@@ -5,13 +5,14 @@ export default function PartDetailModal({ part, onClose, onAddToCart, onRequestI
   if (!part) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-3 sm:my-8 text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto bg-slate-900 border border-slate-700 rounded-2xl sm:rounded-3xl shadow-2xl my-auto text-white">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-1.5 sm:p-2 rounded-full bg-slate-950/80 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 min-w-[36px] min-h-[36px] flex items-center justify-center p-2 rounded-full bg-slate-950/80 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
+          aria-label="Close part details"
         >
           <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
@@ -118,15 +119,15 @@ export default function PartDetailModal({ part, onClose, onAddToCart, onRequestI
 
             {/* Action Bar */}
             <div className="pt-3 sm:pt-4 border-t border-slate-800 space-y-2 sm:space-y-3">
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex flex-col sm:flex-row gap-2.5">
                 <button
                   onClick={() => {
                     if (onRequestItem) onRequestItem(part);
                     onClose();
                   }}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-xl transition-all uppercase tracking-wider"
+                  className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black py-2.5 sm:py-3 px-4 rounded-xl font-bold text-xs sm:text-sm shadow-xl transition-all uppercase tracking-wider cursor-pointer"
                 >
-                  <Box className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <Box className="w-4 h-4" />
                   <span>Request Item (${part.price ? part.price.toLocaleString() : '0.00'})</span>
                 </button>
 
@@ -135,9 +136,9 @@ export default function PartDetailModal({ part, onClose, onAddToCart, onRequestI
                     if (onReserveItem) onReserveItem(part);
                     onClose();
                   }}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-purple-600/30 hover:bg-purple-600 border border-purple-500/50 text-purple-200 hover:text-white py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all uppercase tracking-wider"
+                  className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 bg-purple-600/30 hover:bg-purple-600 border border-purple-500/50 text-purple-200 hover:text-white py-2.5 sm:py-3 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all uppercase tracking-wider cursor-pointer"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <ShieldCheck className="w-4 h-4" />
                   <span>Reserve Item</span>
                 </button>
               </div>

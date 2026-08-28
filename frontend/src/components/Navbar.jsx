@@ -121,13 +121,28 @@ export default function Navbar({
           </div>
         </div>
 
-        {/* Action Buttons: Wishlist, Location, Auth / Dashboard */}
-        <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+        {/* Action Buttons: Cart, Wishlist, Location, Auth / Dashboard */}
+        <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
           
+          {/* Cart Button */}
+          <button 
+            onClick={onOpenCart}
+            className="relative min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20]/60 hover:bg-[#201f20] border border-[#584236]/40 rounded-xs transition-all cursor-pointer"
+            title="Shopping Cart"
+            aria-label="Open Shopping Cart"
+          >
+            <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#ff7a1a] text-black text-[9px] sm:text-[10px] font-technical-data font-bold px-1.5 py-0.5 rounded-full leading-none shadow-sm">
+                {cartCount}
+              </span>
+            )}
+          </button>
+
           {/* Workshop Location Button */}
           <a
             href="#workshop-location"
-            className="hidden sm:flex items-center gap-1.5 font-label-caps text-xs text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20] hover:bg-[#2c2b2d] border border-[#584236]/40 px-2.5 py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all shadow-sm"
+            className="hidden md:flex items-center gap-1.5 font-label-caps text-xs text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20] hover:bg-[#2c2b2d] border border-[#584236]/40 px-2.5 py-2 min-h-[40px] sm:min-h-[44px] uppercase font-bold tracking-wider rounded-xs transition-all shadow-sm"
             title="Houston Workshop & Garage Map"
           >
             <MapPin className="w-3.5 h-3.5 text-[#ff7a1a]" />
@@ -135,10 +150,14 @@ export default function Navbar({
           </a>
 
           {/* Wishlist Button */}
-          <button className="relative p-1.5 sm:p-2 text-[#e0c0b1] hover:text-[#ff7a1a] transition-colors" title="Wishlist">
+          <button 
+            className="relative min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] transition-colors" 
+            title="Wishlist"
+            aria-label="Wishlist"
+          >
             <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#ff7a1a] text-black text-[9px] sm:text-[10px] font-technical-data font-bold px-1 leading-none py-[2px]">
+              <span className="absolute -top-1 -right-1 bg-[#ff7a1a] text-black text-[9px] sm:text-[10px] font-technical-data font-bold px-1.5 py-0.5 rounded-full leading-none">
                 {wishlistCount}
               </span>
             )}
@@ -149,12 +168,12 @@ export default function Navbar({
               {/* User Dashboard & Requests Trigger */}
               <button 
                 onClick={onOpenUserDashboard}
-                className="relative flex items-center gap-1.5 sm:gap-2 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black border border-[#ff7a1a] px-2.5 py-1 sm:px-3 sm:py-1.5 transition-all rounded-xs font-bold text-xs"
+                className="relative min-h-[40px] sm:min-h-[44px] flex items-center gap-1.5 sm:gap-2 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black border border-[#ff7a1a] px-2.5 py-1.5 sm:px-3.5 sm:py-2 transition-all rounded-xs font-bold text-xs cursor-pointer shadow-sm"
                 title="User Dashboard & Garage"
               >
                 <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
                 <span className="hidden sm:inline font-label-caps text-xs uppercase tracking-wider">Dashboard</span>
-                <span className="bg-black text-[#ff7a1a] text-[9px] sm:text-[10px] font-technical-data font-bold px-1 sm:px-1.5 py-0.5 rounded-xs">
+                <span className="bg-black text-[#ff7a1a] text-[9px] sm:text-[10px] font-technical-data font-bold px-1.5 py-0.5 rounded-xs">
                   {userRequestsCount}
                 </span>
               </button>
@@ -163,7 +182,7 @@ export default function Navbar({
               {onLogout && (
                 <button 
                   onClick={onLogout}
-                  className="flex items-center gap-1 font-label-caps text-[11px] sm:text-xs bg-[#201f20] hover:bg-red-600 hover:text-white border border-red-500/40 text-red-400 px-2 sm:px-3 py-1 sm:py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all cursor-pointer shadow-sm"
+                  className="min-h-[40px] sm:min-h-[44px] flex items-center gap-1 font-label-caps text-[11px] sm:text-xs bg-[#201f20] hover:bg-red-600 hover:text-white border border-red-500/40 text-red-400 px-2 sm:px-3 py-1.5 sm:py-2 uppercase font-bold tracking-wider rounded-xs transition-all cursor-pointer shadow-sm"
                   title="Sign Out"
                 >
                   <LogOut className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -175,7 +194,7 @@ export default function Navbar({
             /* Auth Modal Trigger (Login / Register) */
             <button 
               onClick={onOpenAuth}
-              className="flex items-center gap-1 sm:gap-1.5 font-label-caps text-[11px] sm:text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] border border-[#ff7a1a] px-2.5 py-1 sm:px-3.5 sm:py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all shadow-md"
+              className="min-h-[40px] sm:min-h-[44px] flex items-center gap-1 sm:gap-1.5 font-label-caps text-[11px] sm:text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] border border-[#ff7a1a] px-2.5 py-1.5 sm:px-3.5 sm:py-2 uppercase font-bold tracking-wider rounded-xs transition-all shadow-md cursor-pointer"
             >
               <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
               <span>Login</span>
@@ -185,7 +204,7 @@ export default function Navbar({
           {/* Mobile Menu Toggle */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-1.5 sm:p-2 text-[#e0c0b1] hover:text-[#ff7a1a]"
+            className="lg:hidden min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20]/40 border border-[#584236]/30 rounded-xs cursor-pointer"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -271,22 +290,51 @@ export default function Navbar({
 
       {/* Mobile Accordion Navigation Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#131314] border-b border-[#584236]/40 px-6 py-6 space-y-4 font-technical-data max-h-[85vh] overflow-y-auto">
+        <div className="lg:hidden bg-[#131314] border-b border-[#584236]/40 px-4 sm:px-6 py-5 space-y-4 font-technical-data max-h-[85vh] overflow-y-auto">
           
           {/* Search Input for Mobile */}
-          <div className="relative w-full mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a78b7d]" />
+          <div className="relative w-full mb-3">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a78b7d]" />
             <input
               type="text"
-              placeholder="Search catalog..."
+              placeholder="Search catalog, OEM, parts..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full bg-[#201f20] border border-[#584236] pl-9 pr-3 py-2 text-xs text-white"
+              className="w-full bg-[#201f20] border border-[#584236] pl-10 pr-3 py-2.5 min-h-[44px] text-xs text-white rounded-xs focus:outline-none focus:border-[#ff7a1a]"
             />
           </div>
 
+          {/* Quick Cart Button in Mobile Menu */}
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenCart();
+            }}
+            className="w-full min-h-[44px] font-label-caps text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] py-2.5 px-4 uppercase font-bold tracking-wider flex items-center justify-between rounded-xs transition-all shadow-md cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-black" />
+              <span>Shopping Cart</span>
+            </div>
+            <span className="bg-black text-[#ff7a1a] text-xs px-2 py-0.5 rounded-full font-technical-data font-bold">
+              {cartCount} Items
+            </span>
+          </button>
+
+          {/* Direct Browse All Parts in Mobile */}
+          <button
+            onClick={() => handleMobileSelectFilter({ navMode: 'parts', categoryId: 'ALL', systemId: 'ALL' })}
+            className="w-full min-h-[44px] font-label-caps text-xs text-[#e5e2e3] bg-[#201f20] hover:bg-[#2c2b2d] border border-[#584236]/60 py-2.5 px-4 uppercase font-bold tracking-wider flex items-center justify-between rounded-xs transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-[#ff7a1a]" />
+              <span>Browse All Parts Catalog</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#ff7a1a]" />
+          </button>
+
           {/* Accordion Categories */}
-          <div className="space-y-2">
+          <div className="space-y-2 pt-1">
             <span className="text-[10px] text-[#ff7a1a] uppercase tracking-wider font-bold block mb-1">
               VW AIR-COOLED CATEGORIES
             </span>
@@ -295,13 +343,13 @@ export default function Navbar({
               const isExpanded = expandedMobileCat === cat.id;
 
               return (
-                <div key={cat.id} className="bg-[#201f20] border border-[#584236]/40 rounded-xs">
+                <div key={cat.id} className="bg-[#201f20] border border-[#584236]/40 rounded-xs overflow-hidden">
                   <button
                     onClick={() => toggleMobileAccordion(cat.id)}
-                    className="w-full p-3 flex items-center justify-between text-xs font-bold text-[#e5e2e3] hover:text-[#ff7a1a]"
+                    className="w-full min-h-[44px] p-3 flex items-center justify-between text-xs font-bold text-[#e5e2e3] hover:text-[#ff7a1a] cursor-pointer"
                   >
                     <span>{cat.name}</span>
-                    <ChevronRight className={`w-4 h-4 text-[#a78b7d] transition-transform ${isExpanded ? 'rotate-90 text-[#ff7a1a]' : ''}`} />
+                    <ChevronRight className={`w-4 h-4 text-[#a78b7d] transition-transform duration-200 ${isExpanded ? 'rotate-90 text-[#ff7a1a]' : ''}`} />
                   </button>
 
                   {/* Accordion Content */}
@@ -312,12 +360,12 @@ export default function Navbar({
                       {cat.models.length > 0 && (
                         <div>
                           <span className="text-[9px] uppercase tracking-wider text-[#ff7a1a] font-bold block mb-1">Models:</span>
-                          <div className="space-y-1 pl-2">
+                          <div className="space-y-1 pl-1">
                             {cat.models.map(m => (
                               <div 
                                 key={m.id}
                                 onClick={() => handleMobileSelectFilter({ categoryId: cat.id, modelId: m.id })}
-                                className="text-xs text-[#e0c0b1] hover:text-[#ff7a1a] py-1 cursor-pointer"
+                                className="min-h-[36px] flex items-center text-xs text-[#e0c0b1] hover:text-[#ff7a1a] py-1 px-2 rounded-xs hover:bg-[#201f20] cursor-pointer transition-colors"
                               >
                                 • {m.name} ({m.era})
                               </div>
@@ -328,16 +376,16 @@ export default function Navbar({
 
                       {/* Engines List */}
                       <div>
-                        <span className="text-[9px] uppercase tracking-wider text-[#ff7a1a] font-bold block mb-1">Engine Sizes:</span>
-                        <div className="flex flex-wrap gap-1.5 pl-2">
+                        <span className="text-[9px] uppercase tracking-wider text-[#ff7a1a] font-bold block mb-1.5">Engine Sizes:</span>
+                        <div className="flex flex-wrap gap-1.5 pl-1">
                           {cat.engines.map(s => (
-                            <span 
+                            <button 
                               key={s}
                               onClick={() => handleMobileSelectFilter({ categoryId: cat.id, engineSize: s })}
-                              className="text-[10px] bg-[#201f20] text-[#e0c0b1] px-2 py-0.5 border border-[#584236]/40 cursor-pointer"
+                              className="min-h-[32px] text-[10px] bg-[#201f20] hover:bg-[#2c2b2d] hover:text-[#ff7a1a] text-[#e0c0b1] px-2.5 py-1 border border-[#584236]/40 rounded-xs cursor-pointer transition-colors"
                             >
                               {s}
-                            </span>
+                            </button>
                           ))}
                         </div>
                       </div>
@@ -345,7 +393,7 @@ export default function Navbar({
                       {/* Browse All Category */}
                       <button
                         onClick={() => handleMobileSelectFilter({ categoryId: cat.id })}
-                        className="w-full mt-2 text-xs bg-[#ff7a1a] text-black font-bold py-2 uppercase tracking-wider text-center"
+                        className="w-full min-h-[44px] mt-2 text-xs bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-bold py-2.5 px-3 uppercase tracking-wider text-center rounded-xs transition-all cursor-pointer"
                       >
                         Browse All {cat.name}
                       </button>
@@ -361,7 +409,7 @@ export default function Navbar({
           <a
             href="#workshop-location"
             onClick={() => setMobileMenuOpen(false)}
-            className="w-full mt-2 font-label-caps text-xs text-[#ffb68e] bg-[#201f20] hover:bg-[#282729] border border-[#ff7a1a]/40 py-2.5 uppercase font-bold tracking-wider flex items-center justify-center gap-2 rounded-xs"
+            className="w-full min-h-[44px] mt-2 font-label-caps text-xs text-[#ffb68e] bg-[#201f20] hover:bg-[#282729] border border-[#ff7a1a]/40 py-3 px-3 uppercase font-bold tracking-wider flex items-center justify-center gap-2 rounded-xs transition-all"
           >
             <MapPin className="w-4 h-4 text-[#ff7a1a]" />
             <span>Visit Houston Workshop (14826 Yarberry St)</span>
@@ -371,7 +419,7 @@ export default function Navbar({
             <div className="space-y-2 pt-2">
               <button 
                 onClick={() => { setMobileMenuOpen(false); onOpenUserDashboard(); }}
-                className="w-full font-label-caps text-xs text-black bg-[#ff7a1a] py-2.5 uppercase font-bold tracking-wider flex items-center justify-center gap-2"
+                className="w-full min-h-[44px] font-label-caps text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] py-3 px-3 uppercase font-bold tracking-wider flex items-center justify-center gap-2 rounded-xs transition-all cursor-pointer shadow-md"
               >
                 <User className="w-4 h-4" />
                 <span>My Dashboard ({userRequestsCount})</span>
@@ -379,7 +427,7 @@ export default function Navbar({
               {onLogout && (
                 <button 
                   onClick={() => { setMobileMenuOpen(false); onLogout(); }}
-                  className="w-full font-label-caps text-xs text-[#a78b7d] bg-[#201f20] border border-[#584236]/40 py-2 uppercase font-bold tracking-wider"
+                  className="w-full min-h-[44px] font-label-caps text-xs text-[#a78b7d] hover:text-red-400 bg-[#201f20] hover:bg-[#282729] border border-[#584236]/40 py-2.5 uppercase font-bold tracking-wider rounded-xs transition-all cursor-pointer"
                 >
                   Sign Out ({currentUser.name || 'User'})
                 </button>
@@ -388,7 +436,7 @@ export default function Navbar({
           ) : (
             <button 
               onClick={() => { setMobileMenuOpen(false); onOpenAuth(); }}
-              className="w-full mt-2 font-label-caps text-xs text-black bg-[#ff7a1a] py-2.5 uppercase font-bold tracking-wider flex items-center justify-center gap-2"
+              className="w-full min-h-[44px] mt-2 font-label-caps text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] py-3 px-3 uppercase font-bold tracking-wider flex items-center justify-center gap-2 rounded-xs transition-all shadow-md cursor-pointer"
             >
               <User className="w-4 h-4 text-black" />
               <span>Sign In / Register</span>

@@ -256,53 +256,46 @@ export default function LocationMapSection() {
                   <div className="flex items-center bg-[#1c1b1c] border border-[#584236]/40 rounded-xs p-0.5">
                     <button
                       onClick={() => setMapViewType('m')}
-                      className={`px-2.5 py-1 text-[11px] font-bold rounded-xs transition-colors cursor-pointer ${
-                        mapViewType === 'm' 
-                          ? 'bg-[#ff7a1a] text-black shadow-xs' 
-                          : 'text-[#a78b7d] hover:text-white'
+                      className={`min-h-[36px] px-2.5 py-1 text-[11px] font-bold rounded-xs transition-colors cursor-pointer ${
+                        mapViewType === 'm' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white'
                       }`}
-                      title="Standard Street Map View"
                     >
-                      Street
+                      Road
                     </button>
                     <button
                       onClick={() => setMapViewType('k')}
-                      className={`px-2.5 py-1 text-[11px] font-bold rounded-xs transition-colors cursor-pointer ${
-                        mapViewType === 'k' 
-                          ? 'bg-[#ff7a1a] text-black shadow-xs' 
-                          : 'text-[#a78b7d] hover:text-white'
+                      className={`min-h-[36px] px-2.5 py-1 text-[11px] font-bold rounded-xs transition-colors cursor-pointer ${
+                        mapViewType === 'k' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white'
                       }`}
-                      title="Satellite Aerial Imagery"
                     >
                       Satellite
                     </button>
                   </div>
 
                   {/* Zoom Controls */}
-                  <div className="flex items-center bg-[#1c1b1c] border border-[#584236]/40 rounded-xs">
+                  <div className="flex items-center gap-1">
                     <button
                       onClick={handleZoomIn}
-                      className="p-1.5 text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#282729] transition-colors cursor-pointer"
+                      className="min-w-[36px] min-h-[36px] p-2 bg-[#1c1b1c] hover:bg-[#282729] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40 rounded-xs transition-colors cursor-pointer flex items-center justify-center"
                       title="Zoom In"
-                      aria-label="Zoom in on map"
+                      aria-label="Zoom In"
                     >
-                      <ZoomIn className="w-3.5 h-3.5" />
+                      <Plus className="w-3.5 h-3.5" />
                     </button>
-                    <div className="w-[1px] h-3.5 bg-[#584236]/40"></div>
                     <button
                       onClick={handleZoomOut}
-                      className="p-1.5 text-[#e0c0b1] hover:text-[#ff7a1a] hover:bg-[#282729] transition-colors cursor-pointer"
+                      className="min-w-[36px] min-h-[36px] p-2 bg-[#1c1b1c] hover:bg-[#282729] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40 rounded-xs transition-colors cursor-pointer flex items-center justify-center"
                       title="Zoom Out"
-                      aria-label="Zoom out on map"
+                      aria-label="Zoom Out"
                     >
-                      <ZoomOut className="w-3.5 h-3.5" />
+                      <Minus className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {/* Reset Center */}
                   <button
                     onClick={handleReset}
-                    className="p-1.5 bg-[#1c1b1c] hover:bg-[#282729] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40 rounded-xs transition-colors cursor-pointer"
+                    className="min-w-[36px] min-h-[36px] p-2 bg-[#1c1b1c] hover:bg-[#282729] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40 rounded-xs transition-colors cursor-pointer flex items-center justify-center"
                     title="Reset to Workshop Center"
                     aria-label="Reset Map"
                   >
@@ -314,7 +307,7 @@ export default function LocationMapSection() {
                     href={googleMapsPlaceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-1.5 bg-[#1c1b1c] hover:bg-[#282729] text-[#83cffb] border border-[#83cffb]/30 rounded-xs transition-colors flex items-center gap-1 text-[11px]"
+                    className="min-h-[36px] p-2 bg-[#1c1b1c] hover:bg-[#282729] text-[#83cffb] border border-[#83cffb]/30 rounded-xs transition-colors flex items-center gap-1 text-[11px]"
                     title="Open in Full Google Maps App"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -340,7 +333,7 @@ export default function LocationMapSection() {
                 ></iframe>
 
                 {/* Floating Technical Location Card over the Map */}
-                <div className="absolute top-3 left-3 z-10 max-w-[280px] sm:max-w-xs bg-[#131314]/90 backdrop-blur-md p-3 border border-[#ff7a1a]/40 shadow-lg pointer-events-auto">
+                <div className="absolute top-3 left-3 z-10 max-w-[calc(100%-24px)] sm:max-w-xs bg-[#131314]/90 backdrop-blur-md p-3 border border-[#ff7a1a]/40 shadow-lg pointer-events-auto">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#ff7a1a] inline-block animate-ping"></span>
                     <span className="font-h3 text-xs font-bold text-white tracking-wide">

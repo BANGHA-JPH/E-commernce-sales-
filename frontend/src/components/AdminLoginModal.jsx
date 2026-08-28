@@ -64,17 +64,17 @@ export default function AdminLoginModal({ isOpen, onClose, onAdminSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-lg">
-      <div className="bg-[#131314] border border-[#ff7a1a]/60 text-white w-full max-w-md rounded-xs shadow-[0_0_50px_rgba(255,122,26,0.2)] overflow-hidden my-8 animate-scale-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-lg overflow-y-auto">
+      <div className="bg-[#131314] border border-[#ff7a1a]/60 text-white w-full max-w-md max-h-[92vh] overflow-y-auto rounded-xs shadow-[0_0_50px_rgba(255,122,26,0.2)] my-auto animate-scale-up">
         
         {/* Header */}
-        <div className="bg-[#201f20] px-6 py-4 border-b border-[#584236]/40 flex items-center justify-between">
+        <div className="bg-[#201f20] px-4 sm:px-6 py-4 border-b border-[#584236]/40 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-[#ff7a1a] text-black flex items-center justify-center font-bold">
               <Lock className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold font-h2 text-white uppercase tracking-wider">
+              <h3 className="text-xs sm:text-sm font-bold font-h2 text-white uppercase tracking-wider">
                 ADMIN PORTAL <span className="text-[#ff7a1a]">GATEWAY</span>
               </h3>
               <span className="text-[10px] text-[#83cffb] font-technical-data">RESERVED FOR MASTER ENGINEERS</span>
@@ -83,14 +83,15 @@ export default function AdminLoginModal({ isOpen, onClose, onAdminSuccess }) {
 
           <button 
             onClick={onClose}
-            className="p-1.5 text-[#a78b7d] hover:text-white hover:bg-[#353436] rounded-xs transition-all"
+            className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 text-[#a78b7d] hover:text-white hover:bg-[#353436] rounded-xs transition-all cursor-pointer"
+            aria-label="Close admin modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleAdminLogin} className="p-6 space-y-4 font-label-caps">
+        <form onSubmit={handleAdminLogin} className="p-4 sm:p-6 space-y-4 font-label-caps">
           
           {errorMessage && (
             <div className="bg-red-500/20 border border-red-500/50 text-red-300 p-3 rounded-xs text-xs font-technical-data flex items-center gap-2">
@@ -112,7 +113,7 @@ export default function AdminLoginModal({ isOpen, onClose, onAdminSuccess }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter admin email address..."
-                className="w-full bg-[#201f20] border border-[#584236]/60 pl-9 pr-3 py-2.5 text-xs text-white font-technical-data focus:outline-none focus:border-[#ff7a1a]"
+                className="w-full min-h-[44px] bg-[#201f20] border border-[#584236]/60 pl-9 pr-3 py-2.5 text-xs text-white font-technical-data focus:outline-none focus:border-[#ff7a1a]"
               />
             </div>
           </div>
@@ -130,7 +131,7 @@ export default function AdminLoginModal({ isOpen, onClose, onAdminSuccess }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-[#201f20] border border-[#584236]/60 pl-9 pr-3 py-2.5 text-xs text-white font-technical-data focus:outline-none focus:border-[#ff7a1a]"
+                className="w-full min-h-[44px] bg-[#201f20] border border-[#584236]/60 pl-9 pr-3 py-2.5 text-xs text-white font-technical-data focus:outline-none focus:border-[#ff7a1a]"
               />
             </div>
           </div>
@@ -149,7 +150,7 @@ export default function AdminLoginModal({ isOpen, onClose, onAdminSuccess }) {
                 value={secretKey}
                 onChange={(e) => setSecretKey(e.target.value)}
                 placeholder="Enter secret security key..."
-                className="w-full bg-[#201f20] border border-[#ff7a1a]/40 pl-9 pr-3 py-2.5 text-xs text-white font-technical-data focus:outline-none focus:border-[#ff7a1a]"
+                className="w-full min-h-[44px] bg-[#201f20] border border-[#ff7a1a]/40 pl-9 pr-3 py-2.5 text-xs text-white font-technical-data focus:outline-none focus:border-[#ff7a1a]"
               />
             </div>
           </div>
@@ -158,7 +159,7 @@ export default function AdminLoginModal({ isOpen, onClose, onAdminSuccess }) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full mt-2 font-technical-data text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] py-3 uppercase font-bold tracking-wider glow-button flex items-center justify-center gap-2 transition-all"
+            className="w-full min-h-[48px] mt-2 font-technical-data text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] py-3 uppercase font-bold tracking-wider glow-button flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
           >
             {isLoading ? 'Authenticating Admin Portal...' : 'Unlock Admin Control Panel'}
             <ArrowRight className="w-4 h-4" />

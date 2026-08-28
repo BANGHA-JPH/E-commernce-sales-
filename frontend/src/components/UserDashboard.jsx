@@ -298,12 +298,12 @@ export default function UserDashboard({
         <div className="flex items-center gap-3">
           <button
             onClick={onBackToShop || onClose}
-            className="flex items-center gap-2 bg-[#201f20] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black border border-[#584236]/60 px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all rounded-xs"
+            className="min-h-[44px] flex items-center gap-2 bg-[#201f20] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black border border-[#584236]/60 px-3.5 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded-xs cursor-pointer shadow-sm"
           >
             ← Back to Shop
           </button>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight uppercase flex items-center gap-2 font-h2">
+            <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight uppercase flex items-center gap-2 font-h2">
               <User className="w-5 h-5 text-[#ff7a1a]" />
               Restorer Dashboard & Garage
             </h1>
@@ -321,7 +321,7 @@ export default function UserDashboard({
           {onLogout && (
             <button
               onClick={onLogout}
-              className="bg-red-600 hover:bg-red-700 text-white border border-red-500 px-3.5 py-1.5 text-xs font-mono font-bold uppercase tracking-wider transition-all rounded-xs shadow-md cursor-pointer flex items-center gap-1.5"
+              className="min-h-[44px] bg-red-600 hover:bg-red-700 text-white border border-red-500 px-3.5 py-2 text-xs font-mono font-bold uppercase tracking-wider transition-all rounded-xs shadow-md cursor-pointer flex items-center gap-1.5"
               title="Sign Out of Your Restorer Account"
             >
               <LogOut className="w-4 h-4" />
@@ -337,7 +337,7 @@ export default function UserDashboard({
         {/* 1. LEFT SIDEBAR NAVIGATION */}
         <aside className="w-full md:w-64 bg-[#181719] border-b md:border-b-0 md:border-r border-[#262426] flex flex-col justify-between shrink-0 p-4 overflow-y-auto">
           
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* User Profile Header */}
             <div className="flex items-center gap-3 p-3 bg-[#201f20] border border-[#584236]/40 rounded-xs">
               <div className="w-10 h-10 rounded-full bg-[#ff7a1a] flex items-center justify-center text-black font-bold text-base shadow-md shrink-0">
@@ -352,29 +352,29 @@ export default function UserDashboard({
             </div>
 
             {/* Navigation Tabs */}
-            <nav className="space-y-1">
+            <nav className="grid grid-cols-2 md:grid-cols-1 gap-1.5 md:gap-1">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'overview' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                className={`min-h-[44px] w-full flex items-center gap-2.5 sm:gap-3 px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                  activeTab === 'overview' ? 'bg-[#ff7a1a] text-black shadow-sm' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <Layers className="w-4 h-4" />
-                <span>Overview</span>
+                <Layers className="w-4 h-4 shrink-0" />
+                <span className="truncate">Overview</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('requests')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'requests' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                className={`min-h-[44px] w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                  activeTab === 'requests' ? 'bg-[#ff7a1a] text-black shadow-sm' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Clock className="w-4 h-4" />
-                  <span>My Requests</span>
+                <div className="flex items-center gap-2.5 sm:gap-3 truncate">
+                  <Clock className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Requests</span>
                 </div>
                 {userRequests.length > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.2 font-bold rounded-full ${activeTab === 'requests' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.5 font-bold rounded-full ml-1 shrink-0 ${activeTab === 'requests' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
                     {userRequests.length}
                   </span>
                 )}
@@ -382,16 +382,16 @@ export default function UserDashboard({
 
               <button
                 onClick={() => setActiveTab('vehicles')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'vehicles' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                className={`min-h-[44px] w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                  activeTab === 'vehicles' ? 'bg-[#ff7a1a] text-black shadow-sm' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Car className="w-4 h-4" />
-                  <span>Garage Vehicles</span>
+                <div className="flex items-center gap-2.5 sm:gap-3 truncate">
+                  <Car className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Vehicles</span>
                 </div>
                 {savedVehicles.length > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.2 font-bold rounded-full ${activeTab === 'vehicles' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.5 font-bold rounded-full ml-1 shrink-0 ${activeTab === 'vehicles' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
                     {savedVehicles.length}
                   </span>
                 )}
@@ -399,16 +399,16 @@ export default function UserDashboard({
 
               <button
                 onClick={() => setActiveTab('wishlist')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'wishlist' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                className={`min-h-[44px] w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                  activeTab === 'wishlist' ? 'bg-[#ff7a1a] text-black shadow-sm' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Heart className="w-4 h-4" />
-                  <span>Saved Wishlist</span>
+                <div className="flex items-center gap-2.5 sm:gap-3 truncate">
+                  <Heart className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Wishlist</span>
                 </div>
                 {wishlistParts.length > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.2 font-bold rounded-full ${activeTab === 'wishlist' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.5 font-bold rounded-full ml-1 shrink-0 ${activeTab === 'wishlist' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
                     {wishlistParts.length}
                   </span>
                 )}
@@ -416,16 +416,16 @@ export default function UserDashboard({
 
               <button
                 onClick={() => setActiveTab('notifications')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'notifications' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                className={`min-h-[44px] w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                  activeTab === 'notifications' ? 'bg-[#ff7a1a] text-black shadow-sm' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Bell className="w-4 h-4" />
-                  <span>Notifications</span>
+                <div className="flex items-center gap-2.5 sm:gap-3 truncate">
+                  <Bell className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Notifications</span>
                 </div>
                 {notifications.length > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.2 font-bold rounded-full ${activeTab === 'notifications' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a]/20 text-[#ff7a1a]'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.5 font-bold rounded-full ml-1 shrink-0 ${activeTab === 'notifications' ? 'bg-black text-[#ff7a1a]' : 'bg-[#201f20] text-[#a78b7d]'}`}>
                     {notifications.length}
                   </span>
                 )}
@@ -433,12 +433,12 @@ export default function UserDashboard({
 
               <button
                 onClick={() => setActiveTab('tracking')}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'tracking' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                className={`min-h-[44px] w-full flex items-center gap-2.5 sm:gap-3 px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                  activeTab === 'tracking' ? 'bg-[#ff7a1a] text-black shadow-sm' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <Navigation className="w-4 h-4" />
-                <span>Track Order</span>
+                <Navigation className="w-4 h-4 shrink-0" />
+                <span className="truncate">Track Order</span>
               </button>
 
               <button
@@ -446,16 +446,16 @@ export default function UserDashboard({
                   setActiveTab('contact');
                   fetchUserChatMessages();
                 }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'contact' || activeTab === 'chat' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                className={`min-h-[44px] w-full flex items-center justify-between px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                  activeTab === 'contact' || activeTab === 'chat' ? 'bg-[#ff7a1a] text-black shadow-sm' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Contact Specialist / Chat</span>
+                <div className="flex items-center gap-2.5 sm:gap-3 truncate">
+                  <MessageSquare className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Contact Specialist / Chat</span>
                 </div>
                 {chatMessages.length > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.5 font-bold ${activeTab === 'contact' || activeTab === 'chat' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a] text-black'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.5 font-bold rounded-full ml-1 shrink-0 ${activeTab === 'contact' || activeTab === 'chat' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a] text-black'}`}>
                     {unreadAdminCount > 0 ? `${unreadAdminCount} NEW` : chatMessages.length}
                   </span>
                 )}
@@ -463,12 +463,12 @@ export default function UserDashboard({
 
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all ${
-                  activeTab === 'profile' ? 'bg-[#ff7a1a] text-black' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
+                className={`min-h-[44px] w-full flex items-center gap-2.5 sm:gap-3 px-3 py-2.5 rounded-xs text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                  activeTab === 'profile' ? 'bg-[#ff7a1a] text-black shadow-sm' : 'text-[#a78b7d] hover:text-white hover:bg-[#201f20]'
                 }`}
               >
-                <User className="w-4 h-4" />
-                <span>Profile & Settings</span>
+                <Settings className="w-4 h-4 shrink-0" />
+                <span className="truncate">Profile & Settings</span>
               </button>
             </nav>
           </div>

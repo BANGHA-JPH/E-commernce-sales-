@@ -45,7 +45,7 @@ export default function HeroSection({ onSelectCarModel }) {
         </div>
 
         {/* Main H1 Heading */}
-        <h1 className="font-h1 text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-[#e5e2e3] font-bold mb-4 sm:mb-6 tracking-tight drop-shadow-lg leading-[1.15] sm:leading-[1.1]">
+        <h1 className="font-h1 text-xl min-[380px]:text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-[#e5e2e3] font-bold mb-4 sm:mb-6 tracking-tight drop-shadow-lg leading-[1.2] sm:leading-[1.1]">
           Classic Aircooled VW Works.<br />
           Authentic Engines.<br />
           <span className="text-[#ff7a1a]">Precision Spare Parts.</span>
@@ -57,10 +57,10 @@ export default function HeroSection({ onSelectCarModel }) {
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-2 sm:px-0">
           <button 
             onClick={scrollToVintageCars}
-            className="bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-label-caps text-xs sm:text-sm px-5 py-3 sm:px-7 sm:py-3.5 glow-button uppercase font-bold tracking-wider transition-all flex items-center justify-center gap-2 rounded-xs"
+            className="w-full sm:w-auto min-h-[44px] bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-label-caps text-xs sm:text-sm px-5 py-3 sm:px-7 sm:py-3.5 glow-button uppercase font-bold tracking-wider transition-all flex items-center justify-center gap-2 rounded-xs cursor-pointer shadow-lg"
           >
             <Car className="w-4 h-4" />
             Select Your Vehicle
@@ -68,7 +68,7 @@ export default function HeroSection({ onSelectCarModel }) {
 
           <button 
             onClick={scrollToCatalog}
-            className="ghost-button text-[#83cffb] border border-[#83cffb]/30 font-technical-data text-xs sm:text-sm px-5 py-3 sm:px-7 sm:py-3.5 uppercase bg-[#131314]/60 backdrop-blur-md hover:bg-[#83cffb]/10 transition-all flex items-center justify-center gap-2 rounded-xs"
+            className="w-full sm:w-auto min-h-[44px] ghost-button text-[#83cffb] border border-[#83cffb]/30 font-technical-data text-xs sm:text-sm px-5 py-3 sm:px-7 sm:py-3.5 uppercase bg-[#131314]/60 backdrop-blur-md hover:bg-[#83cffb]/10 transition-all flex items-center justify-center gap-2 rounded-xs cursor-pointer"
           >
             <Wrench className="w-4 h-4" />
             Browse Full Parts Catalog

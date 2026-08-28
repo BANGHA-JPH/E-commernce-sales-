@@ -45,7 +45,7 @@ export default function CatalogSection({
   // Fetch dynamic items posted via Admin Panel / Backend DB / Local Storage
   useEffect(() => {
     const fetchCatalogParts = async () => {
-      let serverParts = [];
+      let serverParts = null;
       try {
         const res = await fetch(`${API_BASE_URL}/api/admin/parts`);
         const data = await res.json();
@@ -58,22 +58,24 @@ export default function CatalogSection({
 
       const localParts = JSON.parse(localStorage.getItem('custom_parts') || '[]');
       const deletedIds = new Set(JSON.parse(localStorage.getItem('deleted_part_ids') || '[]'));
-      const combinedMap = new Map();
 
-      // Priority 1: Newly posted local parts
-      localParts.forEach(p => {
-        if (!deletedIds.has(p.id)) combinedMap.set(p.id, p);
-      });
-      // Priority 2: Server database parts
-      serverParts.forEach(p => {
-        if (!deletedIds.has(p.id) && !combinedMap.has(p.id)) combinedMap.set(p.id, p);
-      });
-      // Priority 3: Fallback seed catalog parts
-      SPARE_PARTS.forEach(p => {
-        if (!deletedIds.has(p.id) && !combinedMap.has(p.id)) combinedMap.set(p.id, p);
-      });
-
-      setCatalogItems(Array.from(combinedMap.values()));
+      if (serverParts !== null && Array.isArray(serverParts)) {
+        // When server database is online, it is the authoritative source of truth across all devices
+        const filteredServerParts = serverParts.filter(p => !deletedIds.has(p.id));
+        const serverIdSet = new Set(serverParts.map(p => p.id));
+        const unsyncedLocal = localParts.filter(p => !deletedIds.has(p.id) && !serverIdSet.has(p.id));
+        setCatalogItems([...unsyncedLocal, ...filteredServerParts]);
+      } else {
+        // Complete offline fallback only when backend server is completely unreachable
+        const combinedMap = new Map();
+        localParts.forEach(p => {
+          if (!deletedIds.has(p.id)) combinedMap.set(p.id, p);
+        });
+        SPARE_PARTS.forEach(p => {
+          if (!deletedIds.has(p.id) && !combinedMap.has(p.id)) combinedMap.set(p.id, p);
+        });
+        setCatalogItems(Array.from(combinedMap.values()));
+      }
     };
     fetchCatalogParts();
   }, []);
@@ -280,14 +282,14 @@ export default function CatalogSection({
             </div>
 
             {/* Empty Inventory Cards Grid (Visual Placeholder Boxes) */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {[1, 2, 3, 4].map((slot) => (
                 <div 
                   key={slot}
-                  className="bg-[#181719]/80 border border-dashed border-[#584236]/50 p-2.5 sm:p-4 rounded-xs flex flex-col justify-between space-y-3 opacity-75 hover:opacity-100 transition-opacity"
+                  className="bg-[#181719]/80 border border-dashed border-[#584236]/50 p-3 sm:p-4 rounded-xs flex flex-col justify-between space-y-3 opacity-75 hover:opacity-100 transition-opacity"
                 >
                   <div className="space-y-2">
-                    <div className="h-28 sm:h-36 md:h-44 bg-[#131314] border border-[#584236]/40 rounded-xs flex flex-col items-center justify-center text-[#584236] p-2 text-center">
+                    <div className="h-32 sm:h-36 md:h-44 bg-[#131314] border border-[#584236]/40 rounded-xs flex flex-col items-center justify-center text-[#584236] p-2 text-center">
                       <ImageIcon className="w-6 h-6 mb-1 text-[#584236]" />
                       <span className="text-[9px] sm:text-[11px] font-bold text-[#a78b7d] uppercase tracking-wider">Empty Slot</span>
                       <span className="text-[8px] sm:text-[9px] text-[#584236]">Awaiting Upload</span>
@@ -312,7 +314,7 @@ export default function CatalogSection({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4 md:gap-6">
             {filteredParts.map((part) => {
               const isWishlisted = wishlistIds.includes(part.id);
               const isAdded = addedIds.includes(part.id);
@@ -320,10 +322,10 @@ export default function CatalogSection({
               return (
                 <div
                   key={part.id}
-                  className="bg-[#201f20] border border-[#584236]/40 p-2.5 sm:p-4 flex flex-col justify-between rounded-xs group hover:border-[#ff7a1a] transition-all"
+                  className="bg-[#201f20] border border-[#584236]/40 p-3 sm:p-4 flex flex-col justify-between rounded-xs group hover:border-[#ff7a1a] transition-all shadow-md"
                 >
                   <div>
-                    <div className="relative h-32 sm:h-40 md:h-48 overflow-hidden bg-[#0e0e0f] rounded-xs mb-2.5 sm:mb-4 flex items-center justify-center border border-[#584236]/30">
+                    <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden bg-[#0e0e0f] rounded-xs mb-2.5 sm:mb-4 flex items-center justify-center border border-[#584236]/30">
                       {part.image ? (
                         <img
                           src={part.image}
@@ -339,52 +341,54 @@ export default function CatalogSection({
 
                       <button
                         onClick={() => onToggleWishlist(part.id)}
-                        className={`absolute top-1.5 right-1.5 sm:top-2 sm:right-2 p-1 sm:p-1.5 rounded-xs backdrop-blur-md transition-all ${
+                        className={`absolute top-2 right-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xs backdrop-blur-md transition-all cursor-pointer ${
                           isWishlisted
                             ? 'bg-[#ff7a1a] text-black'
                             : 'bg-[#131314]/80 text-[#e0c0b1] hover:text-[#ff7a1a]'
                         }`}
+                        title="Save to Wishlist"
+                        aria-label="Wishlist item"
                       >
-                        <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+                        <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
                       </button>
                     </div>
 
-                    <div className="space-y-1 sm:space-y-1.5 mb-2 sm:mb-3">
-                      <span className="text-[8px] sm:text-[9px] text-[#ff7a1a] uppercase font-bold block truncate">
+                    <div className="space-y-1 sm:space-y-1.5 mb-3">
+                      <span className="text-[9px] sm:text-[10px] text-[#ff7a1a] uppercase font-bold block truncate">
                         {part.systemCategory || part.partSystem || 'Vehicle Part'} { (part.partSubcategory || part.specificPartCategory || part.subcatId) ? `• ${part.partSubcategory || part.specificPartCategory || part.subcatId}` : '' }
                       </span>
                       <h3 className="font-h3 text-xs sm:text-sm font-bold text-[#e5e2e3] group-hover:text-[#ff7a1a] transition-colors line-clamp-2 leading-tight">
                         {part.title}
                       </h3>
                       {part.oemNumber && (
-                        <div className="text-[9px] sm:text-[10px] text-[#83cffb] truncate">
+                        <div className="text-[10px] text-[#83cffb] truncate">
                           OEM // {part.oemNumber}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  <div className="pt-2 sm:pt-3 border-t border-[#584236]/30 flex flex-col space-y-1.5 sm:space-y-2">
+                  <div className="pt-2.5 sm:pt-3 border-t border-[#584236]/30 flex flex-col space-y-2">
                     <button
                       onClick={() => onRequestItem ? onRequestItem(part) : onAddToCart(part)}
-                      className="w-full text-[11px] sm:text-xs bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-bold py-1.5 rounded-xs uppercase tracking-wider flex items-center justify-center gap-1 sm:gap-1.5 transition-all shadow-sm"
+                      className="w-full min-h-[40px] sm:min-h-[44px] text-xs bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-bold py-2 px-3 rounded-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
                     >
-                      <Box className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Request Item
+                      <Box className="w-3.5 h-3.5" /> Request Item
                     </button>
 
-                    <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="flex items-center gap-2">
                       <button
                         onClick={() => onViewPartDetails(part)}
-                        className="flex-1 text-[10px] sm:text-[11px] text-[#e0c0b1] hover:text-white bg-[#131314] py-1 border border-[#584236]/50 rounded-xs flex items-center justify-center gap-1"
+                        className="flex-1 min-h-[36px] text-xs text-[#e0c0b1] hover:text-white bg-[#131314] hover:bg-[#1c1b1c] py-1.5 px-2 border border-[#584236]/50 rounded-xs flex items-center justify-center gap-1 cursor-pointer transition-colors"
                       >
-                        <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Specs
+                        <Eye className="w-3 h-3" /> Specs
                       </button>
 
                       <button
                         onClick={() => onReserveItem && onReserveItem(part)}
-                        className="flex-1 text-[10px] sm:text-[11px] text-[#ff7a1a] hover:text-white bg-[#201f20] hover:bg-[#353436] py-1 border border-[#584236]/60 rounded-xs font-bold uppercase flex items-center justify-center gap-1"
+                        className="flex-1 min-h-[36px] text-xs text-[#ff7a1a] hover:text-white bg-[#201f20] hover:bg-[#353436] py-1.5 px-2 border border-[#584236]/60 rounded-xs font-bold uppercase flex items-center justify-center gap-1 cursor-pointer transition-colors"
                       >
-                        <ShieldCheck className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Reserve
+                        <ShieldCheck className="w-3 h-3" /> Reserve
                       </button>
                     </div>
                   </div>

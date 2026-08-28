@@ -70,16 +70,43 @@ if (isSupabaseConfigured) {
 // Data Mappers (snake_case DB <-> camelCase App)
 export function mapPartFromDb(row) {
   if (!row) return null;
+  
+  let rawSpecs = Array.isArray(row.specifications) 
+    ? row.specifications 
+    : (typeof row.specifications === 'string' ? (JSON.parse(row.specifications || '[]')) : []);
+  
+  let meta = {};
+  const cleanedSpecs = [];
+
+  for (const s of rawSpecs) {
+    if (s && s.key === '__meta') {
+      try {
+        meta = typeof s.value === 'string' ? JSON.parse(s.value) : s.value;
+      } catch (e) {}
+    } else {
+      cleanedSpecs.push(s);
+    }
+  }
+
   return {
     id: row.id,
     title: row.title,
     oemNumber: row.oem_number || row.oemNumber || '',
-    carModelId: row.car_model_id || row.carModelId || '',
-    carModelName: row.car_model_name || row.carModelName || '',
+    sku: row.oem_number || row.casting_code || meta.sku || '',
+    carModelId: row.car_model_id || row.carModelId || meta.vehicleCategory || '',
+    carModelName: row.car_model_name || row.carModelName || meta.modelYearRange || '',
+    vehicleCategory: meta.vehicleCategory || row.car_model_id || '',
+    modelYearRange: meta.modelYearRange || row.car_model_name || '',
     engineType: row.engine_type || row.engineType || '',
     category: row.category || '',
+    subcategory: meta.subcategory || meta.partSubcategory || row.category || '',
+    partSubcategory: meta.subcategory || meta.partSubcategory || row.category || '',
+    systemCategory: meta.systemCategory || meta.mainSystem || row.category || '',
+    mainSystem: meta.mainSystem || meta.systemCategory || row.category || '',
+    partSystem: meta.systemCategory || meta.mainSystem || row.category || '',
     era: row.era || '',
     price: parseFloat(row.price) || 0,
+    wholesalePrice: meta.wholesalePrice ? parseFloat(meta.wholesalePrice) : 0,
     rating: parseFloat(row.rating) || 5.0,
     reviewsCount: parseInt(row.reviews_count ?? row.reviewsCount, 10) || 1,
     condition: row.condition || 'NOS (New Old Stock)',
@@ -87,23 +114,48 @@ export function mapPartFromDb(row) {
     stock: parseInt(row.stock, 10) || 0,
     inStock: Boolean(row.in_stock ?? row.inStock ?? true),
     image: row.image || '',
+    additionalImages: meta.additionalImages || (row.image ? [row.image] : []),
+    videoUrl: meta.videoUrl || '',
     castingCode: row.casting_code || row.castingCode || '',
     provenance: row.provenance || '',
-    specifications: Array.isArray(row.specifications) ? row.specifications : (typeof row.specifications === 'string' ? JSON.parse(row.specifications) : []),
-    compatibleVehicles: Array.isArray(row.compatible_vehicles) ? row.compatible_vehicles : (Array.isArray(row.compatibleVehicles) ? row.compatibleVehicles : []),
+    description: meta.description || row.provenance || '',
+    specifications: cleanedSpecs,
+    compatibleVehicles: Array.isArray(row.compatible_vehicles) ? row.compatible_vehicles : [],
+    compatibleModels: meta.compatibleModels || (Array.isArray(row.compatible_vehicles) ? row.compatible_vehicles : []),
+    compatibleEngineSizes: meta.compatibleEngineSizes || [],
     createdAt: row.created_at || new Date().toISOString()
   };
 }
 
 export function mapPartToDb(part) {
+  const extraMeta = {
+    subcategory: part.subcategory || part.subcatId || part.partSubcategory || '',
+    partSubcategory: part.subcategory || part.subcatId || part.partSubcategory || '',
+    mainSystem: part.mainSystem || part.systemCategory || part.partSystem || '',
+    systemCategory: part.systemCategory || part.mainSystem || part.partSystem || '',
+    vehicleCategory: part.vehicleCategory || part.carModelId || '',
+    modelYearRange: part.modelYearRange || part.carModelName || '',
+    description: part.description || part.provenance || '',
+    wholesalePrice: part.wholesalePrice || 0,
+    additionalImages: part.additionalImages || [],
+    videoUrl: part.videoUrl || '',
+    compatibleEngineSizes: part.compatibleEngineSizes || [],
+    compatibleModels: part.compatibleModels || part.compatibleVehicles || []
+  };
+
+  const specs = Array.isArray(part.specifications) 
+    ? part.specifications.filter(s => s && s.key !== '__meta') 
+    : [];
+  specs.push({ key: '__meta', value: JSON.stringify(extraMeta) });
+
   return {
     id: part.id,
     title: part.title,
-    oem_number: part.oemNumber || part.oem_number || '',
-    car_model_id: part.carModelId || part.car_model_id || '',
-    car_model_name: part.carModelName || part.car_model_name || '',
-    engine_type: part.engineType || part.engine_type || '',
-    category: part.category || '',
+    oem_number: part.oemNumber || part.oem_number || part.sku || '',
+    car_model_id: part.carModelId || part.car_model_id || part.vehicleCategory || '',
+    car_model_name: part.carModelName || part.car_model_name || part.modelYearRange || '',
+    engine_type: part.engineType || part.engine_type || part.engineSize || '',
+    category: part.category || part.systemCategory || '',
     era: part.era || '',
     price: parseFloat(part.price) || 0,
     rating: parseFloat(part.rating) || 5.0,
@@ -113,10 +165,10 @@ export function mapPartToDb(part) {
     stock: parseInt(part.stock, 10) || 1,
     in_stock: Boolean(part.inStock ?? part.in_stock ?? true),
     image: part.image || '',
-    casting_code: part.castingCode || part.casting_code || '',
-    provenance: part.provenance || '',
-    specifications: part.specifications || [],
-    compatible_vehicles: part.compatibleVehicles || part.compatible_vehicles || []
+    casting_code: part.castingCode || part.casting_code || part.sku || '',
+    provenance: part.provenance || part.description || '',
+    specifications: specs,
+    compatible_vehicles: part.compatibleVehicles || part.compatibleModels || []
   };
 }
 

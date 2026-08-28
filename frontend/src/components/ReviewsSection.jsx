@@ -253,7 +253,7 @@ export default function ReviewsSection() {
               setSelectedCategory(cat);
               setVisibleCount(6);
             }}
-            className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-xs transition-all uppercase tracking-wider font-bold text-[10px] sm:text-[11px] ${
+            className={`min-h-[36px] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xs transition-all uppercase tracking-wider font-bold text-[10px] sm:text-[11px] cursor-pointer ${
               selectedCategory === cat
                 ? 'bg-[#ff7a1a] text-black shadow-md'
                 : 'bg-[#201f20] text-[#a78b7d] hover:text-[#e5e2e3] border border-[#584236]/40 hover:border-[#ff7a1a]/60'

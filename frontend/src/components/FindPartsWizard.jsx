@@ -112,7 +112,7 @@ export default function FindPartsWizard({ onApplyFilter }) {
 
           {/* 4 Step Selector Row */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               
               {/* Step 1: Select Vehicle Category */}
               <div className="space-y-2 font-technical-data">
@@ -123,7 +123,7 @@ export default function FindPartsWizard({ onApplyFilter }) {
                 <select
                   value={selectedCategory}
                   onChange={(e) => handleCategorySelect(e.target.value)}
-                  className="w-full bg-[#131314] border border-[#584236] text-[#e5e2e3] text-xs p-3 rounded-xs focus:outline-none focus:border-[#ff7a1a]"
+                  className="w-full min-h-[44px] bg-[#131314] border border-[#584236] text-[#e5e2e3] text-xs p-3 rounded-xs focus:outline-none focus:border-[#ff7a1a] cursor-pointer"
                 >
                   <option value="">-- Choose VW Category --</option>
                   {VW_NAV_CATEGORIES.map(cat => (
@@ -144,7 +144,7 @@ export default function FindPartsWizard({ onApplyFilter }) {
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
                   disabled={!selectedCategory || availableModels.length === 0}
-                  className="w-full bg-[#131314] border border-[#584236] text-[#e5e2e3] text-xs p-3 rounded-xs focus:outline-none focus:border-[#ff7a1a] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full min-h-[44px] bg-[#131314] border border-[#584236] text-[#e5e2e3] text-xs p-3 rounded-xs focus:outline-none focus:border-[#ff7a1a] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <option value="">
                     {!selectedCategory 
@@ -170,7 +170,7 @@ export default function FindPartsWizard({ onApplyFilter }) {
                 <select
                   value={selectedEngine}
                   onChange={(e) => setSelectedEngine(e.target.value)}
-                  className="w-full bg-[#131314] border border-[#584236] text-[#e5e2e3] text-xs p-3 rounded-xs focus:outline-none focus:border-[#ff7a1a]"
+                  className="w-full min-h-[44px] bg-[#131314] border border-[#584236] text-[#e5e2e3] text-xs p-3 rounded-xs focus:outline-none focus:border-[#ff7a1a] cursor-pointer"
                 >
                   <option value="">-- All Engine Sizes --</option>
                   {availableEngines.map(size => (
@@ -190,7 +190,7 @@ export default function FindPartsWizard({ onApplyFilter }) {
                 <select
                   value={selectedSystem}
                   onChange={(e) => handleSystemChange(e.target.value)}
-                  className="w-full bg-[#131314] border border-[#584236] text-[#e5e2e3] text-xs p-3 rounded-xs focus:outline-none focus:border-[#ff7a1a]"
+                  className="w-full min-h-[44px] bg-[#131314] border border-[#584236] text-[#e5e2e3] text-xs p-3 rounded-xs focus:outline-none focus:border-[#ff7a1a] cursor-pointer"
                 >
                   <option value="">-- All 7 Vehicle Systems --</option>
                   {VEHICLE_SYSTEMS.map(sys => (
@@ -219,7 +219,7 @@ export default function FindPartsWizard({ onApplyFilter }) {
                       key={sys.id}
                       type="button"
                       onClick={() => handleQuickSystemSelect(sys.id)}
-                      className={`p-2.5 rounded-xs border text-left transition-all flex flex-col justify-between ${
+                      className={`min-h-[50px] p-2.5 rounded-xs border text-left transition-all flex flex-col justify-between cursor-pointer ${
                         isSysActive
                           ? 'bg-[#ff7a1a] text-black border-[#ff7a1a] font-bold shadow-md'
                           : 'bg-[#131314] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a] hover:text-[#ff7a1a]'

@@ -52,15 +52,16 @@ export default function GuidedSearchModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
-      <div className="relative w-full max-w-3xl bg-[#181719] border border-[#ff7a1a]/50 rounded-xs shadow-[0_0_50px_rgba(255,122,26,0.3)] p-6 md:p-8 font-technical-data text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-xl overflow-y-auto animate-in fade-in duration-300">
+      <div className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto bg-[#181719] border border-[#ff7a1a]/50 rounded-xs shadow-[0_0_50px_rgba(255,122,26,0.3)] p-4 sm:p-6 md:p-8 font-technical-data text-white my-auto">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-[#a78b7d] hover:text-[#ff7a1a] transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 min-w-[36px] min-h-[36px] flex items-center justify-center p-2 text-[#a78b7d] hover:text-[#ff7a1a] transition-colors cursor-pointer"
+          aria-label="Close guided search"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
