@@ -8,6 +8,8 @@ import {
   Check, 
   ZoomIn, 
   ZoomOut, 
+  Plus,
+  Minus,
   RotateCcw, 
   Wrench, 
   ShieldCheck, 

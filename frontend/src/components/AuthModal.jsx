@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, Key, ShieldCheck, ArrowRight, UserCheck, AlertCircle } from 'lucide-react';
+import { X, Lock, Mail, Key, AlertCircle, ArrowRight } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess, cartTotal }) {
-  if (!isOpen) return null;
-
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +20,6 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, cartTotal })
     const endpoint = isRegister 
       ? `${API_BASE_URL}/api/auth/register` 
       : `${API_BASE_URL}/api/auth/login`;
-
 
     const payload = isRegister 
       ? { name, email, password } 
