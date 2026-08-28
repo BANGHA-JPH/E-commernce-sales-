@@ -75,18 +75,18 @@ export default function Navbar({
     <header className="fixed top-0 w-full z-50 bg-[#131314]/95 backdrop-blur-xl border-b border-[#584236]/30 text-white transition-all duration-300">
       
       {/* Top Header Bar */}
-      <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-3 flex items-center justify-between gap-4 border-b border-[#584236]/20">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 md:px-8 py-2 sm:py-3 flex items-center justify-between gap-2 sm:gap-4 border-b border-[#584236]/20">
         
         {/* Brand Logo Header */}
         <button 
           onClick={onNavigateToShop} 
-          className="flex items-center space-x-3 group shrink-0 text-left focus:outline-none"
+          className="flex items-center space-x-2 sm:space-x-3 group shrink-0 text-left focus:outline-none"
         >
-          <div className="w-10 h-10 bg-[#ff7a1a] flex items-center justify-center text-black font-bold group-hover:bg-[#ffb68e] transition-colors">
-            <Wrench className="w-5 h-5 text-black" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#ff7a1a] flex items-center justify-center text-black font-bold group-hover:bg-[#ffb68e] transition-colors rounded-xs">
+            <Wrench className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
           </div>
           <div>
-            <div className="font-h2 text-base md:text-lg font-bold tracking-tighter text-[#ff7a1a] flex items-center leading-none select-none">
+            <div className="font-h2 text-xs sm:text-base md:text-lg font-bold tracking-tighter text-[#ff7a1a] flex items-center leading-none select-none">
               {"CLASSIC AIRCOOLED VW WORKS".split('').map((char, index) => (
                 <span
                   key={index}
@@ -94,15 +94,15 @@ export default function Navbar({
                   style={{
                     animationDelay: `${index * 0.06}s`,
                     display: 'inline-block',
-                    width: char === ' ' ? '0.3em' : 'auto'
+                    width: char === ' ' ? '0.25em' : 'auto'
                   }}
                 >
                   {char === ' ' ? '\u00A0' : char}
                 </span>
               ))}
             </div>
-            <span className="text-[9px] tracking-widest text-[#a78b7d] uppercase font-technical-data font-bold block mt-0.5">
-              ENGINES, SPARE PARTS & RESTORATION WORKSHOP
+            <span className="text-[7px] sm:text-[9px] tracking-widest text-[#a78b7d] uppercase font-technical-data font-bold block mt-0.5">
+              ENGINES, SPARE PARTS & WORKSHOP
             </span>
           </div>
         </button>
@@ -122,7 +122,7 @@ export default function Navbar({
         </div>
 
         {/* Action Buttons: Wishlist, Location, Auth / Dashboard */}
-        <div className="flex items-center space-x-3 shrink-0">
+        <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
           
           {/* Workshop Location Button */}
           <a
@@ -135,10 +135,10 @@ export default function Navbar({
           </a>
 
           {/* Wishlist Button */}
-          <button className="relative p-2 text-[#e0c0b1] hover:text-[#ff7a1a] transition-colors" title="Wishlist">
-            <Heart className="w-5 h-5" />
+          <button className="relative p-1.5 sm:p-2 text-[#e0c0b1] hover:text-[#ff7a1a] transition-colors" title="Wishlist">
+            <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#ff7a1a] text-black text-[10px] font-technical-data font-bold px-1 leading-none py-[2px]">
+              <span className="absolute -top-1 -right-1 bg-[#ff7a1a] text-black text-[9px] sm:text-[10px] font-technical-data font-bold px-1 leading-none py-[2px]">
                 {wishlistCount}
               </span>
             )}
@@ -149,12 +149,12 @@ export default function Navbar({
               {/* User Dashboard & Requests Trigger */}
               <button 
                 onClick={onOpenUserDashboard}
-                className="relative flex items-center gap-2 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black border border-[#ff7a1a] px-3 py-1.5 transition-all rounded-xs font-bold"
+                className="relative flex items-center gap-1.5 sm:gap-2 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black border border-[#ff7a1a] px-2.5 py-1 sm:px-3 sm:py-1.5 transition-all rounded-xs font-bold text-xs"
                 title="User Dashboard & Garage"
               >
-                <User className="w-4 h-4 text-black" />
-                <span className="hidden sm:inline font-label-caps text-xs uppercase tracking-wider">My Dashboard</span>
-                <span className="bg-black text-[#ff7a1a] text-[10px] font-technical-data font-bold px-1.5 py-0.5 rounded-xs">
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
+                <span className="hidden sm:inline font-label-caps text-xs uppercase tracking-wider">Dashboard</span>
+                <span className="bg-black text-[#ff7a1a] text-[9px] sm:text-[10px] font-technical-data font-bold px-1 sm:px-1.5 py-0.5 rounded-xs">
                   {userRequestsCount}
                 </span>
               </button>
@@ -163,11 +163,11 @@ export default function Navbar({
               {onLogout && (
                 <button 
                   onClick={onLogout}
-                  className="flex items-center gap-1 font-label-caps text-xs bg-[#201f20] hover:bg-red-600 hover:text-white border border-red-500/40 text-red-400 px-3 py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all cursor-pointer shadow-sm"
+                  className="flex items-center gap-1 font-label-caps text-[11px] sm:text-xs bg-[#201f20] hover:bg-red-600 hover:text-white border border-red-500/40 text-red-400 px-2 sm:px-3 py-1 sm:py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all cursor-pointer shadow-sm"
                   title="Sign Out"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Sign Out</span>
+                  <LogOut className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span className="hidden sm:inline">Sign Out</span>
                 </button>
               )}
             </>
@@ -175,20 +175,20 @@ export default function Navbar({
             /* Auth Modal Trigger (Login / Register) */
             <button 
               onClick={onOpenAuth}
-              className="flex items-center gap-1.5 font-label-caps text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] border border-[#ff7a1a] px-3.5 py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all shadow-md"
+              className="flex items-center gap-1 sm:gap-1.5 font-label-caps text-[11px] sm:text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] border border-[#ff7a1a] px-2.5 py-1 sm:px-3.5 sm:py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all shadow-md"
             >
-              <User className="w-4 h-4 text-black" />
-              <span>Login / Register</span>
+              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
+              <span>Login</span>
             </button>
           )}
 
           {/* Mobile Menu Toggle */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-[#e0c0b1] hover:text-[#ff7a1a]"
+            className="lg:hidden p-1.5 sm:p-2 text-[#e0c0b1] hover:text-[#ff7a1a]"
             aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
           </button>
         </div>
       </div>

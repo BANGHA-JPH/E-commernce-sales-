@@ -149,18 +149,18 @@ export default function CatalogSection({
   const availableSubcategories = currentSystemObj ? currentSystemObj.subcategories : [];
 
   return (
-    <section id="catalog" className="py-16 bg-[#131314] relative border-b border-[#584236]/20 font-technical-data">
-      <div className="max-w-[1440px] mx-auto px-4 md:px-8">
+    <section id="catalog" className="py-10 sm:py-16 bg-[#131314] relative border-b border-[#584236]/20 font-technical-data">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 md:px-8">
         
         {/* Catalog Filter Header & Toolbar */}
-        <div className="bg-[#181719] border border-[#584236]/50 rounded-xs p-4 md:p-6 mb-8 shadow-xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#584236]/30 mb-4">
+        <div className="bg-[#181719] border border-[#584236]/50 rounded-xs p-3 sm:p-5 mb-6 sm:mb-8 shadow-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-[#584236]/30 mb-3 sm:mb-4">
             <div>
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-[#ff7a1a] uppercase tracking-wider mb-1">
-                <SlidersHorizontal className="w-4 h-4" />
+              <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-[#ff7a1a] uppercase tracking-wider mb-0.5 sm:mb-1">
+                <SlidersHorizontal className="w-3.5 h-3.5" />
                 <span>SPARE PARTS CATALOG // CLASSIFIED FILTERING</span>
               </div>
-              <h2 className="text-xl md:text-2xl font-bold text-[#e5e2e3]">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-[#e5e2e3]">
                 Inventory Parts ({filteredParts.length} Available)
               </h2>
             </div>
@@ -168,27 +168,27 @@ export default function CatalogSection({
             {(selectedCategory !== 'ALL' || selectedModel !== 'ALL' || selectedSystem !== 'ALL' || selectedSubcat !== 'ALL' || selectedEngine !== 'ALL') && (
               <button
                 onClick={handleResetFilters}
-                className="self-start md:self-auto text-xs text-[#83cffb] hover:text-white bg-[#201f20] px-3 py-1.5 border border-[#83cffb]/30 rounded-xs flex items-center gap-1.5 font-bold transition-all"
+                className="self-start md:self-auto text-[11px] sm:text-xs text-[#83cffb] hover:text-white bg-[#201f20] px-2.5 py-1 sm:px-3 sm:py-1.5 border border-[#83cffb]/30 rounded-xs flex items-center gap-1 font-bold transition-all"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-3 h-3" />
                 <span>Clear Filters</span>
               </button>
             )}
           </div>
 
           {/* Primary System Selector Bar */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div>
-              <span className="text-[11px] text-[#a78b7d] uppercase font-bold block mb-2">
+              <span className="text-[10px] sm:text-[11px] text-[#a78b7d] uppercase font-bold block mb-1.5">
                 1. Select Vehicle System:
               </span>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 <button
                   onClick={() => {
                     setSelectedSystem('ALL');
                     setSelectedSubcat('ALL');
                   }}
-                  className={`text-xs px-3.5 py-2 rounded-xs font-bold transition-all border ${
+                  className={`text-[11px] sm:text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xs font-bold transition-all border ${
                     selectedSystem === 'ALL'
                       ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]'
                       : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a] hover:text-[#ff7a1a]'
@@ -205,13 +205,13 @@ export default function CatalogSection({
                         setSelectedSystem(sys.id);
                         setSelectedSubcat('ALL');
                       }}
-                      className={`text-xs px-3.5 py-2 rounded-xs font-bold transition-all border flex items-center gap-1.5 ${
+                      className={`text-[11px] sm:text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xs font-bold transition-all border flex items-center gap-1 ${
                         isActive
                           ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]'
                           : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a] hover:text-[#ff7a1a]'
                       }`}
                     >
-                      <span>{sys.emoji}</span>
+                      <span className="text-xs">{sys.emoji}</span>
                       <span>{sys.name}</span>
                     </button>
                   );
@@ -221,14 +221,14 @@ export default function CatalogSection({
 
             {/* Subcategories Selector Bar when a System is active */}
             {selectedSystem !== 'ALL' && currentSystemObj && (
-              <div className="p-3 bg-[#131314] border border-[#ff7a1a]/40 rounded-xs animate-in fade-in duration-200">
-                <span className="text-xs font-bold text-[#ff7a1a] block mb-2">
+              <div className="p-2.5 sm:p-3 bg-[#131314] border border-[#ff7a1a]/40 rounded-xs animate-in fade-in duration-200">
+                <span className="text-[11px] sm:text-xs font-bold text-[#ff7a1a] block mb-1.5">
                   2. Subcategories in {currentSystemObj.emoji} {currentSystemObj.name}:
                 </span>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   <button
                     onClick={() => setSelectedSubcat('ALL')}
-                    className={`text-xs px-3 py-1.5 rounded-xs font-bold transition-all border ${
+                    className={`text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xs font-bold transition-all border ${
                       selectedSubcat === 'ALL'
                         ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]'
                         : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/50 hover:border-[#ff7a1a]'
@@ -242,7 +242,7 @@ export default function CatalogSection({
                       <button
                         key={sub.id}
                         onClick={() => setSelectedSubcat(sub.name)}
-                        className={`text-xs px-3 py-1.5 rounded-xs font-bold transition-all border ${
+                        className={`text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xs font-bold transition-all border ${
                           isSubActive
                             ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]'
                             : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/50 hover:border-[#ff7a1a] hover:text-[#ff7a1a]'
@@ -258,56 +258,53 @@ export default function CatalogSection({
           </div>
         </div>
         {filteredParts.length === 0 ? (
-          <div className="space-y-8 animate-in fade-in duration-300">
+          <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
             {/* Notification Banner */}
-            <div className="text-center py-8 bg-[#181719] border border-dashed border-[#584236]/60 rounded-xs p-6 max-w-3xl mx-auto shadow-xl">
-              <div className="w-12 h-12 rounded-full bg-[#ff7a1a]/10 border border-[#ff7a1a]/40 flex items-center justify-center mx-auto mb-3 text-[#ff7a1a]">
-                <Wrench className="w-6 h-6" />
+            <div className="text-center py-6 sm:py-8 bg-[#181719] border border-dashed border-[#584236]/60 rounded-xs p-4 sm:p-6 max-w-3xl mx-auto shadow-xl">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#ff7a1a]/10 border border-[#ff7a1a]/40 flex items-center justify-center mx-auto mb-2 sm:mb-3 text-[#ff7a1a]">
+                <Wrench className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="text-xl font-bold text-[#e5e2e3] mb-1 font-h2">
+              <h3 className="text-lg sm:text-xl font-bold text-[#e5e2e3] mb-1 font-h2">
                 0 Inventory Items Currently Available
               </h3>
-              <p className="text-[#a78b7d] text-xs max-w-md mx-auto leading-relaxed mb-4">
-                No spare parts or images have been uploaded to the database yet. Open the Admin Panel below to add your first inventory post with photos!
+              <p className="text-[#a78b7d] text-[11px] sm:text-xs max-w-md mx-auto leading-relaxed mb-3 sm:mb-4">
+                No spare parts match the active criteria. Clear filters or browse other systems.
               </p>
               <button
                 onClick={handleResetFilters}
-                className="text-xs font-bold text-black bg-[#ff7a1a] hover:bg-[#ffb68e] px-5 py-2 rounded-xs uppercase tracking-wider transition-all glow-button inline-flex items-center gap-2"
+                className="text-[11px] sm:text-xs font-bold text-black bg-[#ff7a1a] hover:bg-[#ffb68e] px-4 py-1.5 sm:px-5 sm:py-2 rounded-xs uppercase tracking-wider transition-all glow-button inline-flex items-center gap-1.5"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>Reset Filters</span>
               </button>
             </div>
 
             {/* Empty Inventory Cards Grid (Visual Placeholder Boxes) */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {[1, 2, 3, 4].map((slot) => (
                 <div 
                   key={slot}
-                  className="bg-[#181719]/80 border border-dashed border-[#584236]/50 p-4 rounded-xs flex flex-col justify-between space-y-4 opacity-75 hover:opacity-100 transition-opacity"
+                  className="bg-[#181719]/80 border border-dashed border-[#584236]/50 p-2.5 sm:p-4 rounded-xs flex flex-col justify-between space-y-3 opacity-75 hover:opacity-100 transition-opacity"
                 >
-                  <div className="space-y-3">
-                    <div className="h-44 bg-[#131314] border border-[#584236]/40 rounded-xs flex flex-col items-center justify-center text-[#584236] p-4 text-center">
-                      <ImageIcon className="w-8 h-8 mb-2 text-[#584236]" />
-                      <span className="text-[11px] font-bold text-[#a78b7d] uppercase tracking-wider">Empty Image Slot</span>
-                      <span className="text-[9px] text-[#584236] mt-0.5">Awaiting Admin Upload</span>
+                  <div className="space-y-2">
+                    <div className="h-28 sm:h-36 md:h-44 bg-[#131314] border border-[#584236]/40 rounded-xs flex flex-col items-center justify-center text-[#584236] p-2 text-center">
+                      <ImageIcon className="w-6 h-6 mb-1 text-[#584236]" />
+                      <span className="text-[9px] sm:text-[11px] font-bold text-[#a78b7d] uppercase tracking-wider">Empty Slot</span>
+                      <span className="text-[8px] sm:text-[9px] text-[#584236]">Awaiting Upload</span>
                     </div>
 
-                    <div className="space-y-1">
-                      <span className="text-[9px] text-[#ff7a1a] uppercase font-bold block">
-                        Slot #{slot} • Empty Inventory Item
+                    <div className="space-y-0.5">
+                      <span className="text-[8px] sm:text-[9px] text-[#ff7a1a] uppercase font-bold block">
+                        Slot #{slot}
                       </span>
-                      <h4 className="text-xs font-bold text-[#e5e2e3]">
-                        Item Position Ready for Upload
+                      <h4 className="text-[11px] sm:text-xs font-bold text-[#e5e2e3] line-clamp-1">
+                        Ready for Upload
                       </h4>
-                      <p className="text-[10px] text-[#a78b7d] line-clamp-2">
-                        Use the Admin Panel form to post spare parts, complete engines, or restoration items here.
-                      </p>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-[#584236]/30 flex items-center justify-between text-[10px] text-[#584236] font-bold uppercase">
-                    <span>STATUS: UNPOPULATED</span>
+                  <div className="pt-2 border-t border-[#584236]/30 flex items-center justify-between text-[9px] sm:text-[10px] text-[#584236] font-bold uppercase">
+                    <span>UNPOPULATED</span>
                     <span className="text-[#ff7a1a]">$0.00</span>
                   </div>
                 </div>
@@ -315,7 +312,7 @@ export default function CatalogSection({
             </div>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {filteredParts.map((part) => {
               const isWishlisted = wishlistIds.includes(part.id);
               const isAdded = addedIds.includes(part.id);
@@ -323,71 +320,71 @@ export default function CatalogSection({
               return (
                 <div
                   key={part.id}
-                  className="bg-[#201f20] border border-[#584236]/40 p-4 flex flex-col justify-between rounded-xs group hover:border-[#ff7a1a] transition-all"
+                  className="bg-[#201f20] border border-[#584236]/40 p-2.5 sm:p-4 flex flex-col justify-between rounded-xs group hover:border-[#ff7a1a] transition-all"
                 >
                   <div>
-                    <div className="relative h-48 overflow-hidden bg-[#0e0e0f] rounded-xs mb-4 flex items-center justify-center border border-[#584236]/30">
+                    <div className="relative h-32 sm:h-40 md:h-48 overflow-hidden bg-[#0e0e0f] rounded-xs mb-2.5 sm:mb-4 flex items-center justify-center border border-[#584236]/30">
                       {part.image ? (
                         <img
                           src={part.image}
                           alt={part.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div className="text-center text-[#a78b7d] space-y-1">
-                          <ImageIcon className="w-8 h-8 mx-auto text-[#584236]" />
-                          <span className="text-[10px] block">Image Slot</span>
+                          <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-[#584236]" />
+                          <span className="text-[9px] sm:text-[10px] block">Image Slot</span>
                         </div>
                       )}
 
                       <button
                         onClick={() => onToggleWishlist(part.id)}
-                        className={`absolute top-2 right-2 p-1.5 rounded-xs backdrop-blur-md transition-all ${
+                        className={`absolute top-1.5 right-1.5 sm:top-2 sm:right-2 p-1 sm:p-1.5 rounded-xs backdrop-blur-md transition-all ${
                           isWishlisted
                             ? 'bg-[#ff7a1a] text-black'
                             : 'bg-[#131314]/80 text-[#e0c0b1] hover:text-[#ff7a1a]'
                         }`}
                       >
-                        <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+                        <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isWishlisted ? 'fill-current' : ''}`} />
                       </button>
                     </div>
 
-                    <div className="space-y-2 mb-4">
-                      <span className="text-[9px] text-[#ff7a1a] uppercase font-bold block">
+                    <div className="space-y-1 sm:space-y-1.5 mb-2 sm:mb-3">
+                      <span className="text-[8px] sm:text-[9px] text-[#ff7a1a] uppercase font-bold block truncate">
                         {part.systemCategory || part.partSystem || 'Vehicle Part'} { (part.partSubcategory || part.specificPartCategory || part.subcatId) ? `• ${part.partSubcategory || part.specificPartCategory || part.subcatId}` : '' }
                       </span>
-                      <h3 className="font-h3 text-sm font-bold text-[#e5e2e3] group-hover:text-[#ff7a1a] transition-colors">
+                      <h3 className="font-h3 text-xs sm:text-sm font-bold text-[#e5e2e3] group-hover:text-[#ff7a1a] transition-colors line-clamp-2 leading-tight">
                         {part.title}
                       </h3>
                       {part.oemNumber && (
-                        <div className="text-[10px] text-[#83cffb]">
+                        <div className="text-[9px] sm:text-[10px] text-[#83cffb] truncate">
                           OEM // {part.oemNumber}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-[#584236]/30 flex flex-col space-y-2">
+                  <div className="pt-2 sm:pt-3 border-t border-[#584236]/30 flex flex-col space-y-1.5 sm:space-y-2">
                     <button
                       onClick={() => onRequestItem ? onRequestItem(part) : onAddToCart(part)}
-                      className="w-full text-xs bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-bold py-1.5 rounded-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                      className="w-full text-[11px] sm:text-xs bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-bold py-1.5 rounded-xs uppercase tracking-wider flex items-center justify-center gap-1 sm:gap-1.5 transition-all shadow-sm"
                     >
-                      <Box className="w-3.5 h-3.5" /> Request Item
+                      <Box className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Request Item
                     </button>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                       <button
                         onClick={() => onViewPartDetails(part)}
-                        className="flex-1 text-[11px] text-[#e0c0b1] hover:text-white bg-[#131314] py-1 border border-[#584236]/50 rounded-xs flex items-center justify-center gap-1"
+                        className="flex-1 text-[10px] sm:text-[11px] text-[#e0c0b1] hover:text-white bg-[#131314] py-1 border border-[#584236]/50 rounded-xs flex items-center justify-center gap-1"
                       >
-                        <Eye className="w-3 h-3" /> Specs
+                        <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Specs
                       </button>
 
                       <button
                         onClick={() => onReserveItem && onReserveItem(part)}
-                        className="flex-1 text-[11px] text-[#ff7a1a] hover:text-white bg-[#201f20] hover:bg-[#353436] py-1 border border-[#584236]/60 rounded-xs font-bold uppercase flex items-center justify-center gap-1"
+                        className="flex-1 text-[10px] sm:text-[11px] text-[#ff7a1a] hover:text-white bg-[#201f20] hover:bg-[#353436] py-1 border border-[#584236]/60 rounded-xs font-bold uppercase flex items-center justify-center gap-1"
                       >
-                        <ShieldCheck className="w-3 h-3" /> Reserve
+                        <ShieldCheck className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Reserve
                       </button>
                     </div>
                   </div>

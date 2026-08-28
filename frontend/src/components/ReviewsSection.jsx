@@ -175,76 +175,76 @@ export default function ReviewsSection() {
   }, [selectedCategory]);
 
   return (
-    <section id="reviews" className="max-w-[1440px] mx-auto px-4 md:px-8 mb-32 pt-12">
+    <section id="reviews" className="max-w-[1440px] mx-auto px-3 sm:px-6 md:px-8 mb-16 sm:mb-24 pt-6 sm:pt-12">
       
       {/* Section Header */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 text-[#ff7a1a] font-technical-data text-xs uppercase tracking-widest rounded-sm mb-4">
-          <ShieldCheck className="w-4 h-4" /> VERIFIED BUILDER & RESTORER TESTIMONIALS
+      <div className="text-center mb-8 sm:mb-12">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 text-[#ff7a1a] font-technical-data text-[10px] sm:text-xs uppercase tracking-widest rounded-sm mb-3 sm:mb-4">
+          <ShieldCheck className="w-3.5 h-3.5" /> VERIFIED BUILDER & RESTORER TESTIMONIALS
         </div>
-        <h2 className="font-h2 text-3xl md:text-5xl text-[#e5e2e3] font-bold mb-4 tracking-tight">
+        <h2 className="font-h2 text-2xl sm:text-3xl md:text-4xl text-[#e5e2e3] font-bold mb-2 sm:mb-4 tracking-tight">
           Trusted by Mechanics & <span className="text-[#ff7a1a]">Engine Builders</span> Worldwide
         </h2>
-        <p className="font-body-md text-sm md:text-base text-[#e0c0b1] max-w-2xl mx-auto leading-relaxed">
+        <p className="font-body-md text-xs sm:text-sm md:text-base text-[#e0c0b1] max-w-2xl mx-auto leading-relaxed px-2">
           Over 1,240+ verified five-star ratings from dedicated air-cooled enthusiasts, race shops, and classic Volkswagen preservationists.
         </p>
       </div>
 
       {/* Aggregate Trust Metrics Strip */}
-      <div className="glass-panel p-6 rounded-sm mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-center border border-[#584236]/40 text-center sm:text-left">
+      <div className="glass-panel p-3.5 sm:p-6 rounded-sm mb-6 sm:mb-10 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 items-center border border-[#584236]/40 text-center sm:text-left">
         
         {/* Rating Score */}
-        <div className="flex items-center justify-center sm:justify-start gap-4">
-          <div className="text-4xl lg:text-5xl font-bold font-h1 text-[#ff7a1a]">4.98</div>
+        <div className="flex items-center justify-center sm:justify-start gap-2.5 sm:gap-4">
+          <div className="text-2xl sm:text-4xl lg:text-5xl font-bold font-h1 text-[#ff7a1a]">4.98</div>
           <div>
-            <div className="flex text-[#ff7a1a] gap-1 mb-1">
+            <div className="flex text-[#ff7a1a] gap-0.5 mb-0.5 sm:mb-1">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-current" />
+                <Star key={i} className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
               ))}
             </div>
-            <div className="font-technical-data text-xs text-[#e0c0b1]">1,240+ Verified Reviews</div>
+            <div className="font-technical-data text-[10px] sm:text-xs text-[#e0c0b1]">1,240+ Reviews</div>
           </div>
         </div>
 
         {/* Fitment Guarantee */}
-        <div className="flex items-center justify-center sm:justify-start gap-3">
-          <div className="w-10 h-10 bg-[#83cffb]/10 border border-[#83cffb]/30 rounded-sm flex items-center justify-center text-[#83cffb] shrink-0">
-            <CheckCircle2 className="w-5 h-5" />
+        <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#83cffb]/10 border border-[#83cffb]/30 rounded-sm flex items-center justify-center text-[#83cffb] shrink-0">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div>
-            <div className="font-h3 text-sm text-[#e5e2e3] font-bold">100% Fitment Match</div>
-            <div className="font-technical-data text-xs text-[#a78b7d]">Blueprint Casting Code Guarantee</div>
+            <div className="font-h3 text-xs sm:text-sm text-[#e5e2e3] font-bold">100% Fitment</div>
+            <div className="font-technical-data text-[9px] sm:text-xs text-[#a78b7d]">Blueprint Match</div>
           </div>
         </div>
 
         {/* Builder Satisfaction */}
-        <div className="flex items-center justify-center sm:justify-start gap-3">
-          <div className="w-10 h-10 bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 rounded-sm flex items-center justify-center text-[#ff7a1a] shrink-0">
-            <ThumbsUp className="w-5 h-5" />
+        <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 rounded-sm flex items-center justify-center text-[#ff7a1a] shrink-0">
+            <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div>
-            <div className="font-h3 text-sm text-[#e5e2e3] font-bold">99.4% Satisfaction</div>
-            <div className="font-technical-data text-xs text-[#a78b7d]">Insured High-Tolerance Packing</div>
+            <div className="font-h3 text-xs sm:text-sm text-[#e5e2e3] font-bold">99.4% Satisfied</div>
+            <div className="font-technical-data text-[9px] sm:text-xs text-[#a78b7d]">Insured Packing</div>
           </div>
         </div>
 
         {/* Master Restorer Approved */}
-        <div className="flex items-center justify-center sm:justify-start gap-3">
-          <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 rounded-sm flex items-center justify-center text-emerald-400 shrink-0">
-            <Award className="w-5 h-5" />
+        <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/10 border border-emerald-500/30 rounded-sm flex items-center justify-center text-emerald-400 shrink-0">
+            <Award className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div>
-            <div className="font-h3 text-sm text-[#e5e2e3] font-bold">Dyno & Track Tested</div>
-            <div className="font-technical-data text-xs text-[#a78b7d]">Street & Strip Calibration</div>
+            <div className="font-h3 text-xs sm:text-sm text-[#e5e2e3] font-bold">Track Tested</div>
+            <div className="font-technical-data text-[9px] sm:text-xs text-[#a78b7d]">Dyno Calibration</div>
           </div>
         </div>
 
       </div>
 
       {/* Category Filter Pills */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mb-10 font-technical-data text-xs">
-        <span className="text-[#a78b7d] flex items-center gap-1.5 mr-2 uppercase tracking-wider text-[11px]">
-          <Filter className="w-3.5 h-3.5 text-[#ff7a1a]" /> Filter by build:
+      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-10 font-technical-data text-xs">
+        <span className="text-[#a78b7d] flex items-center gap-1 mr-1 uppercase tracking-wider text-[10px] sm:text-[11px]">
+          <Filter className="w-3 h-3 text-[#ff7a1a]" /> Build:
         </span>
         {REVIEW_CATEGORIES.map((cat) => (
           <button
@@ -253,7 +253,7 @@ export default function ReviewsSection() {
               setSelectedCategory(cat);
               setVisibleCount(6);
             }}
-            className={`px-3.5 py-1.5 rounded-xs transition-all uppercase tracking-wider font-bold text-[11px] ${
+            className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-xs transition-all uppercase tracking-wider font-bold text-[10px] sm:text-[11px] ${
               selectedCategory === cat
                 ? 'bg-[#ff7a1a] text-black shadow-md'
                 : 'bg-[#201f20] text-[#a78b7d] hover:text-[#e5e2e3] border border-[#584236]/40 hover:border-[#ff7a1a]/60'
@@ -265,71 +265,67 @@ export default function ReviewsSection() {
       </div>
 
       {/* Review Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {filteredReviews.slice(0, visibleCount).map((review) => (
           <div 
             key={review.id} 
-            className="glass-panel p-6 flex flex-col justify-between rounded-sm relative group hover:border-[#ff7a1a] transition-all bg-[#181719]/90 border border-[#584236]/50 shadow-lg"
+            className="glass-panel p-4 sm:p-6 flex flex-col justify-between rounded-sm relative group hover:border-[#ff7a1a] transition-all bg-[#181719]/90 border border-[#584236]/50 shadow-lg"
           >
-            <Quote className="absolute top-4 right-4 w-8 h-8 text-[#584236]/25 group-hover:text-[#ff7a1a]/25 transition-colors" />
+            <Quote className="absolute top-3 right-3 sm:top-4 sm:right-4 w-6 h-6 sm:w-8 sm:h-8 text-[#584236]/25 group-hover:text-[#ff7a1a]/25 transition-colors" />
 
             <div>
               {/* Star Rating, Date & Badge */}
-              <div className="flex justify-between items-center mb-3">
-                <div className="flex items-center gap-2">
+              <div className="flex justify-between items-center mb-2.5 sm:mb-3">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <div className="flex text-[#ff7a1a] gap-0.5">
                     {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                      <Star key={i} className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current" />
                     ))}
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 bg-[#ff7a1a]/15 text-[#ff7a1a] border border-[#ff7a1a]/30 font-technical-data rounded-xs font-bold">
+                  <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-[#ff7a1a]/15 text-[#ff7a1a] border border-[#ff7a1a]/30 font-technical-data rounded-xs font-bold">
                     {review.badge}
                   </span>
                 </div>
-                <span className="font-technical-data text-[10px] text-[#a78b7d]">
+                <span className="font-technical-data text-[9px] sm:text-[10px] text-[#a78b7d]">
                   {review.date}
                 </span>
               </div>
 
               {/* Title & Review Content */}
-              <h3 className="font-h3 text-sm md:text-base text-[#e5e2e3] font-bold mb-2.5 leading-snug">
+              <h3 className="font-h3 text-xs sm:text-sm md:text-base text-[#e5e2e3] font-bold mb-1.5 sm:mb-2.5 leading-snug">
                 "{review.title}"
               </h3>
-              <p className="font-body-md text-xs text-[#e0c0b1] leading-relaxed mb-6">
+              <p className="font-body-md text-[11px] sm:text-xs text-[#e0c0b1] leading-relaxed mb-4 sm:mb-6">
                 {review.review}
               </p>
             </div>
 
             {/* Author Details, Location, Email & Vehicle Badge */}
-            <div className="pt-4 border-t border-[#584236]/30 flex items-start gap-3.5">
+            <div className="pt-3 sm:pt-4 border-t border-[#584236]/30 flex items-start gap-2.5 sm:gap-3.5">
               <img 
                 src={review.avatar} 
                 alt={review.author} 
-                className="w-11 h-11 rounded-sm object-cover border border-[#584236] shrink-0 mt-0.5"
+                className="w-9 h-9 sm:w-11 sm:h-11 rounded-sm object-cover border border-[#584236] shrink-0 mt-0.5"
               />
               <div className="min-w-0 flex-1 space-y-0.5">
                 <div className="flex items-center gap-1.5 font-h3 text-xs text-[#e5e2e3] font-bold truncate">
                   <span>{review.author}</span>
-                  <CheckCircle className="w-3.5 h-3.5 text-[#83cffb] shrink-0" title="Verified Purchaser" />
+                  <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#83cffb] shrink-0" title="Verified Purchaser" />
                 </div>
                 
                 {review.email && (
-                  <div className="flex items-center gap-1 text-[10px] text-[#83cffb] font-technical-data truncate">
-                    <Mail className="w-3 h-3 text-[#83cffb] shrink-0" />
+                  <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-[#83cffb] font-technical-data truncate">
+                    <Mail className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#83cffb] shrink-0" />
                     <span className="truncate">{review.email}</span>
                   </div>
                 )}
 
-                <div className="flex items-center gap-1 text-[10px] text-[#a78b7d] font-technical-data truncate">
-                  <MapPin className="w-3 h-3 text-[#ff7a1a] shrink-0" /> {review.role} • {review.location}
+                <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-[#a78b7d] font-technical-data truncate">
+                  <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#ff7a1a] shrink-0" /> {review.role} • {review.location}
                 </div>
                 
-                <div className="font-technical-data text-[10px] text-[#ff7a1a] font-semibold truncate pt-1">
+                <div className="font-technical-data text-[9px] sm:text-[10px] text-[#ff7a1a] font-semibold truncate pt-0.5">
                   🚗 {review.vehicle}
-                </div>
-                
-                <div className="font-technical-data text-[9px] text-[#a78b7d] truncate">
-                  🔧 {review.partPurchased}
                 </div>
               </div>
             </div>
@@ -340,10 +336,10 @@ export default function ReviewsSection() {
 
       {/* Show More / Show Less Button */}
       {filteredReviews.length > visibleCount && (
-        <div className="text-center mt-10">
+        <div className="text-center mt-6 sm:mt-10">
           <button
             onClick={() => setVisibleCount(prev => prev + 3)}
-            className="px-8 py-3 bg-[#201f20] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black border border-[#584236]/60 hover:border-[#ff7a1a] font-technical-data text-xs uppercase font-bold tracking-widest rounded-xs transition-all shadow-md"
+            className="px-6 py-2.5 sm:px-8 sm:py-3 bg-[#201f20] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black border border-[#584236]/60 hover:border-[#ff7a1a] font-technical-data text-[11px] sm:text-xs uppercase font-bold tracking-widest rounded-xs transition-all shadow-md"
           >
             Load More Reviews ({filteredReviews.length - visibleCount} Remaining)
           </button>

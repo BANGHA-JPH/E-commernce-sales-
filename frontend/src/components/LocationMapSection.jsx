@@ -108,69 +108,69 @@ export default function LocationMapSection() {
   };
 
   return (
-    <section id="workshop-location" className="py-20 bg-[#0e0e0f] relative border-t border-b border-[#584236]/30 overflow-hidden">
+    <section id="workshop-location" className="py-10 sm:py-16 md:py-20 bg-[#0e0e0f] relative border-t border-b border-[#584236]/30 overflow-hidden">
       
       {/* Subtle blueprint grid background */}
       <div className="absolute inset-0 bg-blueprint-grid opacity-10 pointer-events-none"></div>
 
-      <div className="relative max-w-[1440px] mx-auto px-4 md:px-8">
+      <div className="relative max-w-[1440px] mx-auto px-3 sm:px-6 md:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xs bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 text-[#ff7a1a] font-technical-data text-xs uppercase tracking-widest">
-            <MapPin className="w-4 h-4 text-[#ff7a1a] animate-bounce" />
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 space-y-2 sm:space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 text-[#ff7a1a] font-technical-data text-[10px] sm:text-xs uppercase tracking-widest">
+            <MapPin className="w-3.5 h-3.5 text-[#ff7a1a] animate-bounce" />
             <span>HOUSTON WORKSHOP & DISTRIBUTION CENTER</span>
           </div>
 
-          <h2 className="text-3xl md:text-5xl font-bold text-[#e5e2e3] font-h2 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#e5e2e3] font-h2 tracking-tight">
             Visit Our <span className="text-[#ff7a1a]">Workshop & Garage</span>
           </h2>
 
-          <p className="text-[#e0c0b1] text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
+          <p className="text-[#e0c0b1] text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed px-2">
             Experience authentic aircooled restorations in person. Inspect blueprint engine castings, consult with master VW mechanics, or pick up your reserved parts directly from our Houston facility.
           </p>
         </div>
 
         {/* Main Grid: Left is Info Card, Right is Live Google Map */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
           
           {/* LEFT COLUMN: Workshop Info & Hours (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col justify-between gap-6">
+          <div className="lg:col-span-5 flex flex-col justify-between gap-4 sm:gap-6">
             
             {/* Primary Address & Status Box */}
-            <div className="glass-panel p-6 sm:p-7 border border-[#584236]/40 relative bg-gradient-to-b from-[#181719] to-[#121213] shadow-xl">
+            <div className="glass-panel p-4 sm:p-6 sm:p-7 border border-[#584236]/40 relative bg-gradient-to-b from-[#181719] to-[#121213] shadow-xl rounded-xs">
               
               {/* Header with Live Status badge */}
-              <div className="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-[#584236]/30">
-                <div className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-[#ff7a1a]" />
-                  <span className="font-technical-data text-xs uppercase tracking-wider text-[#a78b7d]">Headquarters</span>
+              <div className="flex items-center justify-between gap-2 pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-[#584236]/30">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#ff7a1a]" />
+                  <span className="font-technical-data text-[11px] sm:text-xs uppercase tracking-wider text-[#a78b7d]">Headquarters</span>
                 </div>
 
-                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-technical-data font-bold uppercase rounded-xs border ${
+                <div className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-technical-data font-bold uppercase rounded-xs border ${
                   isOpenNow 
                     ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/40 shadow-[0_0_10px_rgba(52,211,153,0.2)]'
                     : 'bg-amber-950/60 text-amber-400 border-amber-500/40'
                 }`}>
-                  <span className={`w-2 h-2 rounded-full ${isOpenNow ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+                  <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${isOpenNow ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
                   <span>{isOpenNow ? 'Open Now // Bays Active' : 'Closed // Opens 8:00 AM'}</span>
                 </div>
               </div>
 
               {/* Business Name & Full Address */}
-              <div className="space-y-2 mb-6">
-                <h3 className="font-h3 text-xl sm:text-2xl font-bold text-[#e5e2e3] tracking-tight">
+              <div className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
+                <h3 className="font-h3 text-lg sm:text-xl md:text-2xl font-bold text-[#e5e2e3] tracking-tight leading-snug">
                   {WORKSHOP_INFO.name}
                 </h3>
-                <p className="text-xs text-[#ffb68e] font-technical-data">
+                <p className="text-[11px] sm:text-xs text-[#ffb68e] font-technical-data">
                   {WORKSHOP_INFO.tagline}
                 </p>
 
-                <div className="pt-3 flex items-start gap-3 text-sm text-[#e0c0b1]">
-                  <MapPin className="w-5 h-5 text-[#ff7a1a] shrink-0 mt-0.5" />
+                <div className="pt-2 sm:pt-3 flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm text-[#e0c0b1]">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#ff7a1a] shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-bold text-white text-base">{WORKSHOP_INFO.address}</div>
-                    <div className="text-[#a78b7d] font-technical-data text-xs">{WORKSHOP_INFO.cityStateZip}, {WORKSHOP_INFO.country}</div>
+                    <div className="font-bold text-white text-sm sm:text-base">{WORKSHOP_INFO.address}</div>
+                    <div className="text-[#a78b7d] font-technical-data text-[11px] sm:text-xs">{WORKSHOP_INFO.cityStateZip}, {WORKSHOP_INFO.country}</div>
                   </div>
                 </div>
               </div>
