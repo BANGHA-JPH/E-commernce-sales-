@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Heart, Search, User, Menu, X, Wrench, ChevronDown, ChevronRight, Layers, Sparkles, Lock, LogOut } from 'lucide-react';
+import { ShoppingBag, Heart, Search, User, Menu, X, Wrench, ChevronDown, ChevronRight, Layers, Sparkles, Lock, LogOut, MapPin } from 'lucide-react';
 import { VW_NAV_CATEGORIES } from '../data/vwNavigationData';
 import MegaMenu from './MegaMenu';
 
@@ -87,12 +87,12 @@ export default function Navbar({
           </div>
           <div>
             <div className="font-h2 text-base md:text-lg font-bold tracking-tighter text-[#ff7a1a] flex items-center leading-none select-none">
-              {"CLASSIC AIRCOOLED".split('').map((char, index) => (
+              {"CLASSIC AIRCOOLED VW WORKS".split('').map((char, index) => (
                 <span
                   key={index}
                   className="animate-jump-swing"
                   style={{
-                    animationDelay: `${index * 0.1}s`,
+                    animationDelay: `${index * 0.06}s`,
                     display: 'inline-block',
                     width: char === ' ' ? '0.3em' : 'auto'
                   }}
@@ -102,7 +102,7 @@ export default function Navbar({
               ))}
             </div>
             <span className="text-[9px] tracking-widest text-[#a78b7d] uppercase font-technical-data font-bold block mt-0.5">
-              VW WORKS // ENGINES, PARTS & RESTORATION
+              ENGINES, SPARE PARTS & RESTORATION WORKSHOP
             </span>
           </div>
         </button>
@@ -121,9 +121,19 @@ export default function Navbar({
           </div>
         </div>
 
-        {/* Action Buttons: Wishlist, Cart Drawer, Auth / Dashboard */}
+        {/* Action Buttons: Wishlist, Location, Auth / Dashboard */}
         <div className="flex items-center space-x-3 shrink-0">
           
+          {/* Workshop Location Button */}
+          <a
+            href="#workshop-location"
+            className="hidden sm:flex items-center gap-1.5 font-label-caps text-xs text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20] hover:bg-[#2c2b2d] border border-[#584236]/40 px-2.5 py-1.5 uppercase font-bold tracking-wider rounded-xs transition-all shadow-sm"
+            title="Houston Workshop & Garage Map"
+          >
+            <MapPin className="w-3.5 h-3.5 text-[#ff7a1a]" />
+            <span>Workshop Map</span>
+          </a>
+
           {/* Wishlist Button */}
           <button className="relative p-2 text-[#e0c0b1] hover:text-[#ff7a1a] transition-colors" title="Wishlist">
             <Heart className="w-5 h-5" />
@@ -347,6 +357,16 @@ export default function Navbar({
             })}
           </div>
 
+          {/* Mobile Workshop Location Link */}
+          <a
+            href="#workshop-location"
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full mt-2 font-label-caps text-xs text-[#ffb68e] bg-[#201f20] hover:bg-[#282729] border border-[#ff7a1a]/40 py-2.5 uppercase font-bold tracking-wider flex items-center justify-center gap-2 rounded-xs"
+          >
+            <MapPin className="w-4 h-4 text-[#ff7a1a]" />
+            <span>Visit Houston Workshop (14826 Yarberry St)</span>
+          </a>
+
           {currentUser ? (
             <div className="space-y-2 pt-2">
               <button 
@@ -368,7 +388,7 @@ export default function Navbar({
           ) : (
             <button 
               onClick={() => { setMobileMenuOpen(false); onOpenAuth(); }}
-              className="w-full mt-4 font-label-caps text-xs text-black bg-[#ff7a1a] py-2.5 uppercase font-bold tracking-wider flex items-center justify-center gap-2"
+              className="w-full mt-2 font-label-caps text-xs text-black bg-[#ff7a1a] py-2.5 uppercase font-bold tracking-wider flex items-center justify-center gap-2"
             >
               <User className="w-4 h-4 text-black" />
               <span>Sign In / Register</span>

@@ -113,6 +113,7 @@ export default function AdminPanel({
 
   // Polling for live chat in admin panel - stable timer that does NOT switch threads
   useEffect(() => {
+    if (!isOpen) return;
     const cachedConvos = localStorage.getItem('admin_chat_conversations');
     if (cachedConvos) {
       try {
@@ -128,7 +129,7 @@ export default function AdminPanel({
       }
     }, 3500);
     return () => clearInterval(interval);
-  }, [adminToken]);
+  }, [adminToken, isOpen]);
 
   const handleSelectConversation = (convo) => {
     if (!convo) return;
@@ -609,6 +610,8 @@ export default function AdminPanel({
     p.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.oemNumber?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#131314] text-white w-screen h-screen flex flex-col md:flex-row overflow-hidden font-technical-data select-none">

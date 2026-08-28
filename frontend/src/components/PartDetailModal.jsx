@@ -147,26 +147,6 @@ export default function PartDetailModal({ part, onClose, onAddToCart, onRequestI
                   <span>Reserve Item</span>
                 </button>
               </div>
-
-              <div className="flex gap-2">
-                <a
-                  href={`https://wa.me/15550198822?text=${encodeURIComponent(`Hello! I have a direct inquiry regarding "${part.title}" (SKU: ${part.sku || 'N/A'}, Price: $${part.price}).`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl font-bold text-xs transition-all uppercase"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>WhatsApp Inquiry</span>
-                </a>
-
-                <a
-                  href="tel:+15550198822"
-                  className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2.5 rounded-xl font-bold text-xs transition-all uppercase"
-                >
-                  <Phone className="w-4 h-4" />
-                  <span>Call Seller</span>
-                </a>
-              </div>
             </div>
 
           </div>

@@ -224,10 +224,6 @@ export default function UserDashboard({
   const completedOrdersCount = (userRequests || []).filter(r => r && r.status === 'Delivered').length;
   const savedVehiclesCount = (savedVehicles || []).length;
 
-  // Seller Phone & WhatsApp Credentials
-  const SELLER_WHATSAPP_NUMBER = '15550198822'; // Seller WhatsApp formatted
-  const SELLER_PHONE_NUMBER = '+1 (555) 019-8822';
-
   const handleAddVehicleSubmit = (e) => {
     e.preventDefault();
     if (onAddVehicle) {
@@ -477,17 +473,6 @@ export default function UserDashboard({
             </nav>
           </div>
 
-          {/* Quick Help Direct WhatsApp Callout */}
-          <div className="mt-6 p-3 bg-[#201f20] border border-[#ff7a1a]/40 rounded-xs space-y-2 text-center">
-            <a
-              href={`https://wa.me/${SELLER_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hello Classic Aircooled VW Works Seller! I need assistance with vintage VW parts.")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 w-full bg-emerald-600 hover:bg-emerald-500 text-white py-1.5 px-2 text-[11px] font-bold rounded-xs transition-all"
-            >
-              <MessageCircle className="w-3.5 h-3.5" /> WhatsApp Seller
-            </a>
-          </div>
         </aside>
 
         {/* 2. RIGHT WORKSPACE CONTENT AREA */}
@@ -699,29 +684,10 @@ export default function UserDashboard({
                         })}
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="pt-3 border-t border-[#262426] flex flex-wrap items-center justify-between gap-3">
-                        <div className="text-[11px] text-[#a78b7d]">
-                          Submitted on <strong className="text-white">{req.date || 'Today'}</strong>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <a
-                            href={`https://wa.me/${SELLER_WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello! I am inquiring about my request #${req.id} for "${req.partTitle}" (Status: ${req.status}).`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-xs font-bold flex items-center gap-1.5 transition-all"
-                          >
-                            <MessageCircle className="w-3.5 h-3.5" /> WhatsApp Seller
-                          </a>
-
-                          <a
-                            href={`tel:${SELLER_PHONE_NUMBER}`}
-                            className="bg-[#201f20] hover:bg-[#353436] text-[#e0c0b1] border border-[#584236]/60 text-xs px-3 py-1.5 rounded-xs font-bold flex items-center gap-1.5 transition-all"
-                          >
-                            <Phone className="w-3.5 h-3.5" /> Call Seller
-                          </a>
-                        </div>
+                      {/* Submission Date */}
+                      <div className="pt-3 border-t border-[#262426] flex items-center justify-between text-[11px] text-[#a78b7d]">
+                        <span>Submitted on <strong className="text-white">{req.date || 'Today'}</strong></span>
+                        <span className="text-[#ff7a1a] font-mono font-bold">Request #{req.id || 'N/A'}</span>
                       </div>
 
                     </div>
@@ -1159,48 +1125,6 @@ export default function UserDashboard({
                 </form>
               </div>
 
-              {/* Instant WhatsApp & Phone Options */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                {/* WhatsApp Direct Option */}
-                <div className="p-5 bg-[#181719] border border-emerald-500/40 rounded-xs space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
-                      <MessageCircle className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">WhatsApp Seller</h3>
-                      <span className="text-[11px] text-emerald-400 font-bold block">Instant Photo / Negotiation</span>
-                    </div>
-                  </div>
-                  <a
-                    href={`https://wa.me/${SELLER_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hello Classic Aircooled VW Works! I have an inquiry regarding vintage VW spare parts.")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 text-xs uppercase tracking-wider rounded-xs transition-all shadow-md"
-                  >
-                    <MessageCircle className="w-4 h-4" /> Launch WhatsApp Chat
-                  </a>
-                </div>
-
-                {/* Call Specialist Desk */}
-                <div className="p-5 bg-[#181719] border border-[#584236]/40 rounded-xs space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#ff7a1a]/20 text-[#ff7a1a] border border-[#ff7a1a]/40 flex items-center justify-center">
-                      <Phone className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Call Specialist Desk</h3>
-                      <span className="text-[11px] text-[#ff7a1a] font-bold block">{SELLER_PHONE_NUMBER}</span>
-                    </div>
-                  </div>
-                  <a
-                    href={`tel:${SELLER_PHONE_NUMBER}`}
-                    className="inline-flex items-center justify-center gap-2 w-full bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-bold py-2.5 text-xs uppercase tracking-wider rounded-xs transition-all shadow-md"
-                  >
-                    <Phone className="w-4 h-4" /> Call {SELLER_PHONE_NUMBER}
-                  </a>
-                </div>
-              </div>
             </div>
           )}
 

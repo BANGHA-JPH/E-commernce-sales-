@@ -13,3 +13,5 @@ build/
 *.log
 backend/src/data/storage.json
 storage.json
+backend/src/data/messages.json
+messages.json

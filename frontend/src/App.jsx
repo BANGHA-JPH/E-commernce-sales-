@@ -8,6 +8,7 @@ import GuidedSearchModal from './components/GuidedSearchModal';
 import CatalogSection from './components/CatalogSection';
 import ReviewsSection from './components/ReviewsSection';
 import VideoShowcase from './components/VideoShowcase';
+import LocationMapSection from './components/LocationMapSection';
 import PartDetailModal from './components/PartDetailModal';
 import CartDrawer from './components/CartDrawer';
 import AuthModal from './components/AuthModal';
@@ -572,6 +573,9 @@ export default function App() {
 
             {/* Verified Customer Reviews */}
             <ReviewsSection />
+
+            {/* Houston Workshop & Interactive Google Map Location Section */}
+            <LocationMapSection />
           </>
         )}
       </main>
@@ -653,15 +657,17 @@ export default function App() {
       />
 
       {/* Admin Dashboard Control Panel */}
-      <AdminPanel
-        isOpen={isAdminPanelOpen}
-        onClose={() => setIsAdminPanelOpen(false)}
-        onLogout={handleLogout}
-        onRefreshCatalog={handleRefreshCatalog}
-        userRequests={adminRequests}
-        onUpdateUserRequestStatus={handleUpdateUserRequestStatus}
-        adminToken={adminToken}
-      />
+      {isAdminPanelOpen && (
+        <AdminPanel
+          isOpen={isAdminPanelOpen}
+          onClose={() => setIsAdminPanelOpen(false)}
+          onLogout={handleLogout}
+          onRefreshCatalog={handleRefreshCatalog}
+          userRequests={adminRequests}
+          onUpdateUserRequestStatus={handleUpdateUserRequestStatus}
+          adminToken={adminToken}
+        />
+      )}
 
     </div>
   );

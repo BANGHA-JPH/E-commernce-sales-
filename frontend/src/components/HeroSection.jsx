@@ -41,19 +41,19 @@ export default function HeroSection({ onSelectCarModel }) {
         {/* Technical Status Badge */}
         <div className="inline-flex items-center gap-2 font-technical-data text-xs text-[#83cffb] tracking-[0.15em] mb-6 uppercase border border-[#83cffb]/30 px-3.5 py-1.5 bg-[#131314]/70 backdrop-blur-md">
           <ShieldCheck className="w-4 h-4 text-[#ff7a1a]" />
-          <span>OEM VINTAGE AUTO PARTS & ENGINE INVENTORY</span>
+          <span>CLASSIC AIRCOOLED VW WORKS // OEM PARTS & ENGINES</span>
         </div>
 
         {/* Main H1 Heading */}
         <h1 className="font-h1 text-3xl sm:text-5xl md:text-6xl text-[#e5e2e3] font-bold mb-6 tracking-tight drop-shadow-lg leading-[1.1]">
-          Vintage Cars.<br />
+          Classic Aircooled VW Works.<br />
           Authentic Engines.<br />
           <span className="text-[#ff7a1a]">Precision Spare Parts.</span>
         </h1>
 
         {/* Value Proposition */}
         <p className="font-body-lg text-base sm:text-lg text-[#e0c0b1] mb-10 max-w-2xl leading-relaxed">
-          Select your vintage car model to discover exact OEM casting numbers, dual-port carburetors, engine pistons, and hard-to-find restoration components.
+          Select your vehicle model to discover exact OEM casting numbers, dual-port carburetors, engine pistons, and hard-to-find restoration components.
         </p>
 
         {/* Action Buttons */}
@@ -63,7 +63,7 @@ export default function HeroSection({ onSelectCarModel }) {
             className="bg-[#ff7a1a] hover:bg-[#ffb68e] text-black font-label-caps text-xs sm:text-sm px-8 py-4 glow-button uppercase font-bold tracking-wider transition-all flex items-center justify-center gap-2"
           >
             <Car className="w-4 h-4" />
-            Select Your Vintage Car
+            Select Your Vehicle
           </button>
 
           <button 

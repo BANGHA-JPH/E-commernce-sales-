@@ -122,8 +122,37 @@ CREATE TABLE IF NOT EXISTS public.messages (
 CREATE INDEX IF NOT EXISTS idx_messages_user_id ON public.messages(user_id);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON public.messages(created_at ASC);
 
--- Enable RLS and add public access policies
+-- Enable Row Level Security (RLS) & Add Public Access Policies
+-- This ensures Supabase never rejects API queries when using Anon Key or Service Role Key
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all actions for users" ON public.users;
+CREATE POLICY "Allow all actions for users" ON public.users FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.spare_parts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all actions for spare_parts" ON public.spare_parts;
+CREATE POLICY "Allow all actions for spare_parts" ON public.spare_parts FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.vintage_cars ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all actions for vintage_cars" ON public.vintage_cars;
+CREATE POLICY "Allow all actions for vintage_cars" ON public.vintage_cars FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all actions for orders" ON public.orders;
+CREATE POLICY "Allow all actions for orders" ON public.orders FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.requests ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all actions for requests" ON public.requests;
+CREATE POLICY "Allow all actions for requests" ON public.requests FOR ALL USING (true) WITH CHECK (true);
+
 ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow all actions for messages" ON public.messages;
-CREATE POLICY "Allow all actions for messages" ON public.messages FOR ALL USING (true);
+CREATE POLICY "Allow all actions for messages" ON public.messages FOR ALL USING (true) WITH CHECK (true);
+
+-- Grant full table permissions to anon and authenticated roles
+GRANT ALL ON TABLE public.users TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.spare_parts TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.vintage_cars TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.orders TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.requests TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.messages TO anon, authenticated, service_role;
 
