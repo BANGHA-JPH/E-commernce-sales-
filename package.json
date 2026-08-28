@@ -10,7 +10,6 @@
   "scripts": {
     "start": "node backend/src/server.js",
     "build": "npm --prefix frontend run build",
-    "postinstall": "cd frontend && npm install",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "seed": "npm --prefix backend run seed",
