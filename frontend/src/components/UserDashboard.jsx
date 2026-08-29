@@ -30,10 +30,15 @@ export default function UserDashboard({
   onLogout,
   onBackToShop
 }) {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'requests' | 'vehicles' | 'wishlist' | 'notifications' | 'tracking' | 'chat' | 'contact' | 'profile'
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('userDashboardActiveTab') || 'overview'); // 'overview' | 'requests' | 'vehicles' | 'wishlist' | 'notifications' | 'tracking' | 'chat' | 'contact' | 'profile'
   const [trackingSearchInput, setTrackingSearchInput] = useState('');
   const [searchedTrackingResult, setSearchedTrackingResult] = useState(null);
   
+  // Persist User Dashboard activeTab across browser refreshes
+  useEffect(() => {
+    localStorage.setItem('userDashboardActiveTab', activeTab);
+  }, [activeTab]);
+
   // New Vehicle Modal State
   const [isAddingVehicle, setIsAddingVehicle] = useState(false);
   const [newVehCategory, setNewVehCategory] = useState('Type 1 (Beetle)');

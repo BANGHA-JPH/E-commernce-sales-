@@ -18,10 +18,25 @@ import UserDashboard from './components/UserDashboard';
 import Footer from './components/Footer';
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authToken, setAuthToken] = useState(null);
-  const [adminToken, setAdminToken] = useState(null);
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('currentUser');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [authToken, setAuthToken] = useState(() => localStorage.getItem('authToken') || null);
+  const [adminToken, setAdminToken] = useState(() => localStorage.getItem('adminToken') || null);
+  
+  // Persist Admin Panel open state across page refreshes
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(() => {
+    const savedAdminToken = localStorage.getItem('adminToken');
+    const savedAdminOpen = localStorage.getItem('isAdminPanelOpen') === 'true';
+    const hasAdminHash = window.location.hash === '#admin';
+    return Boolean(savedAdminToken && (savedAdminOpen || hasAdminHash));
+  });
+
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -41,8 +56,13 @@ export default function App() {
     engineSize: 'ALL' 
   });
 
-  // Page Navigation State ('shop' | 'dashboard')
-  const [currentPage, setCurrentPage] = useState('shop');
+  // Page Navigation State ('shop' | 'dashboard') - Persisted across refreshes
+  const [currentPage, setCurrentPage] = useState(() => {
+    if (window.location.hash === '#dashboard') return 'dashboard';
+    if (window.location.hash === '#admin') return 'shop';
+    return localStorage.getItem('currentPage') || 'shop';
+  });
+
   // User-scoped Dashboard State
   const [userRequests, setUserRequests] = useState([]);
   const [savedVehicles, setSavedVehicles] = useState([]);
@@ -51,6 +71,31 @@ export default function App() {
 
   // Admin Panel requests store (fetched from GET /api/admin/requests)
   const [adminRequests, setAdminRequests] = useState([]);
+
+  // Sync and persist URL hash and view states across browser refreshes
+  useEffect(() => {
+    if (isAdminPanelOpen) {
+      localStorage.setItem('isAdminPanelOpen', 'true');
+      if (window.location.hash !== '#admin') {
+        window.history.replaceState(null, '', '#admin');
+      }
+    } else {
+      localStorage.setItem('isAdminPanelOpen', 'false');
+      if (currentPage === 'dashboard') {
+        if (window.location.hash !== '#dashboard') {
+          window.history.replaceState(null, '', '#dashboard');
+        }
+      } else {
+        if (window.location.hash === '#admin' || window.location.hash === '#dashboard') {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }
+    }
+  }, [isAdminPanelOpen, currentPage]);
+
+  useEffect(() => {
+    localStorage.setItem('currentPage', currentPage);
+  }, [currentPage]);
 
   const fetchAdminRequests = async () => {
     if (!adminToken) return;

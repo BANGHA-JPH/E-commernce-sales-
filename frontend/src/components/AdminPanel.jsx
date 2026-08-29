@@ -27,7 +27,7 @@ export default function AdminPanel({
   adminToken
 }) {
   const [sidebarTab, setSidebarTab] = useState('inventory'); // 'inventory', 'orders', 'chat', 'settings'
-  const [activeTab, setActiveTab] = useState('add-part'); // 'add-part', 'parts-list', 'requests-manage', 'customer-chat'
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('adminActiveTab') || 'add-part'); // 'add-part', 'parts-list', 'requests-manage', 'customer-chat'
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [parts, setParts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,11 +37,31 @@ export default function AdminPanel({
   const [editingPartId, setEditingPartId] = useState(null);
   const [selectedCustomerReq, setSelectedCustomerReq] = useState(null);
 
-  // Chat & Direct Messages State
+  // Chat & Direct Messages State - Persisted across page refreshes
   const [conversations, setConversations] = useState([]);
-  const [selectedUserThread, setSelectedUserThread] = useState(null);
+  const [selectedUserThread, setSelectedUserThread] = useState(() => {
+    try {
+      const saved = localStorage.getItem('adminSelectedThread');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
   const selectedThreadRef = useRef(null);
   selectedThreadRef.current = selectedUserThread;
+
+  // Persist Admin activeTab & thread across browser refreshes
+  useEffect(() => {
+    localStorage.setItem('adminActiveTab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (selectedUserThread) {
+      localStorage.setItem('adminSelectedThread', JSON.stringify(selectedUserThread));
+    } else {
+      localStorage.removeItem('adminSelectedThread');
+    }
+  }, [selectedUserThread]);
 
   const [threadMessages, setThreadMessages] = useState([]);
   const [adminReplyText, setAdminReplyText] = useState('');
