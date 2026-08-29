@@ -320,38 +320,39 @@ export default function LocationMapSection() {
 
               </div>
 
-              {/* Embedded Google Map Iframe Container */}
-              <div className="relative w-full min-h-[380px] sm:min-h-[460px] lg:min-h-[500px] flex-1 bg-[#0b0b0c] border border-[#584236]/50 overflow-hidden shadow-inner rounded-xs">
+              {/* Embedded Google Map Iframe Container - Explicit height to prevent half-loading on mobile */}
+              <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[520px] bg-[#0b0b0c] border border-[#584236]/50 overflow-hidden shadow-inner rounded-xs">
                 
                 <iframe
                   title="Classic Aircooled VW Works Houston Location"
                   src={googleMapsIframeUrl}
                   width="100%"
                   height="100%"
-                  className="absolute inset-0 w-full h-full border-0"
+                  style={{ border: 0, width: '100%', height: '100%', minHeight: '100%', display: 'block' }}
+                  className="w-full h-full border-0"
                   loading="lazy"
                   allowFullScreen={true}
                   referrerPolicy="no-referrer-when-downgrade"
                 ></iframe>
 
                 {/* Floating Technical Location Card over the Map */}
-                <div className="absolute top-3 left-3 z-10 max-w-[calc(100%-24px)] sm:max-w-xs bg-[#131314]/90 backdrop-blur-md p-3 border border-[#ff7a1a]/40 shadow-lg pointer-events-auto">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#ff7a1a] inline-block animate-ping"></span>
-                    <span className="font-h3 text-xs font-bold text-white tracking-wide">
+                <div className="absolute top-2.5 left-2.5 z-10 max-w-[240px] sm:max-w-xs bg-[#131314]/95 backdrop-blur-md p-2.5 sm:p-3 border border-[#ff7a1a]/50 shadow-xl pointer-events-auto rounded-xs">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-[#ff7a1a] inline-block animate-ping shrink-0"></span>
+                    <span className="font-h3 text-[11px] sm:text-xs font-bold text-white tracking-wide truncate">
                       HOUSTON HQ & GARAGE
                     </span>
                   </div>
-                  <p className="text-[11px] font-technical-data text-[#e0c0b1] leading-tight">
+                  <p className="text-[10px] sm:text-[11px] font-technical-data text-[#e0c0b1] leading-tight">
                     14826 Yarberry St, Houston, TX 77039
                   </p>
-                  <div className="mt-2 flex items-center justify-between text-[10px] font-technical-data text-[#83cffb]">
-                    <span>Precision Restoration Facility</span>
+                  <div className="mt-1.5 flex items-center justify-between text-[10px] font-technical-data text-[#83cffb]">
+                    <span className="text-[9px] sm:text-[10px]">Restoration Facility</span>
                     <a 
                       href={googleMapsDirectionsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#ff7a1a] hover:underline font-bold"
+                      className="text-[#ff7a1a] hover:underline font-bold text-[10px] flex items-center gap-0.5"
                     >
                       Route ➔
                     </a>
@@ -359,7 +360,7 @@ export default function LocationMapSection() {
                 </div>
 
                 {/* Map Bottom Information Strip */}
-                <div className="absolute bottom-2 right-2 z-10 bg-[#0e0e0f]/80 backdrop-blur-xs px-2.5 py-1 text-[10px] font-technical-data text-[#a78b7d] border border-[#584236]/30 hidden sm:block">
+                <div className="absolute bottom-2 right-2 z-10 bg-[#0e0e0f]/90 backdrop-blur-xs px-2.5 py-1 text-[10px] font-technical-data text-[#a78b7d] border border-[#584236]/30 hidden sm:block rounded-xs">
                   <span>GPS: 29.9045° N, 95.3341° W • High-Precision Castings</span>
                 </div>
 
