@@ -627,113 +627,136 @@ export default function AdminPanel({
         />
       )}
 
-      {/* 1. LEFT SIDEBAR NAVIGATION */}
+      {/* Mobile Drawer Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div 
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden animate-fade-in cursor-pointer"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* 1. LEFT SIDEBAR / MOBILE DRAWER NAVIGATION */}
       <aside className={`fixed md:relative inset-y-0 left-0 z-50 h-full bg-[#141416] border-r border-[#262426] flex flex-col justify-between shrink-0 transition-all duration-300 overflow-hidden ${
-        isSidebarOpen ? 'w-64 opacity-100 shadow-2xl' : 'w-0 opacity-0 p-0 border-r-0 pointer-events-none'
+        isSidebarOpen ? 'w-72 md:w-64 opacity-100 shadow-2xl' : 'w-0 opacity-0 p-0 border-r-0 pointer-events-none'
       }`}>
-        <div className="w-64">
-          {/* Logo & Header */}
-          <div className="p-6 border-b border-[#262426] flex items-center justify-between">
-            <div>
-              <h1 className="font-h1 text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                VW Specialist
-              </h1>
-              <span className="text-[10px] text-[#ff7a1a] font-mono uppercase tracking-widest font-bold block mt-0.5">
-                RESTORATION ADMIN
-              </span>
+        <div className="w-72 md:w-64 flex flex-col h-full justify-between">
+          <div>
+            {/* Logo & Header */}
+            <div className="p-4 sm:p-6 border-b border-[#262426] flex items-center justify-between">
+              <div>
+                <h1 className="font-h1 text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                  VW Specialist
+                </h1>
+                <span className="text-[10px] text-[#ff7a1a] font-mono uppercase tracking-widest font-bold block mt-0.5">
+                  RESTORATION ADMIN
+                </span>
+              </div>
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="min-h-[36px] min-w-[36px] flex items-center justify-center p-2 text-[#a78b7d] hover:text-[#ff7a1a] hover:bg-[#201f20] rounded-xs transition-colors cursor-pointer"
+                title="Close Navigation Menu"
+                aria-label="Close Menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              className="p-1 text-[#a78b7d] hover:text-[#ff7a1a] transition-colors"
-              title="Hide Sidebar"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </button>
+
+            {/* Section Navigation Links */}
+            <nav className="p-3 sm:p-4 space-y-1.5 text-xs font-mono font-bold uppercase tracking-wider">
+              <span className="text-[10px] text-[#a78b7d] px-3 py-1 block uppercase font-bold tracking-widest">
+                Admin Sections
+              </span>
+
+              <button
+                onClick={() => { setActiveTab('add-part'); setIsSidebarOpen(false); }}
+                className={`min-h-[46px] w-full flex items-center gap-3 px-3.5 py-3 rounded-xs transition-all cursor-pointer ${
+                  activeTab === 'add-part' 
+                    ? 'bg-[#ff7a1a] text-black shadow-md' 
+                    : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
+                }`}
+              >
+                <Box className="w-4 h-4 shrink-0" />
+                <span>1. Inventory Form</span>
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('parts-list'); setIsSidebarOpen(false); }}
+                className={`min-h-[46px] w-full flex items-center justify-between px-3.5 py-3 rounded-xs transition-all cursor-pointer ${
+                  activeTab === 'parts-list' 
+                    ? 'bg-[#ff7a1a] text-black shadow-md' 
+                    : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <ShoppingCart className="w-4 h-4 shrink-0" />
+                  <span>2. Parts Catalog</span>
+                </div>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-xs font-bold ${activeTab === 'parts-list' ? 'bg-black text-[#ff7a1a]' : 'bg-[#262426] text-[#a78b7d]'}`}>
+                  {parts.length}
+                </span>
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('requests-manage'); setIsSidebarOpen(false); }}
+                className={`min-h-[46px] w-full flex items-center justify-between px-3.5 py-3 rounded-xs transition-all cursor-pointer ${
+                  activeTab === 'requests-manage' 
+                    ? 'bg-[#ff7a1a] text-black shadow-md' 
+                    : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <FileText className="w-4 h-4 shrink-0" />
+                  <span>3. Customer Requests</span>
+                </div>
+                {userRequests.length > 0 && (
+                  <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-xs ${activeTab === 'requests-manage' ? 'bg-black text-[#ff7a1a]' : 'bg-[#ff7a1a] text-black'}`}>
+                    {userRequests.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => { setActiveTab('customer-chat'); setIsSidebarOpen(false); }}
+                className={`min-h-[46px] w-full flex items-center justify-between px-3.5 py-3 rounded-xs transition-all cursor-pointer ${
+                  activeTab === 'customer-chat' 
+                    ? 'bg-[#ff7a1a] text-black shadow-md' 
+                    : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <MessageSquare className="w-4 h-4 shrink-0" />
+                  <span>4. Live Chat Portal</span>
+                </div>
+                {totalUnreadChatCount > 0 ? (
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-xs bg-red-500 text-white animate-pulse">
+                    {totalUnreadChatCount} NEW
+                  </span>
+                ) : (
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                )}
+              </button>
+            </nav>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="p-4 space-y-1 text-xs font-mono font-bold uppercase tracking-wider">
+          {/* Sidebar Footer Buttons */}
+          <div className="p-4 border-t border-[#262426] space-y-2">
             <button
-              onClick={() => { setSidebarTab('inventory'); setActiveTab('add-part'); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xs transition-all ${
-                activeTab === 'add-part' 
-                  ? 'bg-[#ff7a1a] text-black shadow-md' 
-                  : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
-              }`}
+              onClick={() => { setActiveTab('add-part'); setIsSidebarOpen(false); }}
+              className="min-h-[44px] w-full bg-[#201f20] hover:bg-[#ff7a1a] hover:text-black border border-[#584236]/60 text-[#e0c0b1] py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-xs transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Box className="w-4 h-4" />
-              <span>Inventory Form</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Post New Part</span>
             </button>
 
             <button
-              onClick={() => { setSidebarTab('orders'); setActiveTab('parts-list'); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xs transition-all ${
-                activeTab === 'parts-list' 
-                  ? 'bg-[#ff7a1a] text-black shadow-md' 
-                  : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
-              }`}
+              onClick={onLogout || onClose}
+              className="min-h-[44px] w-full bg-red-900/40 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/40 py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <ShoppingCart className="w-4 h-4" />
-              <span>Catalog ({parts.length})</span>
+              <LogOut className="w-3.5 h-3.5" />
+              <span>SIGN OUT OF ADMIN</span>
             </button>
-
-            <button
-              onClick={() => { setSidebarTab('requests'); setActiveTab('requests-manage'); }}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xs transition-all ${
-                activeTab === 'requests-manage' 
-                  ? 'bg-[#ff7a1a] text-black shadow-md' 
-                  : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <FileText className="w-4 h-4" />
-                <span>Requests</span>
-              </div>
-              {userRequests.length > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-xs bg-[#ff7a1a] text-black">
-                  {userRequests.length}
-                </span>
-              )}
-            </button>
-
-            <button
-              onClick={() => { setSidebarTab('chat'); setActiveTab('customer-chat'); }}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xs transition-all ${
-                activeTab === 'customer-chat' 
-                  ? 'bg-[#ff7a1a] text-black shadow-md' 
-                  : 'text-[#a78b7d] hover:text-white hover:bg-[#1f1e20]'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <MessageSquare className="w-4 h-4" />
-                <span>Live Chat</span>
-              </div>
-              {totalUnreadChatCount > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-xs bg-red-500 text-white animate-pulse">
-                  {totalUnreadChatCount} NEW
-                </span>
-              )}
-            </button>
-          </nav>
-        </div>
-
-        {/* Sidebar Footer Buttons */}
-        <div className="p-4 border-t border-[#262426] space-y-2 w-64">
-          <button
-            onClick={() => setActiveTab('add-part')}
-            className="w-full bg-[#201f20] hover:bg-[#ff7a1a] hover:text-black border border-[#584236]/60 text-[#e0c0b1] py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-xs transition-all shadow-sm flex items-center justify-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>LOG NEW PART</span>
-          </button>
-
-          <button
-            onClick={onLogout || onClose}
-            className="w-full bg-red-900/40 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/40 py-2 px-3 text-xs font-mono font-bold uppercase tracking-wider rounded-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>SIGN OUT</span>
-          </button>
+          </div>
         </div>
       </aside>
 
@@ -741,35 +764,75 @@ export default function AdminPanel({
       <div className="flex-1 flex flex-col h-full bg-[#131314] overflow-hidden relative">
         
         {/* TOP NAVBAR */}
-        <header className="min-h-16 bg-[#181719] border-b border-[#262426] px-3 sm:px-6 md:px-8 py-2 flex items-center justify-between gap-2 sm:gap-4 shrink-0 z-10 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        <header className="min-h-16 bg-[#181719] border-b border-[#262426] px-3 sm:px-6 md:px-8 py-2.5 flex items-center justify-between gap-2 shrink-0 z-10">
+          
+          {/* Left: 3-Line Menu Trigger + Title */}
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => setIsSidebarOpen(prev => !prev)}
-              className="min-h-[40px] p-2 text-[#a78b7d] hover:text-[#ff7a1a] hover:bg-[#201f20] rounded-xs border border-[#584236]/40 transition-all flex items-center gap-1.5 group cursor-pointer"
-              title={isSidebarOpen ? "Hide Sidebar" : "Show Sidebar"}
+              className="min-h-[40px] px-2.5 sm:px-3.5 py-2 text-[#e0c0b1] hover:text-white bg-[#201f20] hover:bg-[#282729] rounded-xs border border-[#584236]/60 transition-all flex items-center gap-2 group cursor-pointer shadow-sm"
+              title={isSidebarOpen ? "Close Menu" : "Open 3-Line Section Menu"}
+              aria-label="Toggle Section Menu"
             >
-              <Menu className="w-5 h-5 text-[#ff7a1a] group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#a78b7d] group-hover:text-white hidden sm:inline">
-                {isSidebarOpen ? "Hide Sidebar" : "Sidebar Menu"}
+              <Menu className="w-5 h-5 text-[#ff7a1a] group-hover:scale-110 transition-transform shrink-0" />
+              <span className="text-xs font-mono font-bold uppercase tracking-wider">
+                Menu
               </span>
             </button>
 
-            <h2 className="text-sm sm:text-lg md:text-xl font-bold font-h2 text-white truncate">
-              Specialist Admin
-            </h2>
+            <div className="hidden min-[400px]:block">
+              <h2 className="text-sm sm:text-base md:text-lg font-bold font-h2 text-white truncate flex items-center gap-2">
+                <span>Specialist Admin</span>
+                {activeTab === 'customer-chat' && <span className="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-[#ff7a1a]/20 text-[#ff7a1a] border border-[#ff7a1a]/30 hidden sm:inline">LIVE CHAT</span>}
+                {activeTab === 'requests-manage' && <span className="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-[#ff7a1a]/20 text-[#ff7a1a] border border-[#ff7a1a]/30 hidden sm:inline">REQUESTS</span>}
+                {activeTab === 'parts-list' && <span className="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-[#ff7a1a]/20 text-[#ff7a1a] border border-[#ff7a1a]/30 hidden sm:inline">CATALOG</span>}
+                {activeTab === 'add-part' && <span className="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-[#ff7a1a]/20 text-[#ff7a1a] border border-[#ff7a1a]/30 hidden sm:inline">INVENTORY FORM</span>}
+              </h2>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {/* Right Navigation Controls */}
+          {/* A. Mobile Right Quick Actions (< md) */}
+          <div className="flex md:hidden items-center gap-1.5">
             <button 
               onClick={() => setActiveTab('customer-chat')}
-              className={`min-h-[38px] text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xs font-mono font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
+              className={`min-h-[40px] px-2.5 py-1.5 rounded-xs font-mono text-xs font-bold transition-all border flex items-center gap-1 cursor-pointer ${
+                activeTab === 'customer-chat' 
+                  ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]' 
+                  : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40'
+              }`}
+              title="Open Live Chat"
+            >
+              <MessageSquare className="w-4 h-4" />
+              {totalUnreadChatCount > 0 && (
+                <span className="px-1 py-0.2 text-[9px] font-bold rounded-xs bg-red-500 text-white">
+                  {totalUnreadChatCount}
+                </span>
+              )}
+            </button>
+
+            <button 
+              onClick={onLogout || onClose}
+              className="min-h-[40px] px-2.5 py-1.5 bg-red-600 hover:bg-red-700 text-white font-mono text-xs font-bold rounded-xs flex items-center justify-center gap-1 transition-all border border-red-500 shadow-md cursor-pointer"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* B. Desktop Full Navigation Tabs (>= md) */}
+          <div className="hidden md:flex items-center gap-2">
+            <button 
+              onClick={() => setActiveTab('customer-chat')}
+              className={`min-h-[38px] text-xs px-3 py-2 rounded-xs font-mono font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'customer-chat' 
                   ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]' 
                   : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a]'
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Live Chat</span>
+              <span>Live Chat</span>
               {totalUnreadChatCount > 0 && (
                 <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-xs bg-red-500 text-white">
                   {totalUnreadChatCount}
@@ -778,7 +841,7 @@ export default function AdminPanel({
             </button>
             <button 
               onClick={() => setActiveTab('requests-manage')}
-              className={`min-h-[38px] text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xs font-mono font-bold transition-all border cursor-pointer ${
+              className={`min-h-[38px] text-xs px-3 py-2 rounded-xs font-mono font-bold transition-all border cursor-pointer ${
                 activeTab === 'requests-manage' 
                   ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]' 
                   : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a]'
@@ -788,7 +851,7 @@ export default function AdminPanel({
             </button>
             <button 
               onClick={() => setActiveTab('parts-list')}
-              className={`min-h-[38px] text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xs font-mono font-bold transition-all border cursor-pointer ${
+              className={`min-h-[38px] text-xs px-3 py-2 rounded-xs font-mono font-bold transition-all border cursor-pointer ${
                 activeTab === 'parts-list' 
                   ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]' 
                   : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a]'
@@ -798,7 +861,7 @@ export default function AdminPanel({
             </button>
             <button 
               onClick={() => setActiveTab('add-part')}
-              className={`min-h-[38px] text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xs font-mono font-bold transition-all border cursor-pointer ${
+              className={`min-h-[38px] text-xs px-3 py-2 rounded-xs font-mono font-bold transition-all border cursor-pointer ${
                 activeTab === 'add-part' 
                   ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]' 
                   : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a]'
@@ -808,11 +871,11 @@ export default function AdminPanel({
             </button>
             <button 
               onClick={onLogout || onClose}
-              className="min-h-[38px] bg-red-600 hover:bg-red-700 text-white font-mono text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xs flex items-center gap-1.5 transition-all border border-red-500 shadow-md cursor-pointer ml-1"
+              className="min-h-[38px] bg-red-600 hover:bg-red-700 text-white font-mono text-xs font-bold px-3 py-2 rounded-xs flex items-center gap-1.5 transition-all border border-red-500 shadow-md cursor-pointer ml-1"
               title="Sign out completely from Admin Portal"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">SIGN OUT</span>
+              <span>SIGN OUT</span>
             </button>
           </div>
         </header>
