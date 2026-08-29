@@ -1024,54 +1024,57 @@ export default function UserDashboard({
               </div>
 
               {/* Chat Container */}
-              <div className="bg-[#141416] border border-[#584236]/50 rounded-xs flex flex-col h-[520px] shadow-2xl overflow-hidden">
+              <div className="bg-[#141416] border border-[#584236]/50 rounded-xs flex flex-col h-[calc(100vh-240px)] min-h-[460px] max-h-[640px] shadow-2xl overflow-hidden">
                 
                 {/* Chat Header Bar */}
-                <div className="p-3.5 bg-[#1a191b] border-b border-[#2d2b2e] flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#ff7a1a]/20 border border-[#ff7a1a]/40 text-[#ff7a1a] flex items-center justify-center font-bold">
+                <div className="p-3.5 bg-[#1a191b] border-b border-[#2d2b2e] flex items-center justify-between text-xs shrink-0">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-[#ff7a1a]/20 border border-[#ff7a1a]/40 text-[#ff7a1a] flex items-center justify-center font-bold shrink-0">
                       <Wrench className="w-4 h-4" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="flex items-center gap-1.5 font-bold text-white">
-                        <span>Master Admin Engineer</span>
-                        <CheckCircle className="w-3.5 h-3.5 text-[#83cffb]" />
+                        <span className="truncate">Master Admin Engineer</span>
+                        <CheckCircle className="w-3.5 h-3.5 text-[#83cffb] shrink-0" />
                       </div>
-                      <span className="text-[10px] text-[#a78b7d]">Classic Aircooled VW Works Lead Specialist</span>
+                      <span className="text-[10px] text-[#a78b7d] truncate block">Classic Aircooled VW Works Lead Specialist</span>
                     </div>
                   </div>
-                  <span className="text-[10px] text-[#a78b7d] font-mono">
+                  <span className="text-[10px] text-[#a78b7d] font-mono shrink-0 ml-2">
                     Thread ID: #{currentUser?.id || 'REST-001'}
                   </span>
                 </div>
 
                 {/* Quick Inquiries / Suggestion Chips */}
-                <div className="p-2.5 bg-[#181719] border-b border-[#2d2b2e] flex items-center gap-2 overflow-x-auto text-[11px] font-mono no-scrollbar">
+                <div className="p-2.5 bg-[#181719] border-b border-[#2d2b2e] flex items-center gap-2 overflow-x-auto text-[11px] font-mono no-scrollbar shrink-0">
                   <span className="text-[#a78b7d] uppercase text-[9px] shrink-0 font-bold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-[#ff7a1a]" /> Quick Ask:
+                    <Sparkles className="w-3 h-3 text-[#ff7a1a]" /> Quick:
                   </span>
                   <button 
+                    type="button"
                     onClick={() => handleSendChatMessage("I'd like a quote for a custom 2276cc or 1776cc Turnkey Engine")}
-                    className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all"
+                    className="shrink-0 min-h-[30px] bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all text-[10px] cursor-pointer"
                   >
                     🏎️ Turnkey Engine Quote
                   </button>
                   <button 
+                    type="button"
                     onClick={() => handleSendChatMessage("Can you verify cylinder head casting code compatibility for my Type 1?")}
-                    className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all"
+                    className="shrink-0 min-h-[30px] bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all text-[10px] cursor-pointer"
                   >
                     🔧 Casting Code Check
                   </button>
                   <button 
+                    type="button"
                     onClick={() => handleSendChatMessage("What is the freight shipping cost for crated parts?")}
-                    className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all"
+                    className="shrink-0 min-h-[30px] bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all text-[10px] cursor-pointer"
                   >
                     📦 Crated Shipping Cost
                   </button>
                 </div>
 
                 {/* Messages Scroll Area */}
-                <div ref={chatScrollContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#111112]">
+                <div ref={chatScrollContainerRef} className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-4 bg-[#111112]">
                   {chatMessages.map((msg, idx) => {
                     const isFromUser = msg.senderRole === 'USER';
                     return (
@@ -1099,25 +1102,25 @@ export default function UserDashboard({
                   })}
                 </div>
 
-                {/* Chat Input Bar */}
+                {/* Chat Input Bar - Sticky at bottom with min 44px touch target */}
                 <form 
                   onSubmit={(e) => {
                     e.preventDefault();
                     handleSendChatMessage();
                   }}
-                  className="p-3 bg-[#181719] border-t border-[#2d2b2e] flex items-center gap-2"
+                  className="p-2.5 sm:p-3 bg-[#181719] border-t border-[#2d2b2e] flex items-center gap-2 shrink-0"
                 >
                   <input
                     type="text"
-                    placeholder="Type your message or technical question to Master Admin..."
+                    placeholder="Type your message to Master Admin..."
                     value={chatInputText}
                     onChange={(e) => setChatInputText(e.target.value)}
-                    className="flex-1 bg-[#0e0e0f] border border-[#584236]/60 rounded-xs px-3.5 py-2.5 text-xs text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
+                    className="flex-1 min-h-[44px] bg-[#0e0e0f] border border-[#584236]/60 rounded-xs px-3.5 py-2 text-xs sm:text-sm text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
                   />
                   <button
                     type="submit"
                     disabled={isSendingMessage || !chatInputText.trim()}
-                    className="bg-[#ff7a1a] hover:bg-[#ffb68e] disabled:opacity-40 text-black font-bold text-xs uppercase px-5 py-2.5 rounded-xs transition-all flex items-center gap-1.5 shrink-0"
+                    className="min-h-[44px] bg-[#ff7a1a] hover:bg-[#ffb68e] disabled:opacity-40 text-black font-bold text-xs uppercase px-4 sm:px-5 py-2 rounded-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-md"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Send</span>

@@ -1778,21 +1778,23 @@ export default function AdminPanel({
                 </button>
               </div>
 
-              {/* Two Column Layout */}
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 min-h-0 overflow-hidden">
+              {/* Two Column / Master-Detail Layout */}
+              <div className="flex-1 flex flex-col md:grid md:grid-cols-3 gap-4 min-h-0">
                 
                 {/* Left Panel: Conversation List */}
-                <div className="md:col-span-1 bg-[#141416] border border-[#262426] rounded-xs flex flex-col overflow-hidden h-[540px]">
+                <div className={`md:col-span-1 bg-[#141416] border border-[#262426] rounded-xs flex flex-col overflow-hidden h-[calc(100vh-230px)] min-h-[480px] max-h-[700px] ${
+                  selectedUserThread ? 'hidden md:flex' : 'flex'
+                }`}>
                   {/* Search Bar */}
-                  <div className="p-3 border-b border-[#262426] bg-[#181719]">
+                  <div className="p-3 border-b border-[#262426] bg-[#181719] shrink-0">
                     <div className="relative">
-                      <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#a78b7d]" />
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-[#a78b7d]" />
                       <input
                         type="text"
                         placeholder="Search customers or emails..."
                         value={chatSearchQuery}
                         onChange={(e) => setChatSearchQuery(e.target.value)}
-                        className="w-full bg-[#0e0e0f] border border-[#3a383a] rounded-xs pl-8 pr-3 py-1.5 text-xs text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
+                        className="w-full min-h-[38px] bg-[#0e0e0f] border border-[#3a383a] rounded-xs pl-8 pr-3 py-1.5 text-xs text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
                       />
                     </div>
                   </div>
@@ -1825,7 +1827,7 @@ export default function AdminPanel({
                               <button
                                 key={convo.userId}
                                 onClick={() => handleSelectConversation(convo)}
-                                className={`w-full text-left p-3.5 flex items-start gap-3 transition-all ${
+                                className={`w-full text-left p-3.5 flex items-start gap-3 transition-all cursor-pointer min-h-[58px] ${
                                   isSelected 
                                     ? 'bg-[#222022] border-l-4 border-l-[#ff7a1a]' 
                                     : 'hover:bg-[#1a191b]'
@@ -1857,61 +1859,77 @@ export default function AdminPanel({
                 </div>
 
                 {/* Right Panel: Active Chat Thread View */}
-                <div className="md:col-span-2 bg-[#141416] border border-[#262426] rounded-xs flex flex-col overflow-hidden h-[540px]">
+                <div className={`md:col-span-2 bg-[#141416] border border-[#262426] rounded-xs flex flex-col overflow-hidden h-[calc(100vh-230px)] min-h-[480px] max-h-[700px] ${
+                  selectedUserThread ? 'flex' : 'hidden md:flex'
+                }`}>
                   {selectedUserThread ? (
                     <>
-                      {/* Thread Header */}
-                      <div className="p-3.5 bg-[#181719] border-b border-[#262426] flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-[#ff7a1a]/20 border border-[#ff7a1a]/40 text-[#ff7a1a] flex items-center justify-center font-bold text-xs">
+                      {/* Thread Header with Mobile Back Button */}
+                      <div className="p-3 sm:p-3.5 bg-[#181719] border-b border-[#262426] flex items-center justify-between gap-2 shrink-0">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                          {/* Mobile Back Button to Customer List */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedUserThread(null)}
+                            className="md:hidden min-h-[36px] min-w-[36px] flex items-center justify-center p-2 bg-[#201f20] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black border border-[#584236]/60 rounded-xs transition-colors cursor-pointer shrink-0"
+                            title="Back to Customer List"
+                            aria-label="Back to Customer List"
+                          >
+                            <ArrowLeft className="w-4 h-4" />
+                          </button>
+
+                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#ff7a1a]/20 border border-[#ff7a1a]/40 text-[#ff7a1a] flex items-center justify-center font-bold text-xs shrink-0">
                             {selectedUserThread.userName ? selectedUserThread.userName.charAt(0).toUpperCase() : 'U'}
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h4 className="text-xs font-bold text-white">{selectedUserThread.userName}</h4>
-                              <span className="text-[9px] px-1.5 py-0.2 bg-[#83cffb]/20 text-[#83cffb] border border-[#83cffb]/30 rounded-xs font-mono">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-xs sm:text-sm font-bold text-white truncate">{selectedUserThread.userName}</h4>
+                              <span className="text-[9px] px-1.5 py-0.2 bg-[#83cffb]/20 text-[#83cffb] border border-[#83cffb]/30 rounded-xs font-mono shrink-0">
                                 Restorer
                               </span>
                             </div>
-                            <span className="text-[10px] text-[#a78b7d] font-mono block">
-                              ✉️ {selectedUserThread.userEmail} • User ID: #{selectedUserThread.userId}
+                            <span className="text-[10px] text-[#a78b7d] font-mono block truncate">
+                              ✉️ {selectedUserThread.userEmail}
                             </span>
                           </div>
                         </div>
 
-                        <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                        <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1 shrink-0">
                           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                          Thread Active
+                          <span className="hidden sm:inline">Thread Active</span>
                         </span>
                       </div>
 
                       {/* Quick Admin Canned Responses */}
-                      <div className="p-2 bg-[#1b1a1c] border-b border-[#262426] flex items-center gap-2 overflow-x-auto text-[11px] font-mono no-scrollbar">
+                      <div className="p-2 bg-[#1b1a1c] border-b border-[#262426] flex items-center gap-2 overflow-x-auto text-[11px] font-mono no-scrollbar shrink-0">
                         <span className="text-[#a78b7d] uppercase text-[9px] shrink-0 font-bold flex items-center gap-1">
-                          <Sparkles className="w-3 h-3 text-[#ff7a1a]" /> Quick Reply:
+                          <Sparkles className="w-3 h-3 text-[#ff7a1a]" /> Quick:
                         </span>
                         <button 
+                          type="button"
                           onClick={() => handleSendAdminReply("Hello! Yes, that item is in stock and crated ready for global dispatch.")}
-                          className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2 py-0.5 rounded-xs border border-[#3a383a] transition-all text-[10px]"
+                          className="shrink-0 min-h-[30px] bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all text-[10px] cursor-pointer"
                         >
-                          📦 In Stock & Ready
+                          📦 In Stock
                         </button>
                         <button 
+                          type="button"
                           onClick={() => handleSendAdminReply("Please send your engine case casting code (AS41, Single/Dual relief) so we can verify exact fitment.")}
-                          className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2 py-0.5 rounded-xs border border-[#3a383a] transition-all text-[10px]"
+                          className="shrink-0 min-h-[30px] bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all text-[10px] cursor-pointer"
                         >
-                          🔧 Request Casting Code
+                          🔧 Casting Code
                         </button>
                         <button 
+                          type="button"
                           onClick={() => handleSendAdminReply("We can offer a special 10% restorer bundle discount for this complete set.")}
-                          className="shrink-0 bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2 py-0.5 rounded-xs border border-[#3a383a] transition-all text-[10px]"
+                          className="shrink-0 min-h-[30px] bg-[#222123] hover:bg-[#ff7a1a] text-[#e0c0b1] hover:text-black px-2.5 py-1 rounded-xs border border-[#3a383a] transition-all text-[10px] cursor-pointer"
                         >
-                          💰 10% Bundle Discount
+                          💰 10% Discount
                         </button>
                       </div>
 
                       {/* Messages Scroll Area */}
-                      <div ref={adminChatContainerRef} className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#101011]">
+                      <div ref={adminChatContainerRef} className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3 bg-[#101011]">
                         {threadMessages.map((msg, idx) => {
                           const isAdmin = msg.senderRole === 'ADMIN';
                           return (
@@ -1926,7 +1944,7 @@ export default function AdminPanel({
                               </div>
 
                               <div 
-                                className={`max-w-[85%] p-3 rounded-xs text-xs leading-relaxed ${
+                                className={`max-w-[85%] sm:max-w-[75%] p-3 rounded-xs text-xs leading-relaxed ${
                                   isAdmin 
                                     ? 'bg-[#ff7a1a] text-black font-semibold shadow-md rounded-tr-none'
                                     : 'bg-[#201f20] text-[#e5e2e3] border border-[#584236]/60 shadow-md rounded-tl-none'
@@ -1939,28 +1957,28 @@ export default function AdminPanel({
                         })}
                       </div>
 
-                      {/* Reply Input Box */}
+                      {/* Reply Input Box - Always sticky and accessible at bottom */}
                       <form
                         onSubmit={(e) => {
                           e.preventDefault();
                           handleSendAdminReply();
                         }}
-                        className="p-3 bg-[#181719] border-t border-[#262426] flex items-center gap-2"
+                        className="p-2.5 sm:p-3 bg-[#181719] border-t border-[#262426] flex items-center gap-2 shrink-0"
                       >
                         <input
                           type="text"
-                          placeholder={`Reply to ${selectedUserThread.userName} as Master Admin...`}
+                          placeholder={`Reply to ${selectedUserThread.userName}...`}
                           value={adminReplyText}
                           onChange={(e) => setAdminReplyText(e.target.value)}
-                          className="flex-1 bg-[#0e0e0f] border border-[#3a383a] rounded-xs px-3.5 py-2.5 text-xs text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
+                          className="flex-1 min-h-[44px] bg-[#0e0e0f] border border-[#3a383a] rounded-xs px-3.5 py-2 text-xs sm:text-sm text-white placeholder-[#a78b7d] focus:outline-none focus:border-[#ff7a1a] font-mono"
                         />
                         <button
                           type="submit"
                           disabled={isSendingReply || !adminReplyText.trim()}
-                          className="bg-[#ff7a1a] hover:bg-[#ffb68e] disabled:opacity-40 text-black font-bold text-xs uppercase px-5 py-2.5 rounded-xs transition-all flex items-center gap-1.5 shrink-0"
+                          className="min-h-[44px] bg-[#ff7a1a] hover:bg-[#ffb68e] disabled:opacity-40 text-black font-bold text-xs uppercase px-4 sm:px-5 py-2 rounded-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-md"
                         >
                           <Send className="w-3.5 h-3.5" />
-                          <span>Reply</span>
+                          <span className="hidden sm:inline">Reply</span>
                         </button>
                       </form>
                     </>
