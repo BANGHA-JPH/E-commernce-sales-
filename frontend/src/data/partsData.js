@@ -362,34 +362,49 @@ export const SPARE_PARTS = [
 
 export const YOUTUBE_SHOWCASE = [
   {
-    id: 'turbo-vw-dyno-run',
-    title: '2276cc Turbo Air-Cooled VW Type 1 Engine Dyno Test & Revs',
-    description: 'Listen to the roaring turbo spool and crisp dual Weber response on this 220 HP air-cooled engine with Porsche 911 upright fan shroud.',
-    videoUrl: '/pictures/WhatsApp Video 2026-08-05 at 1.10.25 PM.mp4',
-    youtubeId: '3G8mS7wE0bM',
-    duration: '03:45',
-    category: 'Dyno & Sound Test',
-    thumbnail: '/pictures/WhatsApp Image 2026-08-05 at 1.10.06 PM.jpeg'
-  },
-  {
-    id: 'rogue-beetle-walkaround',
-    title: '1979 "ROGUE" Super Beetle Convertible Custom Show Walkthrough',
-    description: 'Detailed showcase of the peacock blue custom bodywork, four-wheel disc brake setup, and hand-built 2.0L engine compartment.',
-    videoUrl: '/pictures/WhatsApp Video 2026-08-05 at 1.10.26 PM.mp4',
-    youtubeId: 'dDk5_Erh0mY',
-    duration: '05:20',
-    category: 'Vehicle Showcase',
-    thumbnail: '/pictures/WhatsApp Image 2026-08-03 at 7.49.52 PM (1).jpeg'
-  },
-  {
-    id: 'bus-patina-test-drive',
-    title: '1964 Split-Screen VW Bus T1 Patina Cruiser Engine Sound',
-    description: 'Raw exhaust sound clips and driving impressions of the dropped safari bus powered by an 1835cc dual-port engine.',
-    videoUrl: '/pictures/WhatsApp Video 2026-08-05 at 1.10.27 PM.mp4',
-    youtubeId: 'L_LUpnjgPso',
-    duration: '04:10',
+    id: 'old-classics-showcase',
+    title: 'Old Classics Vintage Air-Cooled VW Showcase',
+    description: 'A walkaround and showcase of timeless air-cooled VW classics and custom builds directly from the workshop.',
+    youtubeId: '489rOyNtNxc',
+    duration: 'Shorts',
     category: 'Restoration Workshop',
-    thumbnail: '/pictures/WhatsApp Image 2026-08-03 at 7.49.46 PM.jpeg'
+    thumbnail: 'https://i.ytimg.com/vi/489rOyNtNxc/hqdefault.jpg'
+  },
+  {
+    id: '2366cc-engine-build',
+    title: '2366cc High-Performance Air-Cooled VW Engine',
+    description: 'Raw powerhouse 2366cc engine build, high-compression dual-carb setup, and live dyno revs.',
+    youtubeId: 'scLpvJzd1SA',
+    duration: 'Shorts',
+    category: 'Dyno & Sound Test',
+    thumbnail: 'https://i.ytimg.com/vi/scLpvJzd1SA/hqdefault.jpg'
+  },
+  {
+    id: '90mm-generator-assembly',
+    title: '90mm Generator & Charging System Bench Assembly',
+    description: 'Precision mounting and electrical alignment for vintage 90mm generator on custom air-cooled VW build.',
+    youtubeId: 'TYATURt70rM',
+    duration: 'Shorts',
+    category: 'Workshop Assembly',
+    thumbnail: 'https://i.ytimg.com/vi/TYATURt70rM/hqdefault.jpg'
+  },
+  {
+    id: 'air-cooled-engine-bench-test',
+    title: 'Custom Air-Cooled Engine Workshop Bench Test',
+    description: 'Live test run and valve train inspection on complete freshly rebuilt air-cooled VW flat-four engine.',
+    youtubeId: 'AJzFKdQrGXc',
+    duration: 'Shorts',
+    category: 'Engine Testing',
+    thumbnail: 'https://i.ytimg.com/vi/AJzFKdQrGXc/hqdefault.jpg'
+  },
+  {
+    id: '2275cc-performance-engine',
+    title: '2275cc Performance Engine Build Walkthrough',
+    description: 'In-depth look at this 2275cc air-cooled engine build with upgraded fan shroud, twin carbs, and chrome accessories.',
+    youtubeId: 'hhe8GVdwnx8',
+    duration: 'Shorts',
+    category: 'Performance Engines',
+    thumbnail: 'https://i.ytimg.com/vi/hhe8GVdwnx8/hqdefault.jpg'
   }
 ];
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Video, Film } from 'lucide-react';
+import { Play, Video, Film, ExternalLink } from 'lucide-react';
 import { YOUTUBE_SHOWCASE } from '../data/partsData';
 
 export default function VideoShowcase() {
@@ -9,7 +9,7 @@ export default function VideoShowcase() {
 
   const getYoutubeId = (urlOrId) => {
     if (!urlOrId) return activeVideo.youtubeId;
-    const match = urlOrId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    const match = urlOrId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))([\w-]{11})/);
     return match ? match[1] : urlOrId;
   };
 
@@ -44,13 +44,24 @@ export default function VideoShowcase() {
               
               {/* Top Bar */}
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#584236]/30 text-xs font-technical-data text-[#a78b7d]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff7a1a] inline-block animate-pulse" />
-                  <span className="text-[#e5e2e3] font-bold">{activeVideo.title}</span>
+                <div className="flex items-center gap-2 max-w-[60%] truncate">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff7a1a] inline-block animate-pulse flex-shrink-0" />
+                  <span className="text-[#e5e2e3] font-bold truncate">{activeVideo.title}</span>
                 </div>
-                <div className="hidden sm:flex items-center gap-3 text-[11px]">
-                  <span>DURATION: {activeVideo.duration}</span>
-                  <span className="bg-[#ff7a1a]/20 text-[#ff7a1a] px-2 py-0.5 font-technical-data">4K ULTRA HD</span>
+                <div className="flex items-center gap-3 text-[11px] flex-shrink-0">
+                  {currentYoutubeId && (
+                    <a
+                      href={`https://www.youtube.com/shorts/${currentYoutubeId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[#ff7a1a] hover:text-[#ffb68e] transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      <span>YouTube</span>
+                    </a>
+                  )}
+                  <span className="hidden sm:inline">DURATION: {activeVideo.duration}</span>
+                  <span className="bg-[#ff7a1a]/20 text-[#ff7a1a] px-2 py-0.5 font-technical-data">HD</span>
                 </div>
               </div>
 
