@@ -184,13 +184,13 @@ export default function CatalogSection({
               <span className="text-[10px] sm:text-[11px] text-[#a78b7d] uppercase font-bold block mb-1.5">
                 1. Select Vehicle System:
               </span>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap no-scrollbar">
                 <button
                   onClick={() => {
                     setSelectedSystem('ALL');
                     setSelectedSubcat('ALL');
                   }}
-                  className={`text-[11px] sm:text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xs font-bold transition-all border ${
+                  className={`text-[11px] sm:text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xs font-bold transition-all border shrink-0 ${
                     selectedSystem === 'ALL'
                       ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]'
                       : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a] hover:text-[#ff7a1a]'
@@ -207,7 +207,7 @@ export default function CatalogSection({
                         setSelectedSystem(sys.id);
                         setSelectedSubcat('ALL');
                       }}
-                      className={`text-[11px] sm:text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xs font-bold transition-all border flex items-center gap-1 ${
+                      className={`text-[11px] sm:text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xs font-bold transition-all border flex items-center gap-1 shrink-0 ${
                         isActive
                           ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]'
                           : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/40 hover:border-[#ff7a1a] hover:text-[#ff7a1a]'
@@ -227,10 +227,10 @@ export default function CatalogSection({
                 <span className="text-[11px] sm:text-xs font-bold text-[#ff7a1a] block mb-1.5">
                   2. Subcategories in {currentSystemObj.emoji} {currentSystemObj.name}:
                 </span>
-                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 sm:flex-wrap no-scrollbar">
                   <button
                     onClick={() => setSelectedSubcat('ALL')}
-                    className={`text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xs font-bold transition-all border ${
+                    className={`text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xs font-bold transition-all border shrink-0 ${
                       selectedSubcat === 'ALL'
                         ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]'
                         : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/50 hover:border-[#ff7a1a]'
@@ -244,7 +244,7 @@ export default function CatalogSection({
                       <button
                         key={sub.id}
                         onClick={() => setSelectedSubcat(sub.name)}
-                        className={`text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xs font-bold transition-all border ${
+                        className={`text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xs font-bold transition-all border shrink-0 ${
                           isSubActive
                             ? 'bg-[#ff7a1a] text-black border-[#ff7a1a]'
                             : 'bg-[#201f20] text-[#e0c0b1] border-[#584236]/50 hover:border-[#ff7a1a] hover:text-[#ff7a1a]'

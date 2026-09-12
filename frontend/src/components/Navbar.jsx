@@ -80,29 +80,32 @@ export default function Navbar({
         {/* Brand Logo Header */}
         <button 
           onClick={onNavigateToShop} 
-          className="flex items-center space-x-2 sm:space-x-3 group shrink-0 text-left focus:outline-none"
+          className="flex items-center space-x-1.5 sm:space-x-3 group min-w-0 flex-1 sm:flex-initial text-left focus:outline-none shrink"
         >
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#ff7a1a] flex items-center justify-center text-black font-bold group-hover:bg-[#ffb68e] transition-colors rounded-xs">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#ff7a1a] flex items-center justify-center text-black font-bold group-hover:bg-[#ffb68e] transition-colors rounded-xs shrink-0">
             <Wrench className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
           </div>
-          <div>
-            <div className="font-h2 text-xs sm:text-base md:text-lg font-bold tracking-tighter text-[#ff7a1a] flex items-center leading-none select-none">
-              {"CLASSIC AIRCOOLED VW WORKS".split('').map((char, index) => (
-                <span
-                  key={index}
-                  className="animate-jump-swing"
-                  style={{
-                    animationDelay: `${index * 0.06}s`,
-                    display: 'inline-block',
-                    width: char === ' ' ? '0.25em' : 'auto'
-                  }}
-                >
-                  {char === ' ' ? '\u00A0' : char}
-                </span>
-              ))}
+          <div className="min-w-0">
+            <div className="font-h2 text-xs sm:text-base md:text-lg font-bold tracking-tighter text-[#ff7a1a] flex items-center leading-none select-none truncate">
+              <span className="sm:hidden font-bold">CLASSIC VW WORKS</span>
+              <span className="hidden sm:inline-flex">
+                {"CLASSIC AIRCOOLED VW WORKS".split('').map((char, index) => (
+                  <span
+                    key={index}
+                    className="animate-jump-swing"
+                    style={{
+                      animationDelay: `${index * 0.06}s`,
+                      display: 'inline-block',
+                      width: char === ' ' ? '0.25em' : 'auto'
+                    }}
+                  >
+                    {char === ' ' ? '\u00A0' : char}
+                  </span>
+                ))}
+              </span>
             </div>
-            <span className="text-[7px] sm:text-[9px] tracking-widest text-[#a78b7d] uppercase font-technical-data font-bold block mt-0.5">
-              ENGINES, SPARE PARTS & WORKSHOP
+            <span className="text-[7px] sm:text-[9px] tracking-widest text-[#a78b7d] uppercase font-technical-data font-bold block mt-0.5 truncate">
+              ENGINES & SPARE PARTS
             </span>
           </div>
         </button>
@@ -127,7 +130,7 @@ export default function Navbar({
           {/* Cart Button */}
           <button 
             onClick={onOpenCart}
-            className="relative min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20]/60 hover:bg-[#201f20] border border-[#584236]/40 rounded-xs transition-all cursor-pointer"
+            className="relative min-w-[38px] min-h-[38px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20]/60 hover:bg-[#201f20] border border-[#584236]/40 rounded-xs transition-all cursor-pointer shrink-0"
             title="Shopping Cart"
             aria-label="Open Shopping Cart"
           >
@@ -142,16 +145,16 @@ export default function Navbar({
           {/* Workshop Location Button */}
           <a
             href="#workshop-location"
-            className="hidden md:flex items-center gap-1.5 font-label-caps text-xs text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20] hover:bg-[#2c2b2d] border border-[#584236]/40 px-2.5 py-2 min-h-[40px] sm:min-h-[44px] uppercase font-bold tracking-wider rounded-xs transition-all shadow-sm"
+            className="hidden md:flex items-center gap-1.5 font-label-caps text-xs text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20] hover:bg-[#2c2b2d] border border-[#584236]/40 px-2.5 py-2 min-h-[40px] sm:min-h-[44px] uppercase font-bold tracking-wider rounded-xs transition-all shadow-sm shrink-0"
             title="Houston Workshop & Garage Map"
           >
             <MapPin className="w-3.5 h-3.5 text-[#ff7a1a]" />
             <span>Workshop Map</span>
           </a>
 
-          {/* Wishlist Button */}
+          {/* Wishlist Button - visible on sm+ screens */}
           <button 
-            className="relative min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] transition-colors" 
+            className="hidden sm:flex relative min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] transition-colors shrink-0" 
             title="Wishlist"
             aria-label="Wishlist"
           >
@@ -168,7 +171,7 @@ export default function Navbar({
               {/* User Dashboard & Requests Trigger */}
               <button 
                 onClick={onOpenUserDashboard}
-                className="relative min-h-[40px] sm:min-h-[44px] flex items-center gap-1.5 sm:gap-2 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black border border-[#ff7a1a] px-2.5 py-1.5 sm:px-3.5 sm:py-2 transition-all rounded-xs font-bold text-xs cursor-pointer shadow-sm"
+                className="relative min-h-[38px] sm:min-h-[44px] flex items-center gap-1 sm:gap-2 bg-[#ff7a1a] hover:bg-[#ffb68e] text-black border border-[#ff7a1a] px-2 py-1.5 sm:px-3.5 sm:py-2 transition-all rounded-xs font-bold text-xs cursor-pointer shadow-sm shrink-0"
                 title="User Dashboard & Garage"
               >
                 <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
@@ -182,7 +185,7 @@ export default function Navbar({
               {onLogout && (
                 <button 
                   onClick={onLogout}
-                  className="min-h-[40px] sm:min-h-[44px] flex items-center gap-1 font-label-caps text-[11px] sm:text-xs bg-[#201f20] hover:bg-red-600 hover:text-white border border-red-500/40 text-red-400 px-2 sm:px-3 py-1.5 sm:py-2 uppercase font-bold tracking-wider rounded-xs transition-all cursor-pointer shadow-sm"
+                  className="min-h-[38px] sm:min-h-[44px] flex items-center gap-1 font-label-caps text-[11px] sm:text-xs bg-[#201f20] hover:bg-red-600 hover:text-white border border-red-500/40 text-red-400 px-2 sm:px-3 py-1.5 sm:py-2 uppercase font-bold tracking-wider rounded-xs transition-all cursor-pointer shadow-sm shrink-0"
                   title="Sign Out"
                 >
                   <LogOut className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -194,20 +197,20 @@ export default function Navbar({
             /* Auth Modal Trigger (Login / Register) */
             <button 
               onClick={onOpenAuth}
-              className="min-h-[40px] sm:min-h-[44px] flex items-center gap-1 sm:gap-1.5 font-label-caps text-[11px] sm:text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] border border-[#ff7a1a] px-2.5 py-1.5 sm:px-3.5 sm:py-2 uppercase font-bold tracking-wider rounded-xs transition-all shadow-md cursor-pointer"
+              className="min-h-[38px] sm:min-h-[44px] flex items-center gap-1 sm:gap-1.5 font-label-caps text-[11px] sm:text-xs text-black bg-[#ff7a1a] hover:bg-[#ffb68e] border border-[#ff7a1a] px-2.5 py-1.5 sm:px-3.5 sm:py-2 uppercase font-bold tracking-wider rounded-xs transition-all shadow-md cursor-pointer shrink-0"
             >
               <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
-              <span>Login</span>
+              <span className="hidden min-[360px]:inline">Login</span>
             </button>
           )}
 
           {/* Mobile Menu Toggle */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20]/40 border border-[#584236]/30 rounded-xs cursor-pointer"
+            className="lg:hidden min-w-[38px] min-h-[38px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center p-2 text-[#e0c0b1] hover:text-[#ff7a1a] bg-[#201f20]/60 border border-[#584236]/40 rounded-xs cursor-pointer shrink-0"
             aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
@@ -331,6 +334,24 @@ export default function Navbar({
               <span>Browse All Parts Catalog</span>
             </div>
             <ChevronRight className="w-4 h-4 text-[#ff7a1a]" />
+          </button>
+
+          {/* Quick Wishlist in Mobile */}
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              const catalogEl = document.getElementById('catalog');
+              if (catalogEl) catalogEl.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="w-full min-h-[44px] font-label-caps text-xs text-[#e0c0b1] bg-[#201f20] hover:bg-[#2c2b2d] border border-[#584236]/50 py-2.5 px-4 uppercase font-bold tracking-wider flex items-center justify-between rounded-xs transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Heart className="w-4 h-4 text-[#ff7a1a]" />
+              <span>Saved Wishlist Parts</span>
+            </div>
+            <span className="bg-black text-[#ff7a1a] text-xs px-2 py-0.5 rounded-full font-technical-data font-bold">
+              {wishlistCount} Saved
+            </span>
           </button>
 
           {/* Accordion Categories */}

@@ -131,29 +131,29 @@ export default function VWVehicleShowcase({
         {navMode === 'vehicle' && (
           <div>
             {/* 3-Step Breadcrumb Navigation (Category -> Model -> Systems) */}
-            <div className="mb-6 sm:mb-10 bg-[#181719]/90 backdrop-blur-md border border-[#584236]/40 p-3 sm:p-4 rounded-xs flex items-center justify-between flex-wrap gap-2.5 sm:gap-4">
-              <div className="flex items-center gap-1.5 sm:gap-2.5 text-[11px] sm:text-xs font-bold flex-wrap">
+            <div className="mb-6 sm:mb-10 bg-[#181719]/90 backdrop-blur-md border border-[#584236]/40 p-2.5 sm:p-4 rounded-xs flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 text-[11px] sm:text-xs font-bold shrink-0">
                 
                 {/* Step 1 Pill */}
                 <button
                   onClick={handleResetToCategory}
-                  className={`min-h-[38px] flex items-center gap-1.5 px-3 py-1.5 rounded-xs transition-all cursor-pointer ${
+                  className={`min-h-[36px] sm:min-h-[38px] flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xs transition-all cursor-pointer shrink-0 ${
                     currentStep === 1 
                       ? 'bg-[#ff7a1a] text-black font-bold shadow-md' 
                       : 'bg-[#201f20] text-[#e0c0b1] hover:text-[#ff7a1a] border border-[#584236]/40'
                   }`}
                 >
                   <span className="w-4 h-4 rounded-full bg-black/20 text-current text-[10px] flex items-center justify-center font-bold">1</span>
-                  <span>1. Category</span>
+                  <span>Category</span>
                 </button>
 
-                <ChevronRight className="w-3.5 h-3.5 text-[#584236]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#584236] shrink-0" />
 
                 {/* Step 2 Pill */}
                 <button
                   onClick={() => selectedCat && setCurrentStep(2)}
                   disabled={!selectedCat}
-                  className={`min-h-[38px] flex items-center gap-1.5 px-3 py-1.5 rounded-xs transition-all ${
+                  className={`min-h-[36px] sm:min-h-[38px] flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xs transition-all shrink-0 ${
                     currentStep === 2 
                       ? 'bg-[#ff7a1a] text-black font-bold shadow-md cursor-pointer' 
                       : selectedCat 
@@ -162,16 +162,16 @@ export default function VWVehicleShowcase({
                   }`}
                 >
                   <span className="w-4 h-4 rounded-full bg-black/20 text-current text-[10px] flex items-center justify-center font-bold">2</span>
-                  <span>2. Model {selectedMod ? `(${selectedMod.name})` : selectedCat ? `(${selectedCat.name})` : ''}</span>
+                  <span>Model {selectedMod ? `(${selectedMod.name})` : selectedCat ? `(${selectedCat.name})` : ''}</span>
                 </button>
 
-                <ChevronRight className="w-3.5 h-3.5 text-[#584236]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#584236] shrink-0" />
 
                 {/* Step 3 Pill */}
                 <button
                   onClick={() => selectedMod && setCurrentStep(3)}
                   disabled={!selectedMod}
-                  className={`min-h-[38px] flex items-center gap-1.5 px-3 py-1.5 rounded-xs transition-all ${
+                  className={`min-h-[36px] sm:min-h-[38px] flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xs transition-all shrink-0 ${
                     currentStep === 3 
                       ? 'bg-[#ff7a1a] text-black font-bold shadow-md cursor-pointer' 
                       : selectedMod 
@@ -180,7 +180,7 @@ export default function VWVehicleShowcase({
                   }`}
                 >
                   <span className="w-4 h-4 rounded-full bg-black/20 text-current text-[10px] flex items-center justify-center font-bold">3</span>
-                  <span>3. Vehicle Systems</span>
+                  <span>Systems</span>
                 </button>
 
               </div>
@@ -188,7 +188,7 @@ export default function VWVehicleShowcase({
               {currentStep > 1 && (
                 <button
                   onClick={() => setCurrentStep(currentStep - 1)}
-                  className="min-h-[38px] px-2.5 py-1.5 text-[11px] sm:text-xs text-[#83cffb] hover:underline flex items-center gap-1 font-bold cursor-pointer"
+                  className="min-h-[36px] sm:min-h-[38px] px-2.5 py-1.5 text-[11px] sm:text-xs text-[#83cffb] hover:underline flex items-center gap-1 font-bold cursor-pointer shrink-0 ml-auto"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back</span>
