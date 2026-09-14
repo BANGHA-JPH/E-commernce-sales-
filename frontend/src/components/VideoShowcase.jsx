@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Play, 
-  Pause, 
-  Volume2, 
-  VolumeX, 
-  Maximize2, 
-  RotateCcw, 
-  ChevronLeft, 
-  ChevronRight, 
-  Gauge, 
-  Film, 
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize2,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  Gauge,
+  Film,
   Sparkles,
   Wrench,
   Flame
@@ -122,12 +122,12 @@ export default function VideoShowcase() {
 
   return (
     <section id="workshop" className="py-20 bg-[#0f0f10] relative border-t border-b border-[#584236]/30 overflow-hidden">
-      
+
       {/* Ambient background glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#ff7a1a]/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-[1440px] mx-auto px-4 md:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#ff7a1a]/10 border border-[#ff7a1a]/30 text-[#ff7a1a] font-technical-data text-xs uppercase tracking-widest">
@@ -146,13 +146,13 @@ export default function VideoShowcase() {
 
         {/* Main Showcase Grid */}
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-          
+
           {/* Left Column: Vertical 9:16 Reel Player */}
           <div className="lg:col-span-6 xl:col-span-5 flex justify-center">
             <div className="w-full max-w-[380px] bg-[#141415] rounded-2xl border border-[#584236]/50 shadow-2xl p-3 relative group">
-              
+
               {/* Phone-Style Bezel Container */}
-              <div 
+              <div
                 className="relative aspect-[9/16] rounded-xl overflow-hidden bg-black cursor-pointer select-none shadow-inner"
                 onClick={togglePlay}
               >
@@ -222,7 +222,7 @@ export default function VideoShowcase() {
 
                 {/* Bottom Overlay Controls */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-20 pointer-events-auto space-y-2">
-                  
+
                   {/* Title & Subtitle */}
                   <div className="space-y-0.5">
                     <h3 className="text-sm font-bold text-white font-h2 leading-snug line-clamp-1">
@@ -234,12 +234,12 @@ export default function VideoShowcase() {
                   </div>
 
                   {/* Progress Bar */}
-                  <div 
+                  <div
                     ref={progressBarRef}
                     onClick={handleProgressClick}
                     className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer group/bar relative"
                   >
-                    <div 
+                    <div
                       className="h-full bg-[#ff7a1a] rounded-full transition-all duration-100"
                       style={{ width: `${progress}%` }}
                     />
@@ -266,9 +266,8 @@ export default function VideoShowcase() {
                         type="button"
                         onClick={toggleLoop}
                         title={isLooping ? "Loop On" : "Loop Off"}
-                        className={`text-xs px-1.5 py-0.5 rounded transition-colors ${
-                          isLooping ? 'text-[#ff7a1a] bg-[#ff7a1a]/20' : 'text-white/40'
-                        }`}
+                        className={`text-xs px-1.5 py-0.5 rounded transition-colors ${isLooping ? 'text-[#ff7a1a] bg-[#ff7a1a]/20' : 'text-white/40'
+                          }`}
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
                       </button>
@@ -297,7 +296,7 @@ export default function VideoShowcase() {
                 </div>
 
               </div>
-              
+
               {/* Bottom bezel branding note */}
               <div className="text-center pt-2 text-[10px] font-technical-data uppercase tracking-widest text-[#a78b7d]/60">
                 Pure Workshop Sound • 100% In-House Engine Work
@@ -308,7 +307,7 @@ export default function VideoShowcase() {
 
           {/* Right Column: Active Reel Details & Full Playlist Grid */}
           <div className="lg:col-span-6 xl:col-span-7 space-y-6">
-            
+
             {/* Active Reel Technical Specs Card */}
             <div className="glass-panel p-6 rounded-xl border border-[#584236]/40 bg-[#141415]/80 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#584236]/30">
@@ -339,8 +338,8 @@ export default function VideoShowcase() {
               {/* Technical Tags */}
               <div className="flex flex-wrap gap-2 pt-2">
                 {activeReel.tags.map((tag, i) => (
-                  <span 
-                    key={i} 
+                  <span
+                    key={i}
                     className="text-[11px] font-technical-data px-2.5 py-1 rounded bg-[#201f20] text-[#e0c0b1] border border-[#584236]/40"
                   >
                     #{tag}
@@ -372,11 +371,10 @@ export default function VideoShowcase() {
                       setActiveIdx(index);
                       setIsPlaying(true);
                     }}
-                    className={`relative text-left p-2.5 rounded-lg transition-all duration-300 group overflow-hidden border ${
-                      isActive 
+                    className={`relative text-left p-2.5 rounded-lg transition-all duration-300 group overflow-hidden border ${isActive
                         ? 'bg-[#201f20] border-[#ff7a1a] shadow-lg shadow-[#ff7a1a]/10 ring-1 ring-[#ff7a1a]'
                         : 'bg-[#141415]/70 border-[#584236]/30 hover:border-[#584236] hover:bg-[#1a191a]'
-                    }`}
+                      }`}
                   >
                     {/* Vertical Mini-Thumbnail Container */}
                     <div className="relative aspect-[9/12] w-full rounded overflow-hidden bg-black mb-2">
@@ -387,7 +385,7 @@ export default function VideoShowcase() {
                         playsInline
                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                       />
-                      
+
                       {/* Dark overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
 
@@ -417,9 +415,8 @@ export default function VideoShowcase() {
                       <div className="text-[9px] font-technical-data text-[#ff7a1a] uppercase font-bold truncate">
                         {reel.category}
                       </div>
-                      <h5 className={`text-xs font-bold leading-snug line-clamp-2 ${
-                        isActive ? 'text-[#ff7a1a]' : 'text-[#e5e2e3] group-hover:text-white'
-                      }`}>
+                      <h5 className={`text-xs font-bold leading-snug line-clamp-2 ${isActive ? 'text-[#ff7a1a]' : 'text-[#e5e2e3] group-hover:text-white'
+                        }`}>
                         {reel.title}
                       </h5>
                     </div>
